@@ -1,0 +1,36 @@
+## config.txt REQUIRED in Bot directory.
+
+# Contents:
+
+Line1: Botname
+Line2: Bot Confirmation secret (for communicating with other bots)
+Line3 and onwards: List of channels to join, one per line.
+
+# Example:
+
+MyBot
+ILOVEBEES
+#spawn
+#mychannel
+#channelwithpw thepassword
+
+## lp.txt OPTIONAL with content for !lp list
+
+# Contents:
+
+Each Line:
+NAME URL
+
+# Example:
+
+Superawesome http://www.youtube.com/superawesomegamer
+LPEliteExpert http://www.youtube.com/user/lpeexpert
+
+## twitterkeys.txt OPTIONAL, but REQUIRED if you want to parse twitter links
+
+# Contents:
+
+Line1: Access Token
+Line2: Access Token Secret
+Line3: Consumer Key
+Line4: Consumer Key Secret
