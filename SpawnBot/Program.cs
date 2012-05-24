@@ -10,9 +10,12 @@ using System.IO;
 using System.Threading;
 using System.Security.Cryptography;
 using Twitterizer;
+using SpawnBot.Handlers;
+using System.Reflection;
 
 namespace SpawnBot
 {
+
     class cIRC
     {
         private static IRC IrcObject;
@@ -43,15 +46,17 @@ namespace SpawnBot
 
         private static void ReadConfig()
         {
+            string input;
+            StreamReader r;
+
             // Read config file
             if ( File.Exists("config.txt") )
             {
-                StreamReader r = new StreamReader("config.txt");
+                r = new StreamReader("config.txt");
 
                 Botname = r.ReadLine();
                 BotConfirmationSecret = r.ReadLine();
 
-                string input;
 
                 while ( ( input = r.ReadLine() ) != null )
                 {
@@ -136,17 +141,19 @@ namespace SpawnBot
             return result;
         }
 
-        private void SendMessage( string message, string channel )
+        public static void SendMessage( string message, string channel )
         {
-            IrcObject.IrcWriter.WriteLine(String.Format("PRIVMSG {0} :{1}", channel, message));
+            string correctedMessage = message.Replace("\n", "").Replace("\r", "");
+
+            IrcObject.IrcWriter.WriteLine(String.Format("PRIVMSG {0} :{1}", channel, correctedMessage));
             IrcObject.IrcWriter.Flush();
 
-            Logger.WriteLine(String.Format("-> ({0}) {1}", channel, message), ConsoleColor.DarkCyan);
+            Logger.WriteLine(String.Format("-> ({0}) {1}", channel, correctedMessage), ConsoleColor.DarkCyan);
 
             //Logger.WriteLine(String.Format("PRIVMSG {0} :{1}", channel, message));
         }
 
-        private void SendCommand( string command )
+        public static void SendCommand( string command )
         {
             Logger.WriteLine("-> " + command, ConsoleColor.DarkCyan);
             IrcObject.IrcWriter.WriteLine(command);
@@ -177,6 +184,12 @@ namespace SpawnBot
 
         private void PrivateMessageResponse( string user, string message )
         {
+            if ( message.StartsWith("say") && user == "xwcg" )
+            {
+                SendMessage(message.Substring(4), ChannelName);
+                return;
+            }
+
             if ( message.Contains("steam") || message.Contains("sale") || message.Contains("sales") )
             {
                 string[] Sales = PollSales();
@@ -316,6 +329,9 @@ namespace SpawnBot
                         break;
                     case "mumble":
                         SendMessage("Mumble Address: mumble.thespawn.net - Port: 64738", Channel);
+                        break;
+                    case "version":
+                        SendMessage("SpawnBot v" + Assembly.GetCallingAssembly().GetName().Version.ToString(), Channel);
                         break;
                     case "steam":
                         string sale = PollSteamSale();
@@ -471,7 +487,7 @@ namespace SpawnBot
 
         void IrcObject_eventMessage( string User, string Message, string Channel )
         {
-            if ( !User.Equals("MMC", StringComparison.CurrentCultureIgnoreCase) )
+            if ( !User.Equals("MMC", StringComparison.CurrentCultureIgnoreCase) && !User.Equals("MMMC", StringComparison.CurrentCultureIgnoreCase) )
             {
                 Logger.WriteLine(String.Format("[{2}] {0}: {1}", User, Message, Channel));
             }
