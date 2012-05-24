@@ -1,42 +1,44 @@
 ﻿using System;
-using System.Net;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using xLogger;
 using System.Net.Sockets;
 using System.IO;
 using System.Threading;
 
-namespace SpawnBot
+namespace xIRC
 {
-
     #region Delegates
-    public delegate void CommandReceived( string IrcCommand );
-    public delegate void TopicSet( string IrcChannel, string IrcTopic );
-    public delegate void TopicOwner( string IrcChannel, string IrcUser, string TopicDate );
-    public delegate void NamesList( string UserNames , string IrcChannel);
-    public delegate void ServerMessage( string ServerMessage );
-    public delegate void Join( string IrcChannel, string IrcUser );
-    public delegate void Part( string IrcChannel, string IrcUser );
-    public delegate void Mode( string IrcChannel, string IrcUser, string UserMode );
-    public delegate void NickChange( string UserOldNick, string UserNewNick );
-    public delegate void Kick( string IrcChannel, string UserKicker, string UserKicked, string KickMessage );
-    public delegate void Quit( string UserQuit, string QuitMessage );
-    public delegate void Message( string User, string Message, string Channel );
+    public delegate void CommandReceivedRaw( string IrcCommand );
+    public delegate void TopicSetRaw( string IrcChannel, string IrcTopic );
+    public delegate void TopicOwnerRaw( string IrcChannel, string IrcUser, string TopicDate );
+    public delegate void NamesListRaw( string UserNames, string IrcChannel );
+    public delegate void ServerMessageRaw( string ServerMessage );
+    public delegate void JoinRaw( string IrcChannel, string IrcUser );
+    public delegate void PartRaw( string IrcChannel, string IrcUser );
+    public delegate void ModeRaw( string IrcChannel, string IrcUser, string UserMode );
+    public delegate void NickChangeRaw( string UserOldNick, string UserNewNick );
+    public delegate void KickRaw( string IrcChannel, string UserKicker, string UserKicked, string KickMessage );
+    public delegate void QuitRaw( string UserQuit, string QuitMessage );
+    public delegate void MessageRaw( string User, string Message, string Channel );
     #endregion
 
     public class IRC
     {
         #region Events
-        public event CommandReceived eventReceiving;
-        public event TopicSet eventTopicSet;
-        public event TopicOwner eventTopicOwner;
-        public event NamesList eventNamesList;
-        public event ServerMessage eventServerMessage;
-        public event Join eventJoin;
-        public event Part eventPart;
-        public event Mode eventMode;
-        public event NickChange eventNickChange;
-        public event Kick eventKick;
-        public event Quit eventQuit;
-        public event Message eventMessage;
+        public event CommandReceivedRaw eventReceiving;
+        public event TopicSetRaw eventTopicSet;
+        public event TopicOwnerRaw eventTopicOwner;
+        public event NamesListRaw eventNamesList;
+        public event ServerMessageRaw eventServerMessage;
+        public event JoinRaw eventJoin;
+        public event PartRaw eventPart;
+        public event ModeRaw eventMode;
+        public event NickChangeRaw eventNickChange;
+        public event KickRaw eventKick;
+        public event QuitRaw eventQuit;
+        public event MessageRaw eventMessage;
         #endregion
 
         #region Private Variables
@@ -237,7 +239,7 @@ namespace SpawnBot
             // Authenticate
             string isInvisible = this.IsInvisble ? "8" : "0";
             this.SendCommand(String.Format("USER {0} {1} * :{2}", this.IrcUser, isInvisible, this.IrcRealName));
-    
+
             this.SendCommand(String.Format("NICK {0}", this.IrcNick));
 
             this.SendCommand(String.Format("JOIN {0}", this.IrcChannel));
@@ -377,7 +379,7 @@ namespace SpawnBot
                         }
                     }
                 }
-                catch(Exception e)
+                catch ( Exception e )
                 {
                     Logger.WriteLine("***** Error in command loop or connection. Exception Message:", ConsoleColor.DarkRed);
                     Logger.WriteLine(e.Message, ConsoleColor.DarkRed);

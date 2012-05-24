@@ -1,47 +1,50 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Net;
-using System.Text.RegularExpressions;
-using System.Xml;
-using System.ServiceModel.Syndication;
 using System.IO;
-using System.Threading;
-using System.Security.Cryptography;
-using Twitterizer;
-using SpawnBot.Handlers;
+using System.Net;
 using System.Reflection;
+using System.Security.Cryptography;
+using System.ServiceModel.Syndication;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading;
+using System.Xml;
+using Twitterizer;
+using xIRC;
+using xLogger;
+using SBPluginInterface;
 
 namespace SpawnBot
 {
-
-    class cIRC
+    class Bot : SBPluginHost
     {
         private static IRC IrcObject;
 
-        private static bool DebugMode = false;
+        private static bool DebugMode = true;
 
         private bool Active = true;
         private string ActiveBot = "";
 
         private static string Botname = "";
-        private static string ChannelName = "";
+        private static string DefaultChannelName = "";
         private static string BotConfirmationSecret = "";
-        private static string TwitterAccessToken = "";
-        private static string TwitterAccessTokenSecret = "";
-        private static string TwitterConsumerKey = "";
-        private static string TwitterConsumerKeySecret = "";
+
+        public static string TwitterAccessToken = "";
+        public static string TwitterAccessTokenSecret = "";
+        public static string TwitterConsumerKey = "";
+        public static string TwitterConsumerKeySecret = "";
 
         private static List<string> Channels = new List<string>();
         private static List<string> LPs = new List<string>();
+
+        private static PluginService plugins = new PluginService();
 
 
         static void Main( string[] args )
         {
             ReadConfig();
 
-            cIRC IrcApp = new cIRC("irc.quakenet.org", 6667, Botname, ChannelName);
+            Bot IrcApp = new Bot("irc.quakenet.org", 6667, Botname, DefaultChannelName);
         }
 
         private static void ReadConfig()
@@ -60,9 +63,9 @@ namespace SpawnBot
 
                 while ( ( input = r.ReadLine() ) != null )
                 {
-                    if ( ChannelName == "" )
+                    if ( DefaultChannelName == "" )
                     {
-                        ChannelName = input;
+                        DefaultChannelName = input;
                     }
 
                     Channels.Add(input);
@@ -160,23 +163,30 @@ namespace SpawnBot
             IrcObject.IrcWriter.Flush();
         }
 
-        private cIRC( string IrcServer, int IrcPort, string IrcUser, string IrcChan )
+        private Bot( string IrcServer, int IrcPort, string IrcUser, string IrcChan )
         {
+            plugins.FindPlugins(Environment.CurrentDirectory + "\\Plugins\\");
+
+            foreach ( AvailablePlugin p in plugins.AvailablePlugins )
+            {
+                p.Instance.PluginHost = this;
+            }
+
             IrcObject = new IRC(IrcUser, IrcChan);
 
             // Assign events
-            IrcObject.eventReceiving += new CommandReceived(IrcCommandReceived);
-            IrcObject.eventTopicSet += new TopicSet(IrcTopicSet);
-            IrcObject.eventTopicOwner += new TopicOwner(IrcTopicOwner);
-            IrcObject.eventNamesList += new NamesList(IrcNamesList);
-            IrcObject.eventServerMessage += new ServerMessage(IrcServerMessage);
-            IrcObject.eventJoin += new Join(IrcJoin);
-            IrcObject.eventPart += new Part(IrcPart);
-            IrcObject.eventMode += new Mode(IrcMode);
-            IrcObject.eventNickChange += new NickChange(IrcNickChange);
-            IrcObject.eventKick += new Kick(IrcKick);
-            IrcObject.eventQuit += new Quit(IrcQuit);
-            IrcObject.eventMessage += new Message(IrcObject_eventMessage);
+            IrcObject.eventReceiving += new CommandReceivedRaw(IrcCommandReceived);
+            IrcObject.eventTopicSet += new TopicSetRaw(IrcTopicSet);
+            IrcObject.eventTopicOwner += new TopicOwnerRaw(IrcTopicOwner);
+            IrcObject.eventNamesList += new NamesListRaw(IrcNamesList);
+            IrcObject.eventServerMessage += new ServerMessageRaw(IrcServerMessage);
+            IrcObject.eventJoin += new JoinRaw(IrcJoin);
+            IrcObject.eventPart += new PartRaw(IrcPart);
+            IrcObject.eventMode += new ModeRaw(IrcMode);
+            IrcObject.eventNickChange += new NickChangeRaw(IrcNickChange);
+            IrcObject.eventKick += new KickRaw(IrcKick);
+            IrcObject.eventQuit += new QuitRaw(IrcQuit);
+            IrcObject.eventMessage += new MessageRaw(IrcObject_eventMessage);
 
             // Connect to server	
             IrcObject.Connect(IrcServer, IrcPort);
@@ -186,7 +196,7 @@ namespace SpawnBot
         {
             if ( message.StartsWith("say") && user == "xwcg" )
             {
-                SendMessage(message.Substring(4), ChannelName);
+                SendMessage(message.Substring(4), DefaultChannelName);
                 return;
             }
 
@@ -203,7 +213,7 @@ namespace SpawnBot
 
             if ( message.Trim().StartsWith("DO YOU LOVE BEES?") )
             {
-                if ( message.Substring(message.IndexOf(":") + 1).Trim() == GetSHA1Hash(ChannelName + "I really love bees" + Botname + BotConfirmationSecret) )
+                if ( message.Substring(message.IndexOf(":") + 1).Trim() == GetSHA1Hash(DefaultChannelName + "I really love bees" + Botname + BotConfirmationSecret) )
                 {
                     IUsers.SetBotFlag(user);
 
@@ -220,7 +230,7 @@ namespace SpawnBot
                 IUsers.SetBotFlag(user);
 
                 ActiveBot = user;
-                SendMessage("Alright, I'll sit on the bench.", ChannelName);
+                SendMessage("Alright, I'll sit on the bench.", DefaultChannelName);
 
                 Active = false;
             }
@@ -247,10 +257,7 @@ namespace SpawnBot
 
             if ( Message.Trim() == "I'm already on duty." && User != Botname && Active )
             {
-                SendMessage("DO YOU LOVE BEES? :" + GetSHA1Hash(ChannelName + "I really love bees" + User + BotConfirmationSecret), User);
-                //ActiveBot = User;
-                //SendMessage("Alright, I'll sit on the bench.", Channel);
-                //Active = false;
+                SendMessage("DO YOU LOVE BEES? :" + GetSHA1Hash(DefaultChannelName + "I really love bees" + User + BotConfirmationSecret), User);
             }
 
             if ( !Active )
@@ -258,19 +265,9 @@ namespace SpawnBot
                 return;
             }
 
-            if ( Message.Contains("would of ") )
+            if ( eventPluginChannelMessageReceived != null )
             {
-                SendMessage("*would've/would have", Channel);
-            }
-
-            if ( Message.Contains("should of ") )
-            {
-                SendMessage("*should've/should have", Channel);
-            }
-
-            if ( Message.Contains("could of ") )
-            {
-                SendMessage("*could've/could have", Channel);
+                eventPluginChannelMessageReceived(User, Message, Channel);
             }
 
 
@@ -357,18 +354,7 @@ namespace SpawnBot
                             Insult(User, Channel);
                         }
                         break;
-                    case "title":
-                        if ( Parameters.Length > 1 )
-                        {
-                            string title = PollWebsiteTitle(Parameters[1]);
-                            if ( title == null )
-                            {
-                                SendMessage("Error polling website title.", Channel);
-                                break;
-                            }
-                            SendMessage("Title: " + title, Channel);
-                        }
-                        break;
+                    
                     case "lp":
                         if ( Parameters.Length > 1 )
                         {
@@ -419,69 +405,7 @@ namespace SpawnBot
                 }
             }
 
-            if ( Message.Contains("youtube.com") || Message.Contains("youtu.be") || Message.Contains("vimeo.com") )
-            {
-                string[] Parameters = Message.Split(' ');
-                foreach ( string p in Parameters )
-                {
-                    if ( p.Contains("youtube.com/watch?") || p.Contains("youtu.be/") || p.Contains("vimeo.com/") )
-                    {
-                        string title = PollWebsiteTitle(p);
-                        if ( title == null )
-                        {
-                            break;
-                        }
-                        SendMessage("Title: " + title, Channel);
-                        break;
-                    }
-
-                    if ( p.Contains("youtube.com/playlist?list=") )
-                    {
-                        string title = PollWebsiteTitle(p);
-                        if ( title == null )
-                        {
-                            break;
-                        }
-                        SendMessage("Playlist Title: " + title, Channel);
-                        break;
-                    }
-                }
-            }
-
-            if ( Message.Contains("twitter.com") && ( Message.Contains("/status/") || Message.Contains("/statuses/") ) )
-            {
-                string[] Parameters = Message.Split(' ');
-                foreach ( string p in Parameters )
-                {
-                    if ( p.Contains("twitter.com") && ( p.Contains("/status/") || p.Contains("/statuses/") ) )
-                    {
-                        try
-                        {
-                            string parse = p.Replace("/statuses/", "/status/");
-
-                            parse = parse.Substring(parse.IndexOf("/status/"));
-                            parse = parse.Replace("/status/", "");
-
-                            string text = PollTwitterStatus(Convert.ToDecimal(parse));
-
-                            if ( text == null )
-                            {
-                                return;
-                            }
-                            else
-                            {
-                                SendMessage(text, Channel);
-                                break;
-                            }
-                        }
-                        catch ( Exception e )
-                        {
-                            Logger.WriteLine("***** Twitter error. Parsing: " + p, ConsoleColor.DarkRed);
-                            return;
-                        }
-                    }
-                }
-            }
+            
 
         }
 
@@ -492,10 +416,10 @@ namespace SpawnBot
                 Logger.WriteLine(String.Format("[{2}] {0}: {1}", User, Message, Channel));
             }
 
-            if ( DebugMode )
-            {
-                return;
-            }
+            //if ( DebugMode )
+            //{
+            //    return;
+            //}
 
             if ( Channel == Botname )
             {
@@ -751,66 +675,7 @@ namespace SpawnBot
             return null;
         }
 
-        private string PollWebsiteTitle( string url )
-        {
-            try
-            {
-                Logger.WriteLine("* Polling Title for " + url, ConsoleColor.Yellow);
-
-                string cUrl = url.Trim();
-                if ( ( !cUrl.StartsWith("http://") && !cUrl.StartsWith("https://") ) && !cUrl.StartsWith("www.") )
-                {
-                    cUrl = "http://www." + cUrl;
-                }
-
-                if ( cUrl.StartsWith("www.") )
-                {
-                    cUrl = "http://" + cUrl;
-                }
-
-                WebClient x = new WebClient();
-                string source = x.DownloadString(new Uri(cUrl));
-                string title = Regex.Match(source, @"\<title\b[^>]*\>\s*(?<Title>[\s\S]*?)\</title\>", RegexOptions.IgnoreCase).Groups["Title"].Value;
-                x.Dispose();
-
-                //HttpUtility.HtmlEncode // using System.Web
-
-                if ( CapsCap(title) )
-                {
-                    return title.ToLower();
-                }
-                else
-                {
-                    return title;
-                }
-
-            }
-            catch ( Exception e )
-            {
-                Logger.WriteLine("***** " + e.Message, ConsoleColor.DarkRed);
-                return null;
-            }
-        }
-
-        private string PollTwitterStatus( decimal StatusId )
-        {
-            OAuthTokens t = new OAuthTokens();
-            t.AccessToken = TwitterAccessToken;
-            t.AccessTokenSecret = TwitterAccessTokenSecret;
-            t.ConsumerKey = TwitterConsumerKey;
-            t.ConsumerSecret = TwitterConsumerKeySecret;
-
-            TwitterResponse<TwitterStatus> status = TwitterStatus.Show(t, StatusId);
-
-            if ( status.Result == RequestResult.Success )
-            {
-                return String.Format("@{0} posted: {1}", status.ResponseObject.User.ScreenName, status.ResponseObject.Text);
-            }
-            else
-            {
-                return null;
-            }
-        }
+        
 
         private bool CapsCap( string s )
         {
@@ -906,7 +771,7 @@ namespace SpawnBot
 
                 if ( !DebugMode )
                 {
-                    SendMessage("Robot reporting for duty", ChannelName);
+                    SendMessage("Robot reporting for duty", DefaultChannelName);
                 }
 
                 return;
@@ -989,13 +854,81 @@ namespace SpawnBot
                 //SendMessage("Ping", ChannelName);
                 //VacantSearch = true;
                 //vacancystart = DateTime.Now;
-                SendMessage("I'll take over " + ActiveBot + "'s work now. The King is dead. Long live the King!", ChannelName);
+                SendMessage("I'll take over " + ActiveBot + "'s work now. The King is dead. Long live the King!", DefaultChannelName);
                 Active = true;
                 ActiveBot = Botname;
             }
 
             IUsers.RemoveAllUser(UserQuit, String.Format("Quit ({0})", QuitMessage));
         }
+        #endregion
+
+        #region SBPluginHost Members
+
+        public void PluginResponse( string channel, string message )
+        {
+            SendMessage(message, channel);
+        }
+
+        public event UserJoin eventPluginUserJoined;
+
+        public event UserLeave eventPluginUserLeft;
+
+        public event UserKick eventPluginUserKicked;
+
+        public event UserChange eventPluginUserChangedNick;
+
+        public event UserQuit eventPluginUserQuit;
+
+        public event UserMode eventPluginUserModeSet;
+
+        public event ChannelMessage eventPluginChannelMessageReceived;
+
+        public event PrivateMessage eventPluginPrivateMessageReceived;
+
+        public event ServerTopicSet eventPluginChannelTopicSet;
+
+        public event ServerTopicOwner eventPluginChannelTopicOwnerGet;
+
+        public event ServerNames eventPluginChannelNameListGet;
+
+        #endregion
+
+        #region SBPluginHost Members
+
+
+        public string PluginTwitterAccessToken
+        {
+            get
+            {
+                return TwitterAccessToken;
+            }
+        }
+
+        public string PluginTwitterAccessTokenSecret
+        {
+            get
+            {
+                return TwitterAccessTokenSecret;
+            }
+        }
+
+        public string PluginTwitterConsumerKey
+        {
+            get
+            {
+                return TwitterConsumerKey;
+            }
+        }
+
+        public string PluginTwitterConsumerKeySecret
+        {
+            get
+            {
+                return TwitterConsumerKeySecret;
+            }
+        }
+
         #endregion
     }
 }

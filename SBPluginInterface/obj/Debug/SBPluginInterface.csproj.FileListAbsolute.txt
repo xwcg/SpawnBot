@@ -1,0 +1,9 @@
+F:\Projects (Repositoried)\SpawnBot\SBPluginInterface\bin\Debug\SBPluginInterface.dll
+F:\Projects (Repositoried)\SpawnBot\SBPluginInterface\bin\Debug\SBPluginInterface.pdb
+F:\Projects (Repositoried)\SpawnBot\SBPluginInterface\obj\Debug\ResolveAssemblyReference.cache
+F:\Projects (Repositoried)\SpawnBot\SBPluginInterface\obj\Debug\SBPluginInterface.dll
+F:\Projects (Repositoried)\SpawnBot\SBPluginInterface\obj\Debug\SBPluginInterface.pdb
+F:\Projects (Repositoried)\SpawnBot\SBPluginInterface\bin\Debug\xIRC.dll
+F:\Projects (Repositoried)\SpawnBot\SBPluginInterface\bin\Debug\xLogger.dll
+F:\Projects (Repositoried)\SpawnBot\SBPluginInterface\bin\Debug\xLogger.pdb
+F:\Projects (Repositoried)\SpawnBot\SBPluginInterface\bin\Debug\xIRC.pdb

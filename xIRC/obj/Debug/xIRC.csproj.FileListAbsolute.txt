@@ -1,0 +1,7 @@
+F:\Projects (Repositoried)\SpawnBot\xIRC\obj\Debug\ResolveAssemblyReference.cache
+F:\Projects (Repositoried)\SpawnBot\xIRC\bin\Debug\xIRC.dll
+F:\Projects (Repositoried)\SpawnBot\xIRC\bin\Debug\xIRC.pdb
+F:\Projects (Repositoried)\SpawnBot\xIRC\bin\Debug\xLogger.dll
+F:\Projects (Repositoried)\SpawnBot\xIRC\bin\Debug\xLogger.pdb
+F:\Projects (Repositoried)\SpawnBot\xIRC\obj\Debug\xIRC.dll
+F:\Projects (Repositoried)\SpawnBot\xIRC\obj\Debug\xIRC.pdb
