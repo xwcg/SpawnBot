@@ -1,0 +1,5 @@
+F:\Projects (Repositoried)\SpawnBot\SBSpawnPlugins\bin\Debug\SBSpawnPlugins.dll
+F:\Projects (Repositoried)\SpawnBot\SBSpawnPlugins\bin\Debug\SBSpawnPlugins.pdb
+F:\Projects (Repositoried)\SpawnBot\SBSpawnPlugins\obj\Debug\ResolveAssemblyReference.cache
+F:\Projects (Repositoried)\SpawnBot\SBSpawnPlugins\obj\Debug\SBSpawnPlugins.dll
+F:\Projects (Repositoried)\SpawnBot\SBSpawnPlugins\obj\Debug\SBSpawnPlugins.pdb

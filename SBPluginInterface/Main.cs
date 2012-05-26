@@ -13,7 +13,9 @@ namespace SBPluginInterface
     public delegate void UserMode( string name, string channel, string mode, string by );
 
     public delegate void ChannelMessage( string name, string message, string channel );
+    public delegate void ChannelCommand(string name, string channel, string command, string[] parameters);
     public delegate void PrivateMessage( string name, string message );
+    public delegate void PrivateCommand( string name, string command, string[] parameters );
 
     public delegate void ServerTopicSet( string channel, string topic );
     public delegate void ServerTopicOwner( string channel, string name, string date );
@@ -64,6 +66,9 @@ namespace SBPluginInterface
         event ChannelMessage eventPluginChannelMessageReceived;
         event PrivateMessage eventPluginPrivateMessageReceived;
 
+        event ChannelCommand eventPluginChannelCommandReceived;
+        event PrivateCommand eventPluginPrivateCommandReceived;
+
         event ServerTopicSet eventPluginChannelTopicSet;
         event ServerTopicOwner eventPluginChannelTopicOwnerGet;
         event ServerNames eventPluginChannelNameListGet;
@@ -82,7 +87,18 @@ namespace SBPluginInterface
         {
             get;
         }
+        
         string PluginTwitterConsumerKeySecret
+        {
+            get;
+        }
+
+        string PluginBotname
+        {
+            get;
+        }
+
+        string PluginBotFolder
         {
             get;
         }

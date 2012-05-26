@@ -62,6 +62,7 @@ namespace SBTitler
                 Host = value;
 
                 Host.eventPluginChannelMessageReceived += new ChannelMessage(Host_eventPluginChannelMessageReceived);
+                Host.eventPluginChannelCommandReceived += new ChannelCommand(Host_eventPluginChannelCommandReceived);
             }
         }
 
@@ -72,38 +73,27 @@ namespace SBTitler
 
         #endregion
 
+        void Host_eventPluginChannelCommandReceived( string name, string channel, string command, string[] parameters )
+        {
+            switch ( command )
+            {
+                case "title":
+                    if ( parameters.Length == 1 )
+                    {
+                        string title = PollWebsiteTitle(parameters[0]);
+                        if ( title == null )
+                        {
+                            Host.PluginResponse(channel, "Error getting website title. (Probably a timeout)");
+                            break;
+                        }
+                        Host.PluginResponse(channel, "Title: " + title);
+                    }
+                    break;
+            }
+        }
+
         void Host_eventPluginChannelMessageReceived( string name, string message, string channel )
         {
-            if ( message.StartsWith("!") )
-            {
-                string[] Parameters = message.Split(' ');
-
-                if ( Parameters[0].Length == 1 )
-                {
-                    return;
-                }
-
-                Parameters[0] = Parameters[0].Substring(1);
-
-                ///////////////////////////
-
-                switch ( Parameters[0] )
-                {
-                    case "title":
-                        if ( Parameters.Length > 1 )
-                        {
-                            string title = PollWebsiteTitle(Parameters[1]);
-                            if ( title == null )
-                            {
-                                Host.PluginResponse(channel, "Error getting website title. (Probably a timeout)");
-                                break;
-                            }
-                            Host.PluginResponse(channel, "Title: " + title);
-                        }
-                        break;
-                }
-            }
-
             if ( message.Contains("youtube.com") || message.Contains("youtu.be") || message.Contains("vimeo.com") )
             {
                 string[] Parameters = message.Split(' ');

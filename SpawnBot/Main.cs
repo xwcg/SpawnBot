@@ -170,6 +170,7 @@ namespace SpawnBot
             foreach ( AvailablePlugin p in plugins.AvailablePlugins )
             {
                 p.Instance.PluginHost = this;
+                Logger.WriteLine("* Loaded Plugin: " + p.Instance.PluginName + " - v" + p.Instance.Version, ConsoleColor.DarkGreen);
             }
 
             IrcObject = new IRC(IrcUser, IrcChan);
@@ -238,6 +239,7 @@ namespace SpawnBot
 
         private void ChannelMessageResponse( string User, string Message, string Channel )
         {
+            #region Bot Communication
             if ( Message.Trim() == "Robot reporting for duty" && Active )
             {
                 SendMessage("I'm already on duty.", Channel);
@@ -265,10 +267,57 @@ namespace SpawnBot
                 return;
             }
 
-            if ( eventPluginChannelMessageReceived != null )
+            #endregion
+
+            if ( Message.StartsWith("!") )
             {
-                eventPluginChannelMessageReceived(User, Message, Channel);
+                if ( User.StartsWith("Mariondoe", StringComparison.CurrentCultureIgnoreCase) )
+                {
+                    Random r = new Random();
+                    if ( r.Next(0, 100) <= 25 )
+                    {
+                        SendMessage("Unexpected error 0x0001D107", Channel);
+                        return;
+                    }
+                }
+
+                string[] parts = Message.Split(' ');
+
+                if ( parts[0].Length == 1 )
+                {
+                    return;
+                }
+
+                parts[0] = parts[0].Substring(1).ToLower();
+
+                string Command = parts[0];
+                string[] Parameters = new string[parts.Length - 1];
+
+                for ( int i = 1; i < parts.Length; i++ )
+                {
+                    Parameters[i - 1] = parts[i];
+                }
+
+                if ( Command == "version" )
+                {
+                    SendMessage("SpawnBot v" + Assembly.GetCallingAssembly().GetName().Version.ToString(), Channel);
+                    return;
+                }
+
+                if ( eventPluginChannelCommandReceived != null )
+                {
+                    eventPluginChannelCommandReceived(User, Channel, Command, Parameters);
+                }
             }
+            else
+            {
+                if ( eventPluginChannelMessageReceived != null )
+                {
+                    eventPluginChannelMessageReceived(User, Message, Channel);
+                }
+            }
+
+            //// OLD CODE
 
 
             if ( Message.StartsWith("!") )
@@ -292,44 +341,13 @@ namespace SpawnBot
 
                 Parameters[0] = Parameters[0].Substring(1);
 
+
+
+
                 ///////////////////////////
 
                 switch ( Parameters[0] )
                 {
-                    case "roll":
-                        if ( Parameters.Length > 1 )
-                        {
-                            Roll(Parameters[1], Channel);
-                        }
-                        else
-                        {
-                            SendMessage("Usage: !roll [dice OR number] - You can use a dice declaration like 2d20 or just a natural number like 20", Channel);
-                        }
-                        break;
-                    case "ranks":
-                        if ( Channel.Contains("mhykol") )
-                        {
-                            SendMessage("http://goo.gl/88F58", Channel);
-                        }
-                        break;
-                    case "test":
-                        SendMessage("Stop using !test, Marion.", Channel);
-                        break;
-                    case "flip":
-                        Flip(Channel);
-                        break;
-                    case "coin":
-                        Flip(Channel);
-                        break;
-                    case "server":
-                        SendMessage("The Spawn.net Server IP is: 127.0.0.1", Channel);
-                        break;
-                    case "mumble":
-                        SendMessage("Mumble Address: mumble.thespawn.net - Port: 64738", Channel);
-                        break;
-                    case "version":
-                        SendMessage("SpawnBot v" + Assembly.GetCallingAssembly().GetName().Version.ToString(), Channel);
-                        break;
                     case "steam":
                         string sale = PollSteamSale();
                         if ( sale == null )
@@ -340,21 +358,6 @@ namespace SpawnBot
                         SendMessage("Poor Man's Steam Sale of the Day: " + sale, Channel);
                         SendMessage("You can also ask me about steam sales privately and I'll tell you more", Channel);
                         break;
-                    case "insult":
-                        if ( Parameters.Length == 1 )
-                        {
-                            Insult(User, Channel);
-                        }
-                        else if ( Parameters[1] != Botname )
-                        {
-                            Insult(Parameters[1], Channel);
-                        }
-                        else
-                        {
-                            Insult(User, Channel);
-                        }
-                        break;
-                    
                     case "lp":
                         if ( Parameters.Length > 1 )
                         {
@@ -405,7 +408,7 @@ namespace SpawnBot
                 }
             }
 
-            
+
 
         }
 
@@ -534,68 +537,6 @@ namespace SpawnBot
             w.Dispose();
         }
 
-        private void Roll( string param, string channel )
-        {
-            try
-            {
-                Random r = new Random();
-
-                if ( param.Contains("d") )
-                {
-                    string[] parts = param.Split('+');
-                    int basebonus = 0;
-                    int roll = 0;
-
-                    foreach ( string p in parts )
-                    {
-                        if ( p.Contains("d") )
-                        {
-                            int dice = Convert.ToInt32(p.Split('d')[1]);
-                            int count = Convert.ToInt32(p.Split('d')[0]);
-
-                            for ( int i = 0; i < count; i++ )
-                            {
-                                roll += r.Next(1, dice);
-                            }
-                        }
-                        else
-                        {
-                            basebonus = Convert.ToInt32(p);
-                        }
-                    }
-
-                    SendMessage("I\'ve rolled: " + ( basebonus + roll ).ToString(), channel);
-
-                }
-                else
-                {
-                    int var = Convert.ToInt32(param);
-
-                    int result = r.Next(1, var);
-
-                    SendMessage("I\'ve rolled: " + result.ToString(), channel);
-                }
-            }
-            catch
-            {
-                SendMessage("I'm sorry Dave, I can't do that.", channel);
-            }
-        }
-
-        private void Flip( string channel )
-        {
-            Random r = new Random();
-            int result = r.Next(100);
-            if ( result > 50 )
-            {
-                SendMessage("Heads!", channel);
-            }
-            else
-            {
-                SendMessage("Tails!", channel);
-            }
-        }
-
         private void Insult( string target, string channel )
         {
             string[] col1 = { "artless", "bawdy", "beslubbering", "bootless", "churlish", "cockered", "clouted", "craven", "currish", "dankish", "dissembling", "droning", "errant", 
@@ -675,7 +616,7 @@ namespace SpawnBot
             return null;
         }
 
-        
+
 
         private bool CapsCap( string s )
         {
@@ -892,10 +833,9 @@ namespace SpawnBot
 
         public event ServerNames eventPluginChannelNameListGet;
 
-        #endregion
+        public event ChannelCommand eventPluginChannelCommandReceived;
 
-        #region SBPluginHost Members
-
+        public event PrivateCommand eventPluginPrivateCommandReceived;
 
         public string PluginTwitterAccessToken
         {
@@ -926,6 +866,22 @@ namespace SpawnBot
             get
             {
                 return TwitterConsumerKeySecret;
+            }
+        }
+
+        public string PluginBotname
+        {
+            get
+            {
+                return Botname;
+            }
+        }
+
+        public string PluginBotFolder
+        {
+            get
+            {
+                return Environment.CurrentDirectory;
             }
         }
 
