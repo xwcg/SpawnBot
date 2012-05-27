@@ -4,6 +4,7 @@ using System.IO;
 using System.Reflection;
 using System.Text;
 using SBPluginInterface;
+using xLogger;
 
 namespace SpawnBot
 {
@@ -222,6 +223,24 @@ namespace SpawnBot
                 }
             }
             return toReturn;
+        }
+
+        public AvailablePlugin FindUserManager()
+        {
+            foreach ( AvailablePlugin pluginOn in this.List )
+            {
+                Type[] types = pluginOn.Instance.GetType().Assembly.GetTypes();
+
+                foreach ( Type t in types )
+                {
+                    if ( t.GetInterface("SBPluginInterface.SBUserPlugin") != null )
+                    {
+                        return pluginOn;
+                    }
+                }
+            }
+
+            return null;
         }
     }
 

@@ -3,3 +3,5 @@ F:\Projects (Repositoried)\SpawnBot\SBInsult\bin\Debug\SBInsult.dll
 F:\Projects (Repositoried)\SpawnBot\SBInsult\bin\Debug\SBInsult.pdb
 F:\Projects (Repositoried)\SpawnBot\SBInsult\obj\Debug\SBInsult.dll
 F:\Projects (Repositoried)\SpawnBot\SBInsult\obj\Debug\SBInsult.pdb
+F:\Projects (Repositoried)\SpawnBot\SpawnBot\bin\Debug\Plugins\SBInsult.dll
+F:\Projects (Repositoried)\SpawnBot\SpawnBot\bin\Debug\Plugins\SBInsult.pdb

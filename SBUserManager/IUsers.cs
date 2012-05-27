@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using xLogger;
 
-namespace SpawnBot
+namespace SBUserManager
 {
     public class IrcUser
     {
@@ -39,6 +39,22 @@ namespace SpawnBot
             else
             {
                 channel = "#" + ChannelName;
+            }
+        }
+
+        public string GetLegacyName()
+        {
+            if ( isOp )
+            {
+                return "@" + name;
+            }
+            else if ( isVoice )
+            {
+                return "+" + name;
+            }
+            else
+            {
+                return name;
             }
         }
 
@@ -129,12 +145,7 @@ namespace SpawnBot
     {
         private static List<IrcUser> Userlist = new List<IrcUser>();
 
-        public static void RemoveUser( string name, string channel)
-        {
-            RemoveUser(name, channel, "null");
-        }
-
-        public static void RemoveUser( string name, string channel, string reason )
+        public static bool RemoveUser( string name, string channel )
         {
             int user = Userlist.FindIndex(delegate( IrcUser n )
             {
@@ -151,81 +162,77 @@ namespace SpawnBot
 
             if ( user < 0 )
             {
-                Logger.WriteLine(String.Format("***** RemoveUser: Can't find user '{0}' in '{1}'", name, channel), ConsoleColor.DarkRed);
+                return false;
             }
             else
             {
                 Userlist.RemoveAt(user);
-                Logger.WriteLine(String.Format("* RemoveUser: Removed user '{0}' in '{1}' from Userlist ({2})", name, channel, reason), ConsoleColor.Yellow);
+                return true;
             }
         }
 
-        public static void RemoveAllUser( string name )
+        public static bool[] RemoveAllUser( string name )
         {
-            RemoveAllUser(name, "null");
-        }
+            if ( name == "*" )
+            {
+                Userlist.Clear();
+                return new bool[] { true };
+            }
 
-        public static void RemoveAllUser( string name, string reason )
-        {
             IrcUser[] users = GetUsers(name);
 
             if ( users == null )
             {
-                Logger.WriteLine(String.Format("***** RemoveAllUser: Can't find any user '{0}'", name), ConsoleColor.DarkRed);
-                return;
+                return new bool[] { false };
             }
+
+            List<bool> successes = new List<bool>();
 
             foreach ( IrcUser u in users )
             {
-                RemoveUser(u.Name, u.Channel, reason);
+                successes.Add(RemoveUser(u.Name, u.Channel));
             }
+
+            return successes.ToArray();
         }
 
         public static void AddUser( string name, string channel )
         {
-            AddUser(name, channel, true);
-        }
-
-        public static void AddUser( string name, string channel, bool noVerbose )
-        {
             Userlist.Add(new IrcUser(name, channel));
-
-            if ( !noVerbose )
-            {
-                Logger.WriteLine(String.Format("* AddUser: Added user '{0}' in '{1}' to Userlist", name, channel), ConsoleColor.Yellow);
-            }
         }
 
-        public static void ChangeUserName( string name, string newname )
+        public static bool ChangeUserName( string name, string newname )
         {
             IrcUser[] users = GetUsers(name);
 
             if ( users == null )
             {
-                Logger.WriteLine(String.Format("***** ChangeUserName: Can't find any user '{0}'", name), ConsoleColor.DarkRed);
-                return;
+                return false;
             }
 
             foreach ( IrcUser u in users )
             {
                 u.ChangeName(newname);
             }
+
+            return true;
         }
 
-        public static void SetBotFlag( string name )
+        public static bool SetBotFlag( string name )
         {
             IrcUser[] users = GetUsers(name);
 
             if ( users == null )
             {
-                Logger.WriteLine(String.Format("***** SetBotFlag: Can't find any user '{0}'", name), ConsoleColor.DarkRed);
-                return;
+                return false;
             }
 
             foreach ( IrcUser u in users )
             {
                 u.FlagBot();
             }
+
+            return true;
         }
 
         public static bool IsBot( string name )
@@ -234,7 +241,6 @@ namespace SpawnBot
 
             if ( users == null )
             {
-                Logger.WriteLine(String.Format("***** IsBot: Can't find any user '{0}'", name), ConsoleColor.DarkRed);
                 return false;
             }
 
@@ -277,6 +283,50 @@ namespace SpawnBot
             List<IrcUser> users = Userlist.FindAll(delegate( IrcUser n )
             {
                 return n.Name.Equals(name, StringComparison.CurrentCultureIgnoreCase);
+            });
+
+            if ( users == null || users.Count == 0 )
+            {
+                return null;
+            }
+            else
+            {
+                return users.ToArray();
+            }
+        }
+
+        public static string[] GetChannelsForUser( string name )
+        {
+            List<IrcUser> users = Userlist.FindAll(delegate( IrcUser n )
+            {
+                return n.Name.Equals(name, StringComparison.CurrentCultureIgnoreCase);
+            });
+
+            if ( users == null || users.Count == 0 )
+            {
+                return null;
+            }
+            else
+            {
+                List<string> chlist = new List<string>();
+
+                foreach ( IrcUser user in users )
+                {
+                    if ( !chlist.Contains(user.Channel) )
+                    {
+                        chlist.Add(user.Channel);
+                    }
+                }
+
+                return chlist.ToArray();
+            }
+        }
+
+        public static IrcUser[] GetUsersForChannel( string channel )
+        {
+            List<IrcUser> users = Userlist.FindAll(delegate( IrcUser n )
+            {
+                return n.Channel.Equals(channel, StringComparison.CurrentCultureIgnoreCase);
             });
 
             if ( users == null || users.Count == 0 )

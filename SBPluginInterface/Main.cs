@@ -52,6 +52,20 @@ namespace SBPluginInterface
         void Dispose();
     }
 
+    public interface SBUserPlugin : SBPlugin
+    {
+        bool IsOperator( string name, string channel );
+        bool IsVoiced( string name, string channel );
+        bool IsBot( string name );
+
+        string[] GetChannels( string name );
+        string[] GetUsers( string channel );
+
+        void SetBotFlag( string name );
+
+        void ClearAllUsers();
+    }
+
     public interface SBPluginHost
     {
         void PluginResponse( string channel, string message );
@@ -72,6 +86,11 @@ namespace SBPluginInterface
         event ServerTopicSet eventPluginChannelTopicSet;
         event ServerTopicOwner eventPluginChannelTopicOwnerGet;
         event ServerNames eventPluginChannelNameListGet;
+
+        SBUserPlugin PluginUserManager
+        {
+            get;
+        }
 
         string PluginTwitterAccessToken
         {
