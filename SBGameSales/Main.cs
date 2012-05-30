@@ -8,6 +8,54 @@ using System.ServiceModel.Syndication;
 
 namespace SBGameSales
 {
+    public class GameSaleData
+    {
+        public string Name = "";
+        public string URL = "";
+        public string Store = "";
+        public decimal PriceNow = 0.0m;
+        public decimal PriceOriginal = 0.0m;
+        public decimal PercentOff = 0.0m;
+
+        public GameSaleData( SyndicationItem i )
+        {
+            string temp = i.Title.Text;
+
+            Name = temp.Substring(temp.IndexOf("% off ", StringComparison.CurrentCultureIgnoreCase) + 6);
+            Name = Name.Substring(0, Name.LastIndexOf(" - Now only"));
+
+            URL = i.Links[0].Uri.ToString();
+
+            if ( URL.Contains("anrdoezrs") )
+            {
+                URL = URL.Substring(URL.IndexOf("?url=") + 5);
+            }
+
+
+            // Sale Price: $19.99 USD, List Price: $24.99 USD, Store: Green Man Gaming
+            temp = i.Summary.Text;
+
+            //Sale Price: $19.99 USD
+            //List Price: $24.99 USD
+            //Store: Green Man Gaming
+            string[] parts = temp.Split(new string[] { ", " }, StringSplitOptions.RemoveEmptyEntries);
+
+            //[Sale Price] [$19.99 USD]
+            //[List Price] [$24.99 USD]
+            //[Store]      [Green Man Gaming]
+
+            temp = parts[0].Split(new string[] { ": " }, StringSplitOptions.RemoveEmptyEntries)[1];
+            PriceNow = Convert.ToDecimal(temp.Substring(1, temp.IndexOf(" USD") - 1));
+
+            temp = parts[1].Split(new string[] { ": " }, StringSplitOptions.RemoveEmptyEntries)[1];
+            PriceOriginal = Convert.ToDecimal(temp.Substring(1, temp.IndexOf(" USD") - 1));
+
+            Store = parts[2].Split(new string[] { ": " }, StringSplitOptions.RemoveEmptyEntries)[1];
+
+            PercentOff = 100 - ( ( PriceNow / PriceOriginal ) * 100 );
+        }
+    }
+
     public class Main : SBPlugin
     {
         private SBPluginHost Host;
@@ -73,70 +121,187 @@ namespace SBGameSales
 
         void Host_eventPluginChannelCommandReceived( string name, string channel, string command, string[] parameters )
         {
-            if ( command == "steam" )
+            switch ( command )
             {
-                string sale = PollSteamSale();
-                if ( sale == null )
-                {
-                    Host.PluginResponse(channel, "Error getting Steam sales.");
-                    return;
-                }
-                Host.PluginResponse(channel, "Poor Man's Steam Sale of the Day: " + sale);
-                Host.PluginResponse(channel, "Game Sale Pulling is currently being overhauled");
+                case "sale":
+                    Host.PluginResponse(channel, "Poor Gamer's Sale of the Day: " + BestSale("*"));
+                    break;
+                case "game":
+                    if ( parameters.Length > 0 )
+                    {
+                        string search = "";
+                        foreach ( string s in parameters )
+                        {
+                            search = search + s + " ";
+                        }
+                        Host.PluginResponse(channel, SearchSale(search.Trim(), false));
+                    }
+                    else
+                    {
+                        Host.PluginResponse(channel, "Usage: !game [name] - Example: !game diablo");
+                    }
+                    break;
+                case "gameprice":
+                    if ( parameters.Length > 0 )
+                    {
+                        string search = "";
+                        foreach ( string s in parameters )
+                        {
+                            search = search + s + " ";
+                        }
+                        Host.PluginResponse(channel, SearchSale(search.Trim(), true));
+                    }
+                    else
+                    {
+                        Host.PluginResponse(channel, "Usage: !gameprice [name] - Example: !gameprice diablo");
+                    }
+                    break;
+                case "poor":
+                    Host.PluginResponse(channel, "Lowest Price of the Day: " + BestSale("*", true));
+                    break;
+                case "steam":
+                    Host.PluginResponse(channel, "Steam Sale of the Day: " + BestSale("Steam"));
+                    break;
+                case "gog":
+                    Host.PluginResponse(channel, "GOG Sale of the Day: " + BestSale("GOG"));
+                    break;
+                case "gmg":
+                    Host.PluginResponse(channel, "Green Man Gaming Sale of the Day: " + BestSale("Green Man Gaming"));
+                    break;
+                case "gg":
+                    Host.PluginResponse(channel, "GamersGate Sale of the Day: " + BestSale("GamersGate"));
+                    break;
             }
         }
 
-        private string PollSteamSale()
+        private string SearchSale( string name, bool byprice )
         {
-            XmlReader r = XmlReader.Create("http://steamsales.rhekua.com/feed.php");
+            List<GameSaleData> Sales = LoadSales();
 
-            SyndicationFeed f = SyndicationFeed.Load(r);
 
-            string result = "";
-
-            foreach ( SyndicationItem i in f.Items )
+            Sales = Sales.FindAll(delegate( GameSaleData d )
             {
-                result = i.Title.Text;
-                foreach ( SyndicationLink l in i.Links )
+                if ( d.Name.ToLower().Contains(name.ToLower()) )
                 {
-                    result = result + " (" + l.Uri.ToString() + ")";
-                    break;
+                    return true;
                 }
-                return result;
+
+                return false;
+            });
+
+            if ( Sales == null || Sales.Count == 0 )
+            {
+                return "Sorry, no sales for '" + name + "' found for today :(";
             }
 
-            return null;
+            GameSaleData best = null;
+
+            foreach ( GameSaleData d in Sales )
+            {
+                if ( best == null )
+                {
+                    best = d;
+                    continue;
+                }
+
+                if ( byprice )
+                {
+                    if ( d.PriceNow < best.PriceNow )
+                    {
+                        best = d;
+                    }
+                }
+                else
+                {
+                    if ( d.PercentOff > best.PercentOff )
+                    {
+                        best = d;
+                    }
+                }
+            }
+
+            object[] p = new object[] { best.Name, best.PriceNow, best.Store, best.URL };
+
+            return String.Format("I found: {0} for {1} USD at {2} ({3})", p);
         }
 
-        private string[] PollSales()
+        private string BestSale( string store )
         {
-            XmlReader r = XmlReader.Create("http://steamsales.rhekua.com/feed.php");
-            SyndicationFeed f = SyndicationFeed.Load(r);
+            return BestSale(store, false);
+        }
 
-            List<string> Sales = new List<string>();
+        private string BestSale( string store, bool byprice )
+        {
+            List<GameSaleData> Sales = LoadSales();
 
-            string result = "";
-
-            foreach ( SyndicationItem i in f.Items )
+            if ( store != "*" )
             {
-                result = i.Title.Text;
-                foreach ( SyndicationLink l in i.Links )
+                Sales = Sales.FindAll(delegate( GameSaleData d )
                 {
-                    result = result + " (" + l.Uri.ToString() + ")";
-                    break;
+                    if ( d.Store == store )
+                    {
+                        return true;
+                    }
+
+                    return false;
+                });
+            }
+
+            if ( Sales == null || Sales.Count == 0 )
+            {
+                return "Sorry, no sales found for today :(";
+            }
+
+            GameSaleData best = null;
+
+            foreach ( GameSaleData d in Sales )
+            {
+                if ( best == null )
+                {
+                    best = d;
+                    continue;
                 }
 
-                Sales.Add(result);
-
-                result = "";
+                if ( byprice )
+                {
+                    if ( d.PriceNow < best.PriceNow )
+                    {
+                        best = d;
+                    }
+                }
+                else
+                {
+                    if ( d.PercentOff > best.PercentOff )
+                    {
+                        best = d;
+                    }
+                }
             }
 
-            if ( Sales.Count > 0 )
+            object[] p = new object[] { best.Name, best.PriceNow, best.Store, best.PercentOff.ToString("##.##"), best.PriceOriginal, best.URL };
+
+            return String.Format("{0} for {1} USD at {2} ({3}% off {4} USD) - {5}", p);
+        }
+
+        private List<GameSaleData> LoadSales()
+        {
+            XmlReader r = XmlReader.Create("http://www.steamgamesales.com/rss/?region=us&stores=steam+direct2drive+gamersgate+greenmangaming+gog");
+            SyndicationFeed f = SyndicationFeed.Load(r);
+            List<GameSaleData> GameSales = new List<GameSaleData>();
+
+            try
             {
-                return Sales.ToArray();
+                foreach ( SyndicationItem i in f.Items )
+                {
+                    GameSales.Add(new GameSaleData(i));
+                }
+            }
+            catch
+            {
+                return null;
             }
 
-            return null;
+            return GameSales;
         }
     }
 }
