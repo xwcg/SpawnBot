@@ -49,10 +49,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\xIRC\xIRC.csproj">
-      <Project>{491F7C16-E3EB-4336-BE16-A5C6DCE12089}</Project>
-      <Name>xIRC</Name>
-    </ProjectReference>
     <ProjectReference Include="..\xLogger\xLogger.csproj">
       <Project>{A02DD804-6CAD-4D4A-BAC4-2569128AF8DA}</Project>
       <Name>xLogger</Name>

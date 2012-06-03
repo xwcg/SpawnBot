@@ -60,7 +60,7 @@ namespace SBUserManager
 
         public void ChangeName( string newname )
         {
-            Logger.WriteLine(String.Format("* Changed '{0}' name to '{1}'", name, newname), ConsoleColor.DarkYellow);
+            Logger.WriteLine(String.Format("* '{0}' changed name to '{1}'", name, newname), ConsoleColor.DarkYellow);
             name = newname;
         }
 
@@ -68,29 +68,21 @@ namespace SBUserManager
         {
             isVoice = true;
             isOp = true;
-
-            Logger.WriteLine(String.Format("* Op'ped '{0}' in {1}", name, channel), ConsoleColor.DarkYellow);
         }
 
         public void DeOp()
         {
             isOp = false;
-
-            Logger.WriteLine(String.Format("* DeOp'ped '{0}' in {1}", name, channel), ConsoleColor.DarkYellow);
         }
 
         public void Voice()
         {
             isVoice = true;
-
-            Logger.WriteLine(String.Format("* Voiced '{0}' in {1}", name, channel), ConsoleColor.DarkYellow);
         }
 
         public void DeVoice()
         {
             isVoice = false;
-
-            Logger.WriteLine(String.Format("* UnVoiced '{0}' in {1}", name, channel), ConsoleColor.DarkYellow);
         }
 
         public void FlagBot()

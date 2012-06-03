@@ -68,9 +68,9 @@
       <Project>{8CFEF42B-B9DB-41F1-8CC9-DA996D3C44DD}</Project>
       <Name>SBPluginInterface</Name>
     </ProjectReference>
-    <ProjectReference Include="..\xIRC\xIRC.csproj">
-      <Project>{491F7C16-E3EB-4336-BE16-A5C6DCE12089}</Project>
-      <Name>xIRC</Name>
+    <ProjectReference Include="..\xIrcNet\xIrcNet.csproj">
+      <Project>{E4E51BD6-F5D6-42ED-B9B0-36D15580433B}</Project>
+      <Name>xIrcNet</Name>
     </ProjectReference>
     <ProjectReference Include="..\xLogger\xLogger.csproj">
       <Project>{A02DD804-6CAD-4D4A-BAC4-2569128AF8DA}</Project>

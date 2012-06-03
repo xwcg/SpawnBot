@@ -6,6 +6,11 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 
+/*
+ * License:
+ * Use at will, but don't blame me if something goes wrong.
+ */
+
 namespace xIrcNet
 {
     #region Delegates

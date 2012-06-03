@@ -10,18 +10,18 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Xml;
 using Twitterizer;
-using xIRC;
 using xLogger;
 using SBPluginInterface;
+using xIrcNet;
 
 namespace SpawnBot
 {
     class Bot : SBPluginHost
     {
-        private static IRC IrcObject;
+        #region Properties
+        private static IRC IrcService;
 
         private static bool DebugMode = true;
-
         private bool Active = true;
         private string ActiveBot = "";
 
@@ -29,24 +29,219 @@ namespace SpawnBot
         private static string DefaultChannelName = "";
         private static string BotConfirmationSecret = "";
 
+        private static List<string> Channels = new List<string>();
+
+        private static PluginService plugins = new PluginService();
+        private static SBUserPlugin UserManager;
+
         public static string TwitterAccessToken = "";
         public static string TwitterAccessTokenSecret = "";
         public static string TwitterConsumerKey = "";
         public static string TwitterConsumerKeySecret = "";
-
-        private static List<string> Channels = new List<string>();
-
-        private static PluginService plugins = new PluginService();
-
-        private SBUserPlugin UserManager;
-
+        #endregion
 
         static void Main( string[] args )
         {
             ReadConfig();
 
-            Bot IrcApp = new Bot("irc.quakenet.org", 6667, Botname, DefaultChannelName);
+            Bot BotAbstractor = new Bot();
+
+            // Command interface
+
+            string cmd;
+
+            while ( ( cmd = Console.ReadLine() ) != null )
+            {
+                if ( cmd.StartsWith("say") )
+                {
+                    string[] parts = cmd.Split(' ');
+
+                    string channel = parts[1];
+                    string message = cmd.Substring(cmd.IndexOf(channel) + channel.Length + 1);
+
+                    SendMessage(message, channel);
+                    continue;
+                }
+
+                if ( cmd.StartsWith("join") )
+                {
+                    string[] parts = cmd.Split(' ');
+                    if ( parts.Length > 1 )
+                    {
+                        IrcService.SendCommand("JOIN " + parts[1]);
+                    }
+                    continue;
+                }
+
+                switch ( cmd.ToLower() )
+                {
+                    case "quit":
+                        IrcService.Disconnect();
+                        Environment.Exit(0);
+                        break;
+                    case "connect":
+                        IrcService.Connect();
+                        break;
+                    case "disconnect":
+                        IrcService.Disconnect();
+                        break;
+                    case "ping":
+                        IrcService.SendCommand("PING :test");
+                        break;
+                    default:
+                        Console.WriteLine("Unknown command '" + cmd + "'");
+                        break;
+                }
+            }
         }
+
+        private Bot()
+        {
+            // Load Plugins
+            plugins.FindPlugins(Environment.CurrentDirectory + "\\Plugins\\");
+
+            foreach ( AvailablePlugin p in plugins.AvailablePlugins )
+            {
+                p.Instance.PluginHost = this;
+                Logger.WriteLine("* Loaded Plugin: " + p.Instance.PluginName + " - v" + p.Instance.Version, ConsoleColor.DarkGreen);
+            }
+
+            UserManager = (SBUserPlugin)plugins.AvailablePlugins.FindUserManager().Instance;
+
+            // Start Service
+
+            IrcService = new IRC(Botname, "SpawnBot", "Spawnbot", "irc.quakenet.org", 6667);
+
+            IrcService.eventNameListReceived += new IrcNameListReceived(IrcService_eventNameListReceived);
+            IrcService.eventTopicReceived += new IrcTopicReceived(IrcService_eventTopicReceived);
+            IrcService.eventTopicOwnerReceived += new IrcTopicOwnerRecevied(IrcService_eventTopicOwnerReceived);
+
+            IrcService.eventUserJoined += new IrcUserJoin(IrcService_eventUserJoined);
+            IrcService.eventUserKicked += new IrcUserKicked(IrcService_eventUserKicked);
+            IrcService.eventUserChangedNick += new IrcUserChange(IrcService_eventUserChangedNick);
+            IrcService.eventUserModeChanged += new IrcUserMode(IrcService_eventUserModeChanged);
+            IrcService.eventUserPart += new IrcUserPart(IrcService_eventUserPart);
+            IrcService.eventUserQuit += new IrcUserQuit(IrcService_eventUserQuit);
+
+            IrcService.eventRawBotModeReceived += new IrcRawBotModeGet(IrcService_eventRawBotModeReceived);
+
+            IrcService.eventMessageReceived += new IrcMessage(IrcService_eventMessageReceived);
+
+            IrcService.Connect();
+        }
+
+        #region IRC Events
+
+        void IrcService_eventRawBotModeReceived( string mode )
+        {
+            if ( mode == "+i" )
+            {
+                foreach ( string channel in Channels )
+                {
+                    SendCommand("JOIN " + channel);
+                }
+
+                if ( !DebugMode )
+                {
+                    SendMessage("Robot reporting for duty", DefaultChannelName);
+                }
+            }
+        }
+
+        void IrcService_eventUserQuit( string name, string message )
+        {
+            if ( name == ActiveBot )
+            {
+                SendMessage("I'll take over " + ActiveBot + "'s work now. The King is dead. Long live the King!", DefaultChannelName);
+                Active = true;
+                ActiveBot = Botname;
+            }
+
+            if ( eventPluginUserQuit != null )
+            {
+                eventPluginUserQuit(name, message);
+            }
+        }
+
+        void IrcService_eventUserPart( string channel, string name, string message )
+        {
+            if ( eventPluginUserLeft != null )
+            {
+                eventPluginUserLeft(channel, name, message);
+            }
+        }
+
+        void IrcService_eventUserModeChanged( string channel, string name, string mode, string by )
+        {
+            if ( eventPluginUserModeSet != null )
+            {
+                eventPluginUserModeSet(name, channel, mode, by);
+            }
+        }
+
+        void IrcService_eventUserChangedNick( string name, string newName )
+        {
+            if ( eventPluginUserChangedNick != null )
+            {
+                eventPluginUserChangedNick(name, newName);
+            }
+        }
+
+        void IrcService_eventUserKicked( string channel, string name, string by, string message )
+        {
+            if ( eventPluginUserKicked != null )
+            {
+                eventPluginUserKicked(channel, name, by, message);
+            }
+        }
+
+        void IrcService_eventUserJoined( string channel, string name )
+        {
+            if ( eventPluginUserJoined != null )
+            {
+                eventPluginUserJoined(channel, name);
+            }
+        }
+
+        void IrcService_eventMessageReceived( string channel, string name, string message )
+        {
+            Logger.WriteLine(String.Format("[{0}] {1}: {2}", channel, name, message));
+
+            if ( channel == IrcService.Nick )
+            {
+                PrivateMessageResponse(name, message);
+            }
+            else
+            {
+                ChannelMessageResponse(channel, name, message);
+            }
+        }
+
+        void IrcService_eventTopicOwnerReceived( string channel, string name, string date )
+        {
+            if ( eventPluginChannelTopicOwnerGet != null )
+            {
+                eventPluginChannelTopicOwnerGet(channel, name, date);
+            }
+        }
+
+        void IrcService_eventTopicReceived( string channel, string topic )
+        {
+            if ( eventPluginChannelTopicSet != null )
+            {
+                eventPluginChannelTopicSet(channel, topic);
+            }
+        }
+
+        void IrcService_eventNameListReceived( string channel, string[] list )
+        {
+            if ( eventPluginChannelNameListGet != null )
+            {
+                eventPluginChannelNameListGet(channel, list);
+            }
+        }
+
+        #endregion
 
         private static void ReadConfig()
         {
@@ -128,103 +323,74 @@ namespace SpawnBot
         {
             string correctedMessage = message.Replace("\n", "").Replace("\r", "");
 
-            IrcObject.IrcWriter.WriteLine(String.Format("PRIVMSG {0} :{1}", channel, correctedMessage));
-            IrcObject.IrcWriter.Flush();
+            IrcService.SendCommand(String.Format("PRIVMSG {0} :{1}", channel, correctedMessage));
 
             Logger.WriteLine(String.Format("-> ({0}) {1}", channel, correctedMessage), ConsoleColor.DarkCyan);
-
-            //Logger.WriteLine(String.Format("PRIVMSG {0} :{1}", channel, message));
         }
 
         public static void SendCommand( string command )
         {
             Logger.WriteLine("-> " + command, ConsoleColor.DarkCyan);
-            IrcObject.IrcWriter.WriteLine(command);
-            IrcObject.IrcWriter.Flush();
+            IrcService.SendCommand(command);
         }
 
-        private Bot( string IrcServer, int IrcPort, string IrcUser, string IrcChan )
-        {
-            plugins.FindPlugins(Environment.CurrentDirectory + "\\Plugins\\");
-
-            foreach ( AvailablePlugin p in plugins.AvailablePlugins )
-            {
-                p.Instance.PluginHost = this;
-                Logger.WriteLine("* Loaded Plugin: " + p.Instance.PluginName + " - v" + p.Instance.Version, ConsoleColor.DarkGreen);
-            }
-
-            UserManager = (SBUserPlugin)plugins.AvailablePlugins.FindUserManager().Instance;
-
-            IrcObject = new IRC(IrcUser, IrcChan);
-
-            // Assign events
-            IrcObject.eventReceiving += new CommandReceivedRaw(IrcCommandReceived);
-            IrcObject.eventTopicSet += new TopicSetRaw(IrcTopicSet);
-            IrcObject.eventTopicOwner += new TopicOwnerRaw(IrcTopicOwner);
-            IrcObject.eventNamesList += new NamesListRaw(IrcNamesList);
-            IrcObject.eventServerMessage += new ServerMessageRaw(IrcServerMessage);
-            IrcObject.eventJoin += new JoinRaw(IrcJoin);
-            IrcObject.eventPart += new PartRaw(IrcPart);
-            IrcObject.eventMode += new ModeRaw(IrcMode);
-            IrcObject.eventNickChange += new NickChangeRaw(IrcNickChange);
-            IrcObject.eventKick += new KickRaw(IrcKick);
-            IrcObject.eventQuit += new QuitRaw(IrcQuit);
-            IrcObject.eventMessage += new MessageRaw(IrcObject_eventMessage);
-
-            // Connect to server	
-            IrcObject.Connect(IrcServer, IrcPort);
-        }
-
-        private void PrivateMessageResponse( string user, string message )
+        private void PrivateMessageResponse( string name, string message )
         {
             if ( message.Trim().StartsWith("DO YOU LOVE BEES?") )
             {
                 if ( message.Substring(message.IndexOf(":") + 1).Trim() == GetSHA1Hash(DefaultChannelName + "I really love bees" + Botname + BotConfirmationSecret) )
                 {
-                    UserManager.SetBotFlag(user);
+                    UserManager.SetBotFlag(name);
 
-                    SendMessage(BotConfirmationSecret, user);
+                    SendMessage(BotConfirmationSecret, name);
                 }
                 else
                 {
-                    SendMessage("Dirty liar!", user);
+                    SendMessage("Dirty liar!", name);
                 }
+                return;
             }
 
-            if ( message.Trim().StartsWith(BotConfirmationSecret) && user != Botname && Active )
+            if ( message.Trim().StartsWith(BotConfirmationSecret) && name != Botname && Active )
             {
-                UserManager.SetBotFlag(user);
+                UserManager.SetBotFlag(name);
 
-                ActiveBot = user;
+                ActiveBot = name;
                 SendMessage("Alright, I'll sit on the bench.", DefaultChannelName);
 
                 Active = false;
+                return;
+            }
+
+            if ( eventPluginPrivateMessageReceived != null )
+            {
+                eventPluginPrivateMessageReceived(name, message);
             }
         }
 
-        private void ChannelMessageResponse( string User, string Message, string Channel )
+        private void ChannelMessageResponse( string channel, string name, string message )
         {
             #region Bot Communication
-            if ( Message.Trim() == "Robot reporting for duty" && Active )
+            if ( message.Trim() == "Robot reporting for duty" && Active )
             {
-                SendMessage("I'm already on duty.", Channel);
+                SendMessage("I'm already on duty.", channel);
             }
 
-            if ( Message.Trim() == "Alright, I'll sit on the bench." && Active )
+            if ( message.Trim() == "Alright, I'll sit on the bench." && Active )
             {
-                if ( UserManager.IsBot(User) )
+                if ( UserManager.IsBot(name) )
                 {
-                    SendMessage("<3", Channel);
+                    SendMessage("<3", channel);
                 }
                 else
                 {
-                    SendMessage("</3 Lies! Thou art no bot!", Channel);
+                    SendMessage("</3 Lies! Thou art no bot!", channel);
                 }
             }
 
-            if ( Message.Trim() == "I'm already on duty." && User != Botname && Active )
+            if ( message.Trim() == "I'm already on duty." && name != Botname && Active )
             {
-                SendMessage("DO YOU LOVE BEES? :" + GetSHA1Hash(DefaultChannelName + "I really love bees" + User + BotConfirmationSecret), User);
+                SendMessage("DO YOU LOVE BEES? :" + GetSHA1Hash(DefaultChannelName + "I really love bees" + name + BotConfirmationSecret), name);
             }
 
             if ( !Active )
@@ -234,19 +400,19 @@ namespace SpawnBot
 
             #endregion
 
-            if ( Message.StartsWith("!") )
+            if ( message.StartsWith("!") )
             {
-                if ( User.StartsWith("Mariondoe", StringComparison.CurrentCultureIgnoreCase) )
+                if ( name.StartsWith("Mariondoe", StringComparison.CurrentCultureIgnoreCase) )
                 {
                     Random r = new Random();
                     if ( r.Next(0, 100) <= 25 )
                     {
-                        SendMessage("Unexpected error 0x0001D107", Channel);
+                        SendMessage("Unexpected error 0x0001D107", channel);
                         return;
                     }
                 }
 
-                string[] parts = Message.Split(' ');
+                string[] parts = message.Split(' ');
 
                 if ( parts[0].Length == 1 )
                 {
@@ -265,189 +431,23 @@ namespace SpawnBot
 
                 if ( Command == "version" )
                 {
-                    SendMessage("SpawnBot v" + Assembly.GetCallingAssembly().GetName().Version.ToString(), Channel);
+                    SendMessage("SpawnBot v" + Assembly.GetCallingAssembly().GetName().Version.ToString(), channel);
                     return;
                 }
 
                 if ( eventPluginChannelCommandReceived != null )
                 {
-                    eventPluginChannelCommandReceived(User, Channel, Command, Parameters);
+                    eventPluginChannelCommandReceived(name, channel, Command, Parameters);
                 }
             }
             else
             {
                 if ( eventPluginChannelMessageReceived != null )
                 {
-                    eventPluginChannelMessageReceived(User, Message, Channel);
+                    eventPluginChannelMessageReceived(name, message, channel);
                 }
             }
         }
-
-        void IrcObject_eventMessage( string User, string Message, string Channel )
-        {
-            //if ( !User.Equals("MMC", StringComparison.CurrentCultureIgnoreCase) && !User.Equals("MMMC", StringComparison.CurrentCultureIgnoreCase) )
-            //{
-            Logger.WriteLine(String.Format("[{2}] {0}: {1}", User, Message, Channel));
-            //}
-
-            //if ( DebugMode )
-            //{
-            //    return;
-            //}
-
-            if ( Channel == Botname )
-            {
-                PrivateMessageResponse(User, Message);
-            }
-            else
-            {
-                ChannelMessageResponse(User, Message, Channel);
-            }
-        }
-
-        #region Junk
-        private void IrcCommandReceived( string IrcCommand )
-        {
-            //Logger.WriteLine(IrcCommand);
-        }
-
-        private void IrcTopicSet( string IrcChan, string IrcTopic )
-        {
-            if ( eventPluginChannelTopicSet != null )
-            {
-                eventPluginChannelTopicSet(IrcChan, IrcTopic);
-            }
-        }
-
-        private void IrcTopicOwner( string IrcChan, string IrcUser, string TopicDate )
-        {
-            if ( eventPluginChannelTopicOwnerGet != null )
-            {
-                eventPluginChannelTopicOwnerGet(IrcChan, IrcUser, TopicDate);
-            }
-
-        }
-
-        private void IrcNamesList( string UserNames, string IrcChannel )
-        {
-            string[] list = UserNames.Split(' ');
-
-            if ( eventPluginChannelNameListGet != null )
-            {
-                eventPluginChannelNameListGet(IrcChannel, list);
-            }
-        }
-
-        private void IrcServerMessage( string ServerMessage )
-        {
-            Logger.WriteLine(String.Format("** {0}", ServerMessage), ConsoleColor.Green);
-        }
-
-        private void IrcJoin( string IrcChan, string IrcUser )
-        {
-            if ( eventPluginUserJoined != null )
-            {
-                eventPluginUserJoined(IrcChan, IrcUser);
-            }
-        }
-
-        private void IrcPart( string IrcChan, string IrcUser )
-        {
-            if ( IrcUser == ActiveBot )
-            {
-                SendMessage("I'll take over " + ActiveBot + "'s work now. The King is dead. Long live the King!", IrcChan);
-                Active = true;
-                ActiveBot = Botname;
-            }
-
-            if ( eventPluginUserLeft != null )
-            {
-                eventPluginUserLeft(IrcChan, IrcUser);
-            }
-        }
-
-        private void IrcMode( string IrcChan, string IrcUser, string UserMode )
-        {
-            if ( IrcUser == Botname && IrcUser == IrcChan )
-            {
-                foreach ( string channel in Channels )
-                {
-                    SendCommand("JOIN " + channel);
-                }
-
-                if ( !DebugMode )
-                {
-                    SendMessage("Robot reporting for duty", DefaultChannelName);
-                }
-
-                return;
-            }
-
-            string[] modeparts = UserMode.Split(' ');
-
-            bool add = false;
-
-            if ( modeparts[0].StartsWith("+") )
-            {
-                add = true;
-            }
-            else
-            {
-                add = false;
-            }
-
-            char[] modes = modeparts[0].Substring(1).ToCharArray();
-
-            for ( int i = 0; i < modes.Length; i++ )
-            {
-                if ( add )
-                {
-                    if ( eventPluginUserModeSet != null )
-                    {
-                        eventPluginUserModeSet(modeparts[i + 1], IrcChan, "+" + modes[i], IrcUser);
-                    }
-                }
-                else
-                {
-                    if ( eventPluginUserModeSet != null )
-                    {
-                        eventPluginUserModeSet(modeparts[i + 1], IrcChan, "-" + modes[i], IrcUser);
-                    }
-                }
-            }
-        }
-
-        private void IrcNickChange( string UserOldNick, string UserNewNick )
-        {
-            if ( eventPluginUserChangedNick != null )
-            {
-                eventPluginUserChangedNick(UserOldNick, UserNewNick);
-            }
-        }
-
-        private void IrcKick( string IrcChannel, string UserKicker, string UserKicked, string KickMessage )
-        {
-            if ( eventPluginUserKicked != null )
-            {
-                eventPluginUserKicked(IrcChannel, UserKicked, UserKicker, KickMessage);
-            }
-        }
-
-        private void IrcQuit( string UserQuit, string QuitMessage )
-        {
-            if ( UserQuit == ActiveBot )
-            {
-                SendMessage("I'll take over " + ActiveBot + "'s work now. The King is dead. Long live the King!", DefaultChannelName);
-                Active = true;
-                ActiveBot = Botname;
-            }
-
-            if ( eventPluginUserQuit != null )
-            {
-                eventPluginUserQuit(UserQuit, QuitMessage);
-            }
-        }
-        #endregion
 
         #region SBPluginHost Members
 

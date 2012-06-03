@@ -1,9 +1,0 @@
-F:\Projects (Repositoried)\SpawnBot\NetTestApp\bin\Debug\NetTestApp.exe
-F:\Projects (Repositoried)\SpawnBot\NetTestApp\bin\Debug\NetTestApp.pdb
-F:\Projects (Repositoried)\SpawnBot\NetTestApp\bin\Debug\xIrcNet.dll
-F:\Projects (Repositoried)\SpawnBot\NetTestApp\bin\Debug\xIrcNet.pdb
-F:\Projects (Repositoried)\SpawnBot\NetTestApp\obj\Debug\ResolveAssemblyReference.cache
-F:\Projects (Repositoried)\SpawnBot\NetTestApp\obj\Debug\NetTestApp.exe
-F:\Projects (Repositoried)\SpawnBot\NetTestApp\obj\Debug\NetTestApp.pdb
-F:\Projects (Repositoried)\SpawnBot\NetTestApp\bin\Debug\xLogger.dll
-F:\Projects (Repositoried)\SpawnBot\NetTestApp\bin\Debug\xLogger.pdb

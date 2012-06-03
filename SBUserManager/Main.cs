@@ -136,6 +136,11 @@ namespace SBUserManager
 
         void Host_eventPluginUserModeSet( string name, string channel, string mode, string by )
         {
+            if ( name == channel )
+            {
+                return;
+            }
+
             IrcUser u = IUsers.GetUser(name, channel);
 
             if ( u == null )
@@ -178,28 +183,36 @@ namespace SBUserManager
             {
                 Logger.WriteLine("***** Unknown mode '" + mode + "'", ConsoleColor.DarkRed);
             }
+
+            Logger.WriteLine(String.Format("[{0}] {1} sets {2} for {3} ", new object[] { channel, by, mode, name }), ConsoleColor.DarkYellow);
         }
 
         void Host_eventPluginUserQuit( string name, string message )
         {
             IUsers.RemoveAllUser(name);
+
+            Logger.WriteLine(String.Format("[*] {0} has quit ({1})", name, message), ConsoleColor.Yellow);
         }
 
-        void Host_eventPluginUserLeft( string channel, string name )
+        void Host_eventPluginUserLeft( string channel, string name, string reason )
         {
             IUsers.RemoveUser(name, channel);
+
+            Logger.WriteLine(String.Format("[{0}] {1} has left ({2})", channel, name, reason), ConsoleColor.Yellow);
         }
 
         void Host_eventPluginUserKicked( string channel, string name, string by, string reason )
         {
             IUsers.RemoveUser(name, channel);
+
+            Logger.WriteLine(String.Format("[{0}] {1} has been kicked by {2} ({3})", new object[] { channel, name, by, reason }), ConsoleColor.Yellow);
         }
 
         void Host_eventPluginUserJoined( string channel, string name )
         {
             IUsers.AddUser(name, channel);
 
-            Logger.WriteLine(String.Format("* User '{0}' joined '{1}'", name, channel), ConsoleColor.Yellow);
+            Logger.WriteLine(String.Format("[{0}] {1} has joined", channel, name), ConsoleColor.Yellow);
         }
 
         void Host_eventPluginUserChangedNick( string name, string newname )

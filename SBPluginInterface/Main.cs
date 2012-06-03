@@ -6,7 +6,7 @@ using System.Text;
 namespace SBPluginInterface
 {
     public delegate void UserJoin( string channel, string name );
-    public delegate void UserLeave( string channel, string name );
+    public delegate void UserLeave( string channel, string name, string message );
     public delegate void UserKick( string channel, string name, string by, string reason );
     public delegate void UserChange( string name, string newname );
     public delegate void UserQuit( string name, string message );
