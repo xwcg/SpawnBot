@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Net.Sockets;
 using System.IO;
+using System.Linq;
+using System.Net.Sockets;
+using System.Text;
 using System.Threading;
 
 namespace xIrcNet
@@ -14,14 +14,18 @@ namespace xIrcNet
     public delegate void IrcCommandReceived( string cmd );
     public delegate void IrcServerMessageReceived( string cmd );
     public delegate void IrcServerPingReceived( string hash );
+    public delegate void IrcServerPongReceived();
+    public delegate void IrcIdentChallenge( string msg );
+
     public delegate void IrcMessage( string channel, string name, string message );
+    public delegate void IrcNotice( string name, string message );
 
     public delegate void IrcTopicReceived( string channel, string topic );
     public delegate void IrcTopicOwnerRecevied( string channel, string name, string date );
     public delegate void IrcNameListReceived( string channel, string[] list );
 
     public delegate void IrcUserJoin( string channel, string name );
-    public delegate void IrcUserPart( string channel, string name );
+    public delegate void IrcUserPart( string channel, string name, string message );
     public delegate void IrcUserMode( string channel, string name, string mode, string by );
     public delegate void IrcUserChange( string name, string newName );
     public delegate void IrcUserKicked( string channel, string name, string by, string message );
@@ -51,8 +55,13 @@ namespace xIrcNet
         public event IrcCommandReceived eventCommandReceived;
         public event IrcCommandSent eventCommandSent;
         public event IrcMessage eventMessageReceived;
+        public event IrcNotice eventNoticeReceived;
+
         public event IrcServerMessageReceived eventServerMessageReceived;
         public event IrcServerPingReceived eventServerPingReceived;
+        public event IrcServerPongReceived eventServerPongReceived;
+
+        public event IrcIdentChallenge eventServerIdentChallenge;
 
         public event IrcTopicReceived eventTopicReceived;
         public event IrcTopicOwnerRecevied eventTopicOwnerReceived;
@@ -89,6 +98,12 @@ namespace xIrcNet
 
         private Thread _ReadThread;
         private string _Host;
+        private DateTime _LastPing;
+        private DateTime _PongChallenge;
+        private bool _PongChallenging = false;
+        private int _NameIncrementor = 0;
+        private string _OriginalNick;
+
         #endregion
 
         #region Properties
@@ -117,6 +132,11 @@ namespace xIrcNet
             set
             {
                 _Nick = value;
+
+                if ( _Connection != null && _Connection.Connected )
+                {
+                    SendCommand(String.Format("NICK {0}", _Nick));
+                }
             }
         }
 
@@ -233,21 +253,21 @@ namespace xIrcNet
                 }
 
                 SendCommand(String.Format("QUIT :{0}", msg));
+            }
 
-                _In.Close();
-                _Out.Close();
-                _Stream.Close();
-                _Connection.Close();
+            _In.Close();
+            _Out.Close();
+            _Stream.Close();
+            _Connection.Close();
 
-                _In.Dispose();
-                _Out.Dispose();
-                _Stream.Dispose();
-                _Connection = null;
+            _In.Dispose();
+            _Out.Dispose();
+            _Stream.Dispose();
+            _Connection = null;
 
-                if ( eventDisconnected != null )
-                {
-                    eventDisconnected(msg);
-                }
+            if ( eventDisconnected != null )
+            {
+                eventDisconnected(msg);
             }
         }
 
@@ -339,9 +359,17 @@ namespace xIrcNet
                     {
                         case "PING":
                             HandlePing(RawParts[1]);
-                            break;
+                            continue;
+                        case "NOTICE":
+                            if ( RawParts[1] == "AUTH" )
+                            {
+                                if ( eventServerIdentChallenge != null )
+                                {
+                                    eventServerIdentChallenge(RawIn.Substring(RawIn.IndexOf(":") + 1));
+                                }
+                            }
+                            continue;
                     }
-
                     switch ( RawParts[1] )
                     {
                         // WELCOME
@@ -416,6 +444,19 @@ namespace xIrcNet
                             }
                             break;
 
+                        // NICKNAME IN USE
+                        case "433":
+                            if ( _NameIncrementor == 0 )
+                            {
+                                _OriginalNick = _Nick;
+
+                                eventUserChangedNick += new IrcUserChange(IRC_eventUserChangedNick);
+                                eventUserQuit += new IrcUserQuit(IRC_eventUserQuit);
+                            }
+                            _NameIncrementor++;
+                            Nick = _Nick + _NameIncrementor.ToString();
+                            break;
+
                         ////// Normal command
 
                         case "MODE":
@@ -424,6 +465,10 @@ namespace xIrcNet
 
                         case "PRIVMSG":
                             HandlePrivMsg(RawGetSourceNick(RawParts[0]), RawIn);
+                            break;
+
+                        case "NOTICE":
+                            HandleNoticeMsg(RawGetSourceNick(RawParts[0]), RawIn);
                             break;
 
                         case "NICK":
@@ -440,9 +485,87 @@ namespace xIrcNet
                                 eventUserJoined(RawParts[2], RawGetSourceNick(RawParts[0]));
                             }
                             break;
+
+                        case "PART":
+                            HandlePart(RawGetSourceNick(RawParts[0]), RawIn);
+                            break;
+
+                        case "QUIT":
+                            HandleQuit(RawGetSourceNick(RawParts[0]), RawIn);
+                            break;
+
+                        case "PONG":
+                            if ( eventServerPongReceived != null )
+                            {
+                                eventServerPongReceived();
+                            }
+                            break;
+                    }
+                }
+
+                if ( _Connection != null && _Connection.Connected == false )
+                {
+                    Disconnect("Timeout");
+                    return;
+                }
+
+                if ( _Connection != null && _Connection.Connected == true && _PongChallenging == false )
+                {
+                    TimeSpan t = new TimeSpan(DateTime.Now.Ticks - _LastPing.Ticks);
+
+                    if ( t.TotalSeconds > 200 && t.TotalSeconds < 5000 )
+                    {
+                        _PongChallenging = true;
+
+                        eventServerPongReceived += new IrcServerPongReceived(IRC_eventServerPongReceived);
+
+                        _PongChallenge = DateTime.Now;
+                        SendCommand("PING :42");
+                    }
+                }
+
+                if ( _PongChallenging == true )
+                {
+                    TimeSpan t = new TimeSpan(DateTime.Now.Ticks - _PongChallenge.Ticks);
+
+                    if ( t.TotalSeconds > 10 )
+                    {
+                        Disconnect("Timeout");
+                        return;
                     }
                 }
             }
+
+            Disconnect("Disconnected");
+        }
+
+        void IRC_eventUserQuit( string name, string message )
+        {
+            if ( name == _OriginalNick )
+            {
+                Nick = _OriginalNick;
+
+                eventUserChangedNick -= IRC_eventUserChangedNick;
+                eventUserQuit -= IRC_eventUserQuit;
+            }
+        }
+
+        void IRC_eventUserChangedNick( string name, string newName )
+        {
+            if ( name == _OriginalNick )
+            {
+                Nick = _OriginalNick;
+
+                eventUserChangedNick -= IRC_eventUserChangedNick;
+                eventUserQuit -= IRC_eventUserQuit;
+            }
+        }
+
+        void IRC_eventServerPongReceived()
+        {
+            _LastPing = DateTime.Now;
+            _PongChallenging = false;
+            eventServerPongReceived -= IRC_eventServerPongReceived;
         }
 
         /// <summary>
@@ -468,6 +591,10 @@ namespace xIrcNet
             {
                 return rawpart.Substring(0, rawpart.IndexOf("!"));
             }
+            else if ( rawpart.Contains(_Host) )
+            {
+                return "Server";
+            }
             else
             {
                 return null;
@@ -476,14 +603,17 @@ namespace xIrcNet
 
         private void HandlePing( string rawHash )
         {
-            string hash = rawHash.Substring(1);
+            _LastPing = DateTime.Now;
 
-            SendCommand(String.Format("PONG :{0}", hash));
+            string hash = rawHash.Substring(1);
 
             if ( eventServerPingReceived != null )
             {
                 eventServerPingReceived(hash);
             }
+
+            SendCommand(String.Format("PONG :{0}", hash));
+
         }
 
         private void HandleTopic( string CleanText )
@@ -577,6 +707,19 @@ namespace xIrcNet
             }
         }
 
+        private void HandleNoticeMsg( string CleanSourceNick, string rawcmd )
+        {
+            string[] parts = rawcmd.Split(' ');
+
+            string name = CleanSourceNick;
+            string message = rawcmd.Substring(rawcmd.IndexOf(_Nick) + _Nick.Length + 2);
+
+            if ( eventNoticeReceived != null )
+            {
+                eventNoticeReceived(name, message);
+            }
+        }
+
         private void HandleNick( string CleanSourceNick, string NewNick )
         {
             string nick = NewNick;
@@ -619,6 +762,29 @@ namespace xIrcNet
             if ( eventUserKicked != null )
             {
                 eventUserKicked(channel, name, by, message);
+            }
+        }
+
+        private void HandlePart( string CleanSourceNick, string rawcmd )
+        {
+            string name = CleanSourceNick;
+            string channel = rawcmd.Split(' ')[2];
+            string message = rawcmd.Substring(rawcmd.IndexOf(channel) + channel.Length + 2);
+
+            if ( eventUserPart != null )
+            {
+                eventUserPart(channel, name, message);
+            }
+        }
+
+        private void HandleQuit( string CleanSourceNick, string rawcmd )
+        {
+            string name = CleanSourceNick;
+            string message = rawcmd.Substring(rawcmd.IndexOf("QUIT") + 6);
+
+            if ( eventUserQuit != null )
+            {
+                eventUserQuit(name, message);
             }
         }
 

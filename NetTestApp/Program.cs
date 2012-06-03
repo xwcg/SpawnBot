@@ -26,6 +26,9 @@ namespace NetTestApp
             test.eventMessageReceived += new IrcMessage(test_eventMessageReceived);
             test.eventNameListReceived += new IrcNameListReceived(test_eventNameListReceived);
             test.eventUserKicked += new IrcUserKicked(test_eventUserKicked);
+            test.eventNoticeReceived += new IrcNotice(test_eventNoticeReceived);
+            test.eventServerIdentChallenge += new IrcIdentChallenge(test_eventServerIdentChallenge);
+            test.eventUserPart += new IrcUserPart(test_eventUserPart);
 
             string cmd;
 
@@ -42,6 +45,16 @@ namespace NetTestApp
                     continue;
                 }
 
+                if ( cmd.StartsWith("join") )
+                {
+                    string[] parts = cmd.Split(' ');
+                    if ( parts.Length > 1 )
+                    {
+                        test.SendCommand("JOIN " + parts[1]);
+                    }
+                    continue;
+                }
+
                 switch ( cmd.ToLower() )
                 {
                     case "quit":
@@ -54,11 +67,29 @@ namespace NetTestApp
                     case "disconnect":
                         test.Disconnect();
                         break;
+                    case "ping":
+                        test.SendCommand("PING :test");
+                        break;
                     default:
                         Console.WriteLine("Unknown command '" + cmd + "'");
                         break;
                 }
             }
+        }
+
+        static void test_eventUserPart( string channel, string name, string message )
+        {
+            Logger.WriteLine(String.Format("({0}) {1} left channel. ({2})", channel, name, message), ConsoleColor.Yellow);
+        }
+
+        static void test_eventServerIdentChallenge( string msg )
+        {
+            Logger.WriteLine("IDENT CHALLENGE: " + msg, ConsoleColor.DarkBlue);
+        }
+
+        static void test_eventNoticeReceived( string name, string message )
+        {
+            Logger.WriteLine(String.Format("(NOTICE from {0}) {1}", name, message), ConsoleColor.White);
         }
 
         static void test_eventUserKicked( string channel, string name, string by, string message )
@@ -68,12 +99,7 @@ namespace NetTestApp
 
         static void test_eventNameListReceived( string channel, string[] list )
         {
-            Logger.WriteLine("USER LIST FOR " + channel, ConsoleColor.Blue);
-            foreach ( string name in list )
-            {
-                Logger.WriteLine(name, ConsoleColor.DarkBlue);
-            }
-            Logger.WriteLine("END OF LIST");
+            Logger.WriteLine("USER LIST FOR " + channel + " RECEIVED", ConsoleColor.Blue);
         }
 
         static void test_eventMessageReceived( string channel, string name, string message )
@@ -121,7 +147,7 @@ namespace NetTestApp
 
         static void test_eventDisconnected( string msg )
         {
-            Logger.WriteLine("Disconnected!", ConsoleColor.Green);
+            Logger.WriteLine("Disconnected! (" + msg + ")", ConsoleColor.Green);
         }
     }
 }
