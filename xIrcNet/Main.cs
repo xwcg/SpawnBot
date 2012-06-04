@@ -774,7 +774,16 @@ namespace xIrcNet
         {
             string name = CleanSourceNick;
             string channel = rawcmd.Split(' ')[2];
-            string message = rawcmd.Substring(rawcmd.IndexOf(channel) + channel.Length + 2);
+            string message;
+
+            if ( rawcmd.Split(' ').Length > 3 )
+            {
+                message = rawcmd.Substring(rawcmd.IndexOf(channel) + channel.Length + 2);
+            }
+            else
+            {
+                message = "PART";
+            }
 
             if ( eventUserPart != null )
             {

@@ -293,7 +293,10 @@ namespace SBGameSales
             {
                 foreach ( SyndicationItem i in f.Items )
                 {
-                    GameSales.Add(new GameSaleData(i));
+                    if ( !i.Title.Text.Contains(" DLC ") )
+                    {
+                        GameSales.Add(new GameSaleData(i));
+                    }
                 }
             }
             catch

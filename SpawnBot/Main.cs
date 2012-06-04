@@ -52,41 +52,51 @@ namespace SpawnBot
 
             while ( ( cmd = Console.ReadLine() ) != null )
             {
-                if ( cmd.StartsWith("say") )
-                {
-                    string[] parts = cmd.Split(' ');
+                string[] cmdparts = cmd.Split(' ');
 
-                    string channel = parts[1];
-                    string message = cmd.Substring(cmd.IndexOf(channel) + channel.Length + 1);
-
-                    SendMessage(message, channel);
-                    continue;
-                }
-
-                if ( cmd.StartsWith("join") )
-                {
-                    string[] parts = cmd.Split(' ');
-                    if ( parts.Length > 1 )
-                    {
-                        IrcService.SendCommand("JOIN " + parts[1]);
-                    }
-                    continue;
-                }
-
-                switch ( cmd.ToLower() )
+                switch ( cmdparts[0] )
                 {
                     case "quit":
-                        IrcService.Disconnect();
+                        if ( cmdparts.Length > 1 )
+                        {
+                            IrcService.Disconnect(cmd.Substring(5));
+                        }
+                        else
+                        {
+                            IrcService.Disconnect();
+                        }
                         Environment.Exit(0);
                         break;
                     case "connect":
                         IrcService.Connect();
                         break;
                     case "disconnect":
-                        IrcService.Disconnect();
+                        if ( cmdparts.Length > 1 )
+                        {
+                            IrcService.Disconnect(cmd.Substring(11));
+                        }
+                        else
+                        {
+                            IrcService.Disconnect();
+                        }
                         break;
                     case "ping":
                         IrcService.SendCommand("PING :test");
+                        break;
+                    case "say":
+                        if ( cmdparts.Length > 1 )
+                        {
+                            string channel = cmdparts[1];
+                            string message = cmd.Substring(cmd.IndexOf(channel) + channel.Length + 1);
+
+                            SendMessage(message, channel);
+                        }
+                        break;
+                    case "join":
+                        if ( cmdparts.Length > 1 )
+                        {
+                            IrcService.SendCommand("JOIN " + cmdparts[1]);
+                        }
                         break;
                     default:
                         Console.WriteLine("Unknown command '" + cmd + "'");
@@ -127,7 +137,18 @@ namespace SpawnBot
 
             IrcService.eventMessageReceived += new IrcMessage(IrcService_eventMessageReceived);
 
+            IrcService.eventDisconnected += new IrcDisconnected(IrcService_eventDisconnected);
+
             IrcService.Connect();
+        }
+
+        void IrcService_eventDisconnected( string msg )
+        {
+            if ( msg == "Disconnected" || msg == "Timeout" )
+            {
+                UserManager.ClearAllUsers();
+                IrcService.Connect();
+            }
         }
 
         #region IRC Events
