@@ -138,7 +138,14 @@ namespace SpawnBot
             IrcService.eventMessageReceived += new IrcMessage(IrcService_eventMessageReceived);
 
             IrcService.eventDisconnected += new IrcDisconnected(IrcService_eventDisconnected);
+            IrcService.eventConnectingError += new IrcConnectingError(IrcService_eventConnectingError);
 
+            IrcService.Connect();
+        }
+
+        void IrcService_eventConnectingError( string error )
+        {
+            UserManager.ClearAllUsers();
             IrcService.Connect();
         }
 

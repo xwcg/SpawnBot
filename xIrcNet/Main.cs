@@ -102,6 +102,7 @@ namespace xIrcNet
         private StreamReader _In;
 
         private Thread _ReadThread;
+        private Thread _TimeoutThread;
         private string _Host;
         private DateTime _LastPing;
         private DateTime _PongChallenge;
@@ -257,6 +258,11 @@ namespace xIrcNet
                     _ReadThread.Abort();
                 }
 
+                if ( _TimeoutThread.ThreadState == ThreadState.Running || _TimeoutThread.ThreadState == ThreadState.Background )
+                {
+                    _TimeoutThread.Abort();
+                }
+
                 SendCommand(String.Format("QUIT :{0}", msg));
             }
 
@@ -305,6 +311,10 @@ namespace xIrcNet
                     _ReadThread = new Thread(new ThreadStart(ReceiveLoop));
                     _ReadThread.IsBackground = true;
                     _ReadThread.Start();
+
+                    _TimeoutThread = new Thread(new ThreadStart(TimeoutLoop));
+                    _TimeoutThread.IsBackground = true;
+                    _TimeoutThread.Start();
                 }
                 else
                 {
@@ -342,172 +352,187 @@ namespace xIrcNet
 
         private void ReceiveLoop()
         {
-            while ( _In != null && _Connection.Connected )
+            try
             {
-                string RawIn;
-
-                if ( ( RawIn = _In.ReadLine() ) != null )
+                while ( _In != null && _Connection.Connected )
                 {
-                    if ( eventCommandReceived != null )
-                    {
-                        eventCommandReceived(RawIn);
-                    }
+                    string RawIn;
 
-                    string[] RawParts = RawIn.Split(' ');
-
-                    if ( RawParts[0].StartsWith(":") )
+                    if ( ( RawIn = _In.ReadLine() ) != null )
                     {
-                        RawParts[0] = RawParts[0].Substring(1);
-                    }
+                        if ( eventCommandReceived != null )
+                        {
+                            eventCommandReceived(RawIn);
+                        }
 
-                    switch ( RawParts[0] )
-                    {
-                        case "PING":
-                            HandlePing(RawParts[1]);
-                            continue;
-                        case "NOTICE":
-                            if ( RawParts[1] == "AUTH" )
-                            {
-                                if ( eventServerIdentChallenge != null )
+                        string[] RawParts = RawIn.Split(' ');
+
+                        if ( RawParts[0].StartsWith(":") )
+                        {
+                            RawParts[0] = RawParts[0].Substring(1);
+                        }
+
+                        switch ( RawParts[0] )
+                        {
+                            case "PING":
+                                HandlePing(RawParts[1]);
+                                continue;
+                            case "NOTICE":
+                                if ( RawParts[1] == "AUTH" )
                                 {
-                                    eventServerIdentChallenge(RawIn.Substring(RawIn.IndexOf(":") + 1));
+                                    if ( eventServerIdentChallenge != null )
+                                    {
+                                        eventServerIdentChallenge(RawIn.Substring(RawIn.IndexOf(":") + 1));
+                                    }
                                 }
-                            }
-                            continue;
-                    }
-                    switch ( RawParts[1] )
-                    {
-                        // WELCOME
-                        case "001":
-                            _Host = RawParts[0];
-                            break;
+                                continue;
+                        }
+                        switch ( RawParts[1] )
+                        {
+                            // WELCOME
+                            case "001":
+                                _Host = RawParts[0];
+                                break;
 
-                        // YOUR HOST
-                        case "002":
-                            break;
+                            // YOUR HOST
+                            case "002":
+                                break;
 
-                        // CREATED
-                        case "003":
-                            break;
+                            // CREATED
+                            case "003":
+                                break;
 
-                        // MY INFO
-                        case "004":
-                            break;
+                            // MY INFO
+                            case "004":
+                                break;
 
-                        // I SUPPORT
-                        case "005":
-                            break;
+                            // I SUPPORT
+                            case "005":
+                                break;
 
-                        // U(R) MODE IS
-                        case "221":
-                            if ( eventRawBotModeReceived != null )
-                            {
-                                eventRawBotModeReceived(RawParts[3]);
-                            }
-                            break;
+                            // U(R) MODE IS
+                            case "221":
+                                if ( eventRawBotModeReceived != null )
+                                {
+                                    eventRawBotModeReceived(RawParts[3]);
+                                }
+                                break;
 
-                        // TOPIC
-                        case "332":
-                            HandleTopic(RawGetOnlyText(RawIn));
-                            break;
+                            // TOPIC
+                            case "332":
+                                HandleTopic(RawGetOnlyText(RawIn));
+                                break;
 
-                        // TOPIC WHO TIME
-                        case "333":
-                            HandleTopicInfo(RawGetOnlyText(RawIn));
-                            break;
+                            // TOPIC WHO TIME
+                            case "333":
+                                HandleTopicInfo(RawGetOnlyText(RawIn));
+                                break;
 
-                        // NAME REPLY
-                        case "353":
-                            HandleNameList(RawGetOnlyText(RawIn));
-                            break;
+                            // NAME REPLY
+                            case "353":
+                                HandleNameList(RawGetOnlyText(RawIn));
+                                break;
 
-                        // END OF NAMES
-                        case "366":
-                            break;
+                            // END OF NAMES
+                            case "366":
+                                break;
 
-                        // MOTD START
-                        case "375":
-                            if ( eventRawMotdStarted != null )
-                            {
-                                eventRawMotdStarted();
-                            }
-                            break;
+                            // MOTD START
+                            case "375":
+                                if ( eventRawMotdStarted != null )
+                                {
+                                    eventRawMotdStarted();
+                                }
+                                break;
 
-                        // MOTD
-                        case "372":
-                            if ( eventRawMotdLineReceived != null )
-                            {
-                                eventRawMotdLineReceived(RawGetOnlyText(RawIn));
-                            }
-                            break;
+                            // MOTD
+                            case "372":
+                                if ( eventRawMotdLineReceived != null )
+                                {
+                                    eventRawMotdLineReceived(RawGetOnlyText(RawIn));
+                                }
+                                break;
 
-                        // MOTD END
-                        case "376":
-                            if ( eventRawMotdEnded != null )
-                            {
-                                eventRawMotdEnded();
-                            }
-                            break;
+                            // MOTD END
+                            case "376":
+                                if ( eventRawMotdEnded != null )
+                                {
+                                    eventRawMotdEnded();
+                                }
+                                break;
 
-                        // NICKNAME IN USE
-                        case "433":
-                            if ( _NameIncrementor == 0 )
-                            {
-                                _OriginalNick = _Nick;
+                            // NICKNAME IN USE
+                            case "433":
+                                if ( _NameIncrementor == 0 )
+                                {
+                                    _OriginalNick = _Nick;
 
-                                eventUserChangedNick += new IrcUserChange(IRC_eventUserChangedNick);
-                                eventUserQuit += new IrcUserQuit(IRC_eventUserQuit);
-                            }
-                            _NameIncrementor++;
-                            Nick = _Nick + _NameIncrementor.ToString();
-                            break;
+                                    eventUserChangedNick += new IrcUserChange(IRC_eventUserChangedNick);
+                                    eventUserQuit += new IrcUserQuit(IRC_eventUserQuit);
+                                }
+                                _NameIncrementor++;
+                                Nick = _Nick + _NameIncrementor.ToString();
+                                break;
 
-                        ////// Normal command
+                            ////// Normal command
 
-                        case "MODE":
-                            HandleMode(RawParts);
-                            break;
+                            case "MODE":
+                                HandleMode(RawParts);
+                                break;
 
-                        case "PRIVMSG":
-                            HandlePrivMsg(RawGetSourceNick(RawParts[0]), RawIn);
-                            break;
+                            case "PRIVMSG":
+                                HandlePrivMsg(RawGetSourceNick(RawParts[0]), RawIn);
+                                break;
 
-                        case "NOTICE":
-                            HandleNoticeMsg(RawGetSourceNick(RawParts[0]), RawIn);
-                            break;
+                            case "NOTICE":
+                                HandleNoticeMsg(RawGetSourceNick(RawParts[0]), RawIn);
+                                break;
 
-                        case "NICK":
-                            HandleNick(RawGetSourceNick(RawParts[0]), RawParts[2]);
-                            break;
+                            case "NICK":
+                                HandleNick(RawGetSourceNick(RawParts[0]), RawParts[2]);
+                                break;
 
-                        case "KICK":
-                            HandleKick(RawParts);
-                            break;
+                            case "KICK":
+                                HandleKick(RawParts);
+                                break;
 
-                        case "JOIN":
-                            if ( eventUserJoined != null )
-                            {
-                                eventUserJoined(RawParts[2], RawGetSourceNick(RawParts[0]));
-                            }
-                            break;
+                            case "JOIN":
+                                if ( eventUserJoined != null )
+                                {
+                                    eventUserJoined(RawParts[2], RawGetSourceNick(RawParts[0]));
+                                }
+                                break;
 
-                        case "PART":
-                            HandlePart(RawGetSourceNick(RawParts[0]), RawIn);
-                            break;
+                            case "PART":
+                                HandlePart(RawGetSourceNick(RawParts[0]), RawIn);
+                                break;
 
-                        case "QUIT":
-                            HandleQuit(RawGetSourceNick(RawParts[0]), RawIn);
-                            break;
+                            case "QUIT":
+                                HandleQuit(RawGetSourceNick(RawParts[0]), RawIn);
+                                break;
 
-                        case "PONG":
-                            if ( eventServerPongReceived != null )
-                            {
-                                eventServerPongReceived();
-                            }
-                            break;
+                            case "PONG":
+                                if ( eventServerPongReceived != null )
+                                {
+                                    eventServerPongReceived();
+                                }
+                                break;
+                        }
                     }
                 }
+            }
+            catch(Exception e)
+            {
+                Disconnect(e.Message);
+            }
 
+            Disconnect("Disconnected");
+        }
+
+        private void TimeoutLoop()
+        {
+            while ( _In != null && _Connection.Connected )
+            {
                 if ( _Connection != null && _Connection.Connected == false )
                 {
                     Disconnect("Timeout");
@@ -539,9 +564,9 @@ namespace xIrcNet
                         return;
                     }
                 }
-            }
 
-            Disconnect("Disconnected");
+                Thread.Sleep(1000);
+            }
         }
 
         void IRC_eventUserQuit( string name, string message )
@@ -735,7 +760,7 @@ namespace xIrcNet
 
             if ( eventUserChangedNick != null )
             {
-                eventUserChangedNick(CleanSourceNick, NewNick);
+                eventUserChangedNick(CleanSourceNick, nick);
             }
         }
 
