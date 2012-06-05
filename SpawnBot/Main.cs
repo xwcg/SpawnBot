@@ -14,6 +14,25 @@ using xLogger;
 using SBPluginInterface;
 using xIrcNet;
 
+/*
+    Copyright 2012 Michael Schwarz
+  
+    This file is part of SpawnBot.
+
+    SpawnBot is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    SpawnBot is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with SpawnBot.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 namespace SpawnBot
 {
     class Bot : SBPluginHost
@@ -42,6 +61,20 @@ namespace SpawnBot
 
         static void Main( string[] args )
         {
+            Console.BackgroundColor = ConsoleColor.DarkBlue;
+            Console.ForegroundColor = ConsoleColor.White;
+
+            Console.WriteLine("SpawnBot - Copyright (C) 2012 Michael Schwarz                                  ");
+            Console.WriteLine("This program comes with ABSOLUTELY NO WARRANTY.                                ");
+            Console.WriteLine("This is free software, and you are welcome to redistribute it                  ");
+            Console.WriteLine("under certain conditions; Read COPYING for details.                            ");
+            Console.WriteLine("                                                                               ");
+
+            Console.BackgroundColor = ConsoleColor.Black;
+            Console.ForegroundColor = ConsoleColor.Gray;
+
+            Console.WriteLine();
+
             ReadConfig();
 
             Bot BotAbstractor = new Bot();
@@ -108,6 +141,8 @@ namespace SpawnBot
         private Bot()
         {
             // Load Plugins
+            Logger.WriteLine("* Loading Plugins...", ConsoleColor.Green);
+
             plugins.FindPlugins(Environment.CurrentDirectory + "\\Plugins\\");
 
             foreach ( AvailablePlugin p in plugins.AvailablePlugins )
@@ -118,7 +153,17 @@ namespace SpawnBot
 
             UserManager = (SBUserPlugin)plugins.AvailablePlugins.FindUserManager().Instance;
 
+            if ( UserManager == null )
+            {
+                Logger.WriteLine("**** No User Manager Found. Exiting.", ConsoleColor.DarkRed);
+                Environment.Exit(1);
+            }
+
+            Logger.WriteLine("* User Manager: " + UserManager.PluginName, ConsoleColor.Green);
+
             // Start Service
+
+            Logger.WriteLine("* Starting Bot...", ConsoleColor.DarkYellow);
 
             IrcService = new IRC(Botname, "SpawnBot", "Spawnbot", "irc.quakenet.org", 6667);
 
@@ -139,8 +184,15 @@ namespace SpawnBot
 
             IrcService.eventDisconnected += new IrcDisconnected(IrcService_eventDisconnected);
             IrcService.eventConnectingError += new IrcConnectingError(IrcService_eventConnectingError);
+            IrcService.eventConnected += new IrcConnected(IrcService_eventConnected);
 
+            Logger.WriteLine("* Connecting to " + IrcService.Server + " on port " + IrcService.Port.ToString(), ConsoleColor.White);
             IrcService.Connect();
+        }
+
+        void IrcService_eventConnected()
+        {
+            Logger.WriteLine("* Connected", ConsoleColor.Green);
         }
 
         void IrcService_eventConnectingError( string error )
@@ -349,6 +401,7 @@ namespace SpawnBot
 
         public static void SendMessage( string message, string channel )
         {
+            // "PRIVMSG #" channel_name + " :\u0001" + "ACTION " + msg + "\u0001"
             string correctedMessage = message.Replace("\n", "").Replace("\r", "");
 
             IrcService.SendCommand(String.Format("PRIVMSG {0} :{1}", channel, correctedMessage));

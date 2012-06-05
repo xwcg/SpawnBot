@@ -13,7 +13,7 @@ namespace SpawnBot
      * This is a heavily edited version of a plugin service from here:
      * http://www.codeproject.com/Articles/6334/Plug-ins-in-C
      * 
-     * I do not own this, nor do I in any way infer to do so.
+     * I do not own this, nor do I in any way imply to do so.
      * 
      * TODO:
      * 
