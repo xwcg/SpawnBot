@@ -280,15 +280,32 @@ namespace xIrcNet
                 SendCommand(String.Format("QUIT :{0}", msg));
             }
 
-            _In.Close();
-            _Out.Close();
-            _Stream.Close();
-            _Connection.Close();
+            if ( _In != null )
+            {
+                _In.Close();
+                _In.Dispose();
+                _In = null;
+            }
 
-            _In.Dispose();
-            _Out.Dispose();
-            _Stream.Dispose();
-            _Connection = null;
+            if ( _Out != null )
+            {
+                _Out.Close();
+                _Out.Dispose();
+                _Out = null;
+            }
+
+            if ( _Stream != null )
+            {
+                _Stream.Close();
+                _Stream.Dispose();
+                _Stream = null;
+            }
+
+            if ( _Connection != null )
+            {
+                _Connection.Close();
+                _Connection = null;
+            }
 
             if ( eventDisconnected != null )
             {
@@ -349,15 +366,21 @@ namespace xIrcNet
 
         public void SendCommand( string command )
         {
-            if ( _Out != null && _Connection.Connected )
+            try
             {
-                _Out.WriteLine(command);
-                _Out.Flush();
-
-                if ( eventCommandSent != null )
+                if ( _Out != null && _Connection.Connected )
                 {
-                    eventCommandSent(command);
+                    _Out.WriteLine(command);
+                    _Out.Flush();
+
+                    if ( eventCommandSent != null )
+                    {
+                        eventCommandSent(command);
+                    }
                 }
+            }
+            catch
+            {
             }
         }
         #endregion

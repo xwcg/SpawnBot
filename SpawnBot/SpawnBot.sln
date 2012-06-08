@@ -27,6 +27,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SBGameSales", "..\SBGameSal
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xIrcNet", "..\xIrcNet\xIrcNet.csproj", "{E4E51BD6-F5D6-42ED-B9B0-36D15580433B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SBMindcrack", "..\SBMindcrack\SBMindcrack.csproj", "{09FDA3B5-B6FE-473A-9AA1-6FC60783DA3F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConfigManager", "..\ConfigManager\ConfigManager.csproj", "{A9380850-363A-4AC8-BB2D-C6C3D30EECB6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -85,6 +89,14 @@ Global
 		{E4E51BD6-F5D6-42ED-B9B0-36D15580433B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E4E51BD6-F5D6-42ED-B9B0-36D15580433B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E4E51BD6-F5D6-42ED-B9B0-36D15580433B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{09FDA3B5-B6FE-473A-9AA1-6FC60783DA3F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{09FDA3B5-B6FE-473A-9AA1-6FC60783DA3F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{09FDA3B5-B6FE-473A-9AA1-6FC60783DA3F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{09FDA3B5-B6FE-473A-9AA1-6FC60783DA3F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A9380850-363A-4AC8-BB2D-C6C3D30EECB6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A9380850-363A-4AC8-BB2D-C6C3D30EECB6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A9380850-363A-4AC8-BB2D-C6C3D30EECB6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A9380850-363A-4AC8-BB2D-C6C3D30EECB6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

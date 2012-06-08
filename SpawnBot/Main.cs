@@ -13,6 +13,7 @@ using Twitterizer;
 using xLogger;
 using SBPluginInterface;
 using xIrcNet;
+using ConfigManager;
 
 /*
     Copyright 2012 Michael Schwarz
@@ -47,16 +48,14 @@ namespace SpawnBot
         private static string Botname = "";
         private static string DefaultChannelName = "";
         private static string BotConfirmationSecret = "";
+        private static string AutoexecFile = "";
+        private static string Superadmin = "";
 
         private static List<string> Channels = new List<string>();
 
         private static PluginService plugins = new PluginService();
         private static SBUserPlugin UserManager;
-
-        public static string TwitterAccessToken = "";
-        public static string TwitterAccessTokenSecret = "";
-        public static string TwitterConsumerKey = "";
-        public static string TwitterConsumerKeySecret = "";
+        private static Manager CfgManager = new Manager();
         #endregion
 
         static void Main( string[] args )
@@ -74,6 +73,8 @@ namespace SpawnBot
             Console.ForegroundColor = ConsoleColor.Gray;
 
             Console.WriteLine();
+
+            Thread.Sleep(2000);
 
             ReadConfig();
 
@@ -181,6 +182,7 @@ namespace SpawnBot
             IrcService.eventRawBotModeReceived += new IrcRawBotModeGet(IrcService_eventRawBotModeReceived);
 
             IrcService.eventMessageReceived += new IrcMessage(IrcService_eventMessageReceived);
+            IrcService.eventNoticeReceived += new IrcNotice(IrcService_eventNoticeReceived);
 
             IrcService.eventDisconnected += new IrcDisconnected(IrcService_eventDisconnected);
             IrcService.eventConnectingError += new IrcConnectingError(IrcService_eventConnectingError);
@@ -189,6 +191,9 @@ namespace SpawnBot
             Logger.WriteLine("* Connecting to " + IrcService.Server + " on port " + IrcService.Port.ToString(), ConsoleColor.White);
             IrcService.Connect();
         }
+
+        #region IRC Events
+
 
         void IrcService_eventConnected()
         {
@@ -210,12 +215,24 @@ namespace SpawnBot
             }
         }
 
-        #region IRC Events
-
         void IrcService_eventRawBotModeReceived( string mode )
         {
             if ( mode == "+i" )
             {
+                if ( AutoexecFile.Length > 0 && File.Exists(AutoexecFile) )
+                {
+                    StreamReader r = new StreamReader(AutoexecFile);
+                    string i;
+                    
+                    while ( ( i = r.ReadLine() ) != null )
+                    {
+                        SendCommand(i);
+                    }
+
+                    r.Close();
+                    r.Dispose();
+                }
+
                 foreach ( string channel in Channels )
                 {
                     SendCommand("JOIN " + channel);
@@ -297,6 +314,11 @@ namespace SpawnBot
             }
         }
 
+        void IrcService_eventNoticeReceived( string name, string message )
+        {
+            Logger.WriteLine(String.Format("[NOTICE from {0}]: {1}", name, message), ConsoleColor.White);
+        }
+
         void IrcService_eventTopicOwnerReceived( string channel, string name, string date )
         {
             if ( eventPluginChannelTopicOwnerGet != null )
@@ -325,57 +347,64 @@ namespace SpawnBot
 
         private static void ReadConfig()
         {
-            string input;
-            StreamReader r;
+            List<Config> cl = CfgManager.Load(null, "config.cfg");
 
-            // Read config file
-            if ( File.Exists("config.txt") )
+            if ( cl == null )
             {
-                r = new StreamReader("config.txt");
-
-                Botname = r.ReadLine();
-                BotConfirmationSecret = r.ReadLine();
-
-
-                while ( ( input = r.ReadLine() ) != null )
-                {
-                    if ( DefaultChannelName == "" )
-                    {
-                        DefaultChannelName = input;
-                    }
-
-                    Channels.Add(input);
-                }
-
-                r.Close();
-                r.Dispose();
-            }
-            else
-            {
-                Logger.WriteLine("****** CONFIG.TXT not found ******", ConsoleColor.Red);
+                Logger.WriteLine("****** CONFIG.CFG not found ******", ConsoleColor.Red);
                 Environment.Exit(0);
             }
 
-            // Read Twitter Keys
-
-            input = "";
-
-            if ( File.Exists("twitterkeys.txt") )
+            foreach ( Config c in cl )
             {
-                r = new StreamReader("twitterkeys.txt");
-
-                TwitterAccessToken = r.ReadLine();
-                TwitterAccessTokenSecret = r.ReadLine();
-                TwitterConsumerKey = r.ReadLine();
-                TwitterConsumerKeySecret = r.ReadLine();
-
-                r.Close();
-                r.Dispose();
+                switch ( c.Index )
+                {
+                    case "nick":
+                        Botname = c.Value;
+                        break;
+                    case "secret":
+                        BotConfirmationSecret = c.Value;
+                        break;
+                    case "channels":
+                        if ( c.Value.Contains(",") )
+                        {
+                            string[] cs = c.Value.Split(',');
+                            foreach ( string ch in cs )
+                            {
+                                if ( DefaultChannelName == "" )
+                                {
+                                    DefaultChannelName = ch;
+                                }
+                                Channels.Add(ch);
+                            }
+                        }
+                        else
+                        {
+                            DefaultChannelName = c.Value;
+                            Channels.Add(c.Value);
+                        }
+                        break;
+                    case "admin":
+                        Superadmin = c.Value;
+                        break;
+                    case "debug":
+                        if ( c.Value == "1" )
+                        {
+                            DebugMode = true;
+                        }
+                        else
+                        {
+                            DebugMode = false;
+                        }
+                        break;
+                    case "autoexec":
+                        AutoexecFile = c.Value;
+                        break;
+                }
             }
-            else
-            {
-                Logger.WriteLine("*** TWITTERKEYS.TXT not found. Ignoring.", ConsoleColor.Yellow);
-            }
+
+            cl.Clear();
+            cl = null;
         }
 
         public static string GetSHA1Hash( string text )
@@ -417,35 +446,62 @@ namespace SpawnBot
 
         private void PrivateMessageResponse( string name, string message )
         {
-            if ( message.Trim().StartsWith("DO YOU LOVE BEES?") )
+            if ( message.StartsWith("!") )
             {
-                if ( message.Substring(message.IndexOf(":") + 1).Trim() == GetSHA1Hash(DefaultChannelName + "I really love bees" + Botname + BotConfirmationSecret) )
+                string[] parts = message.Split(' ');
+
+                if ( parts[0].Length == 1 )
+                {
+                    return;
+                }
+
+                parts[0] = parts[0].Substring(1).ToLower();
+
+                string Command = parts[0];
+                string[] Parameters = new string[parts.Length - 1];
+
+                for ( int i = 1; i < parts.Length; i++ )
+                {
+                    Parameters[i - 1] = parts[i];
+                }
+
+                if ( eventPluginPrivateCommandReceived != null )
+                {
+                    eventPluginPrivateCommandReceived(name, Command, Parameters);
+                }
+            }
+            else
+            {
+                if ( message.Trim().StartsWith("DO YOU LOVE BEES?") )
+                {
+                    if ( message.Substring(message.IndexOf(":") + 1).Trim() == GetSHA1Hash(DefaultChannelName + "I really love bees" + Botname + BotConfirmationSecret) )
+                    {
+                        UserManager.SetBotFlag(name);
+
+                        SendMessage(BotConfirmationSecret, name);
+                    }
+                    else
+                    {
+                        SendMessage("Dirty liar!", name);
+                    }
+                    return;
+                }
+
+                if ( message.Trim().StartsWith(BotConfirmationSecret) && name != Botname && Active )
                 {
                     UserManager.SetBotFlag(name);
 
-                    SendMessage(BotConfirmationSecret, name);
+                    ActiveBot = name;
+                    SendMessage("Alright, I'll sit on the bench.", DefaultChannelName);
+
+                    Active = false;
+                    return;
                 }
-                else
+
+                if ( eventPluginPrivateMessageReceived != null )
                 {
-                    SendMessage("Dirty liar!", name);
+                    eventPluginPrivateMessageReceived(name, message);
                 }
-                return;
-            }
-
-            if ( message.Trim().StartsWith(BotConfirmationSecret) && name != Botname && Active )
-            {
-                UserManager.SetBotFlag(name);
-
-                ActiveBot = name;
-                SendMessage("Alright, I'll sit on the bench.", DefaultChannelName);
-
-                Active = false;
-                return;
-            }
-
-            if ( eventPluginPrivateMessageReceived != null )
-            {
-                eventPluginPrivateMessageReceived(name, message);
             }
         }
 
@@ -563,35 +619,11 @@ namespace SpawnBot
 
         public event PrivateCommand eventPluginPrivateCommandReceived;
 
-        public string PluginTwitterAccessToken
+        public Manager PluginConfigManager
         {
             get
             {
-                return TwitterAccessToken;
-            }
-        }
-
-        public string PluginTwitterAccessTokenSecret
-        {
-            get
-            {
-                return TwitterAccessTokenSecret;
-            }
-        }
-
-        public string PluginTwitterConsumerKey
-        {
-            get
-            {
-                return TwitterConsumerKey;
-            }
-        }
-
-        public string PluginTwitterConsumerKeySecret
-        {
-            get
-            {
-                return TwitterConsumerKeySecret;
+                return CfgManager;
             }
         }
 

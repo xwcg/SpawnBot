@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using ConfigManager;
 
 /*
     Copyright 2012 Michael Schwarz
@@ -111,22 +112,7 @@ namespace SBPluginInterface
             get;
         }
 
-        string PluginTwitterAccessToken
-        {
-            get;
-        }
-
-        string PluginTwitterAccessTokenSecret
-        {
-            get;
-        }
-
-        string PluginTwitterConsumerKey
-        {
-            get;
-        }
-        
-        string PluginTwitterConsumerKeySecret
+        Manager PluginConfigManager
         {
             get;
         }

@@ -5,6 +5,7 @@ using System.Text;
 using SBPluginInterface;
 using Twitterizer;
 using xLogger;
+using ConfigManager;
 
 /*
     Copyright 2012 Michael Schwarz
@@ -30,6 +31,11 @@ namespace SBTwitter
     public class Main : SBPlugin
     {
         private SBPluginHost Host;
+
+        private string AccessToken;
+        private string AccessSecret;
+        private string ConsumerKey;
+        private string ConsumerSecret;
 
         #region SBPlugin Members
 
@@ -79,7 +85,37 @@ namespace SBTwitter
             {
                 Host = value;
 
-                Host.eventPluginChannelMessageReceived += new ChannelMessage(Host_eventPluginChannelMessageReceived);
+                List<Config> Cfgs = Host.PluginConfigManager.Load("sbtwitter", "keys.cfg");
+
+                if ( Cfgs == null )
+                {
+                    Logger.WriteLine("****** (SBTwitter) KEYS.CFG not found, Disabling. ******", ConsoleColor.Red);
+                }
+                else
+                {
+                    foreach ( Config c in Cfgs )
+                    {
+                        switch ( c.Index )
+                        {
+                            case "accesstoken":
+                                AccessToken = c.Value;
+                                break;
+                            case "accesssecret":
+                                AccessSecret = c.Value;
+                                break;
+                            case "consumerkey":
+                                ConsumerKey = c.Value;
+                                break;
+                            case "consumersecret":
+                                ConsumerSecret = c.Value;
+                                break;
+                        }
+                    }
+
+                    Host.eventPluginChannelMessageReceived += new ChannelMessage(Host_eventPluginChannelMessageReceived);
+                }
+
+
             }
         }
 
@@ -131,10 +167,10 @@ namespace SBTwitter
         private string PollTwitterStatus( decimal StatusId )
         {
             OAuthTokens t = new OAuthTokens();
-            t.AccessToken = Host.PluginTwitterAccessToken;
-            t.AccessTokenSecret = Host.PluginTwitterAccessTokenSecret;
-            t.ConsumerKey = Host.PluginTwitterConsumerKey;
-            t.ConsumerSecret = Host.PluginTwitterConsumerKeySecret;
+            t.AccessToken = AccessToken;
+            t.AccessTokenSecret = AccessSecret;
+            t.ConsumerKey = ConsumerKey;
+            t.ConsumerSecret = ConsumerSecret;
 
             TwitterResponse<TwitterStatus> status = TwitterStatus.Show(t, StatusId);
 

@@ -5,6 +5,7 @@ using System.Text;
 using SBPluginInterface;
 using System.IO;
 using xLogger;
+using ConfigManager;
 
 /*
     Copyright 2012 Michael Schwarz
@@ -97,6 +98,8 @@ namespace SBLetsPlayList
             }
         }
 
+        #endregion
+
         void Host_eventPluginChannelCommandReceived( string name, string channel, string command, string[] parameters )
         {
             if ( command == "lp" )
@@ -156,31 +159,21 @@ namespace SBLetsPlayList
             }
         }
 
-
-        #endregion
-
         private bool LoadList()
         {
-            string input = "";
+            List<Config> list = Host.PluginConfigManager.Load("sbletsplaylist", "list.cfg");
 
-            if ( File.Exists(Host.PluginBotFolder + "\\lp.txt") )
-            {
-                StreamReader r = new StreamReader(Host.PluginBotFolder + "\\lp.txt");
-
-                while ( ( input = r.ReadLine() ) != null )
-                {
-                    LPs.Add(input);
-                }
-
-                r.Close();
-                r.Dispose();
-
-                return true;
-            }
-            else
+            if ( list == null )
             {
                 return false;
             }
+
+            foreach ( Config l in list )
+            {
+                LPs.Add(String.Format("{0} {1}", l.Index, l.Value));
+            }
+
+            return true;
         }
 
         private string LpList()
@@ -263,15 +256,15 @@ namespace SBLetsPlayList
 
         private void SaveLP()
         {
-            StreamWriter w = new StreamWriter("lp.txt", false);
+            List<Config> cfg = new List<Config>();
+
             foreach ( string lp in LPs )
             {
-                w.WriteLine(lp);
+                string[] p = lp.Split(' ');
+                cfg.Add(new Config(p[0], p[1]));
             }
 
-            w.Flush();
-            w.Close();
-            w.Dispose();
+            Host.PluginConfigManager.Save(cfg, "sbletsplaylist", "list.cfg");
         }
 
     }
