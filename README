@@ -1,36 +1,73 @@
-## config.txt REQUIRED in Bot directory.
+SpawnBot is a Modular Pure C# IRC Bot.
 
-# Contents:
+Netcode is provided by xIrcNet developed especially for SpawnBot.
+You can use xIrcNet independently from SpawnBot, refer to COPYING for limitations.
 
-Line1: Botname
-Line2: Bot Confirmation secret (for communicating with other bots)
-Line3 and onwards: List of channels to join, one per line.
+--------------------------
 
-# Example:
+1. Bot config file
 
-MyBot
-ILOVEBEES
-#spawn
-#mychannel
-#channelwithpw thepassword
+Location: <BotDir>\config\config.cfg
 
-## lp.txt OPTIONAL with content for !lp list
+Description: Contains your basic bot configuration
 
-# Contents:
+Content:
+nick=YourBotname
+secret=Ilovedembees
+channels=#mychannel,#otherchannel,#channelwithpw thepassword,#friendschannel
+admin=Yournickname
+debug=0
+autoexec=default.cfg
 
-Each Line:
-NAME URL
+Help:
+Secret: Is used for bot authentification with other bots running the same software
+admin: not used
+debug: 1 for true, will surppress bot authentification messages
+autoexec: Autoexec file (see below)
 
-# Example:
+2. Autoexec file
 
-Superawesome http://www.youtube.com/superawesomegamer
-LPEliteExpert http://www.youtube.com/user/lpeexpert
+Location: <BotDir>\<yourfilename.cfg>
 
-## twitterkeys.txt OPTIONAL, but REQUIRED if you want to parse twitter links
+Description: Contains a list of commands for the bot to send to the server after connecting.
+for example to send your auth or send a message to the admin. Filename can be anything you
+want. The file to load is set in the config file (see above). This way you can create
+different bot "profiles".
 
-# Contents:
+Content: One command per line, example:
+PRIVMSG Q@CServe.quakenet.org :AUTH YourBotname ThIsIsMyPW223
+PRIVMSG yourname :Bot has been started.
+NOTICE afriend :The toaster says hello.
 
-Line1: Access Token
-Line2: Access Token Secret
-Line3: Consumer Key
-Line4: Consumer Key Secret
+-------------------------
+
+# Plugin specific config files
+
+1. SBTwitter
+
+Location: <BotDir>\config\sbtwitter\keys.cfg
+
+Description: Contains twitter API keys
+
+Content:
+accesstoken=123
+accesssecret=456
+consumerkey=768
+consumersecret=901
+
+Help:
+accesstoken: Twitter Access Token
+accesssecret: Twitter Access Token Secret
+consumerkey: Twitter Consumer Key
+consumersecret: Twitter Consumer Secret
+
+2. SBLetsPlayList
+
+Location: <BotDir>\config\sbletsplaylist\list.cfg
+
+Description: List of let's plays.
+
+Content:
+Superawesome=http://www.youtube.com/superawesomegamer
+LPEliteExpert=http://www.youtube.com/user/lpeexpert
+etc...
