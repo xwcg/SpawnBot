@@ -51,7 +51,7 @@ namespace xIrcNet
     public delegate void IrcUserQuit( string name, string message );
 
     public delegate void IrcConnected();
-    public delegate void IrcDisconnected( string msg );
+    public delegate void IrcDisconnected( string msg , bool connectionError);
     public delegate void IrcConnectingError( string error );
 
     public delegate void IrcRawMotdStart();
@@ -237,6 +237,14 @@ namespace xIrcNet
             eventConnected += new IrcConnected(IRC_eventConnected);
         }
 
+        /// <summary>
+        /// Creates a new IRC Connection
+        /// </summary>
+        /// <param name="name">Nickname/Handle</param>
+        /// <param name="user">Username</param>
+        /// <param name="realname">Real Name</param>
+        /// <param name="server">The server to connect to</param>
+        /// <param name="port">The port where to connect to</param>
         public IRC( string name, string user, string realname, string server, int port )
         {
             _Nick = name;
@@ -260,10 +268,10 @@ namespace xIrcNet
 
         public void Disconnect()
         {
-            Disconnect("So long and thanks for all the fish");
+            Disconnect("So long and thanks for all the fish", false);
         }
 
-        public void Disconnect( string msg )
+        public void Disconnect( string msg , bool connectionError)
         {
             if ( _Connection != null && _Connection.Connected )
             {
@@ -309,7 +317,7 @@ namespace xIrcNet
 
             if ( eventDisconnected != null )
             {
-                eventDisconnected(msg);
+                eventDisconnected(msg, connectionError);
             }
         }
 
@@ -558,12 +566,16 @@ namespace xIrcNet
                     }
                 }
             }
-            catch(Exception e)
+            catch ( ThreadStartException e )
             {
-                Disconnect(e.Message);
+                return;
+            }
+            catch ( Exception e )
+            {
+                Disconnect(e.Message, true);
             }
 
-            Disconnect("Disconnected");
+            Disconnect("Disconnected", false);
         }
 
         private void TimeoutLoop()
@@ -572,7 +584,7 @@ namespace xIrcNet
             {
                 if ( _Connection != null && _Connection.Connected == false )
                 {
-                    Disconnect("Timeout");
+                    Disconnect("Timeout", true);
                     return;
                 }
 
@@ -597,7 +609,7 @@ namespace xIrcNet
 
                     if ( t.TotalSeconds > 10 )
                     {
-                        Disconnect("Timeout");
+                        Disconnect("Timeout", true);
                         return;
                     }
                 }

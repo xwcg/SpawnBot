@@ -85,7 +85,7 @@ namespace ConfigManager
 
             if ( !Directory.Exists(LoadPath) )
             {
-                return null;
+                Directory.CreateDirectory(LoadPath);
             }
 
             if ( FileName != null && FileName.Length > 0 )
@@ -99,7 +99,10 @@ namespace ConfigManager
 
             if ( !File.Exists(LoadPath) )
             {
-                return null;
+                FileStream newfile = File.Create(LoadPath);
+                newfile.Flush();
+                newfile.Close();
+                newfile.Dispose();
             }
 
             List<Config> Output = new List<Config>();
@@ -109,6 +112,13 @@ namespace ConfigManager
 
             while ( ( input = r.ReadLine() ) != null )
             {
+                // Skip over comments
+                if ( input.StartsWith("//") )
+                {
+                    continue;
+                }
+
+                // Otherwise, check if valid line and add
                 if ( input.Length > 2 && input.Contains("=") )
                 {
                     string[] parts = input.Split('=');
@@ -150,10 +160,10 @@ namespace ConfigManager
                 return false;
             }
 
-            if ( !File.Exists(SavePath) )
-            {
-                File.Create(SavePath);
-            }
+            //if ( !File.Exists(SavePath) )
+            //{
+            //    File.Create(SavePath);
+            //}
 
             try
             {

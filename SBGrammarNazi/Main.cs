@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using SBPluginInterface;
+using System.Text.RegularExpressions;
+using ConfigManager;
+using xLogger;
 
 /*
     Copyright 2012 Michael Schwarz
@@ -28,6 +31,7 @@ namespace SBGrammarNazi
     public class Main : SBPlugin
     {
         private SBPluginHost Host;
+        private Dictionary<string, string> PeeveDict = new Dictionary<string, string>();
 
         #region SBPlugin Members
 
@@ -78,8 +82,15 @@ namespace SBGrammarNazi
                 Host = value;
 
                 Host.eventPluginChannelMessageReceived += new ChannelMessage(Host_eventPluginChannelMessageReceived);
+                Host.eventPluginChannelCommandReceived += new ChannelCommand(Host_eventPluginChannelCommandReceived);
+
+                if ( LoadDictionary() == false )
+                {
+                    Logger.WriteLine("*** Grammar Pet Peeve Dictionary not found. Ignoring.", ConsoleColor.Yellow);
+                }
             }
         }
+
 
         public void Dispose()
         {
@@ -88,32 +99,88 @@ namespace SBGrammarNazi
 
         #endregion
 
+        private bool LoadDictionary()
+        {
+            List<Config> list = Host.PluginConfigManager.Load("sbgrammarnazi", "dictionary.cfg");
+
+            PeeveDict.Clear();
+
+            if ( list == null )
+            {
+                return false;
+            }
+
+            foreach ( Config l in list )
+            {
+                PeeveDict.Add(l.Index, l.Value);
+            }
+
+            return true;
+        }
+
+        private void SaveDictionary()
+        {
+            List<Config> list = new List<Config>();
+
+            foreach ( KeyValuePair<string, string> Peeve in PeeveDict )
+            {
+                list.Add(new Config(Peeve.Key, Peeve.Value));
+            }
+
+            Host.PluginConfigManager.Save(list, "sbgrammarnazi", "dictionary.cfg");
+        }
+
+        void Host_eventPluginChannelCommandReceived( string name, string channel, string command, string[] parameters )
+        {
+            if ( command.ToLower() == "addgrammar" )
+            {
+                if ( Host.PluginUserManager.IsOperator(name, channel) && name.StartsWith("xwcg"))
+                {
+                    if ( parameters.Length >= 3 )
+                    {
+                        string[] parts = String.Join(" ", parameters).Split('=');
+                        PeeveDict.Add(parts[0].Trim(), parts[1].Trim());
+                        SaveDictionary();
+                        Host.PluginResponse(channel, "Grammar Rule added!");
+                    }
+                    else
+                    {
+                        Host.PluginResponse(channel, "Usage: !addgrammar [badspelling] = [goodspelling]");
+                    }
+                }
+                else
+                {
+                    Host.PluginResponse(channel, "Only x can do this.");
+                }
+            }
+
+            if ( command.ToLower() == "grammaroptimizedatabase" )
+            {
+                if ( Host.PluginUserManager.IsOperator(name, channel) && name.StartsWith("xwcg") )
+                {
+                    
+                }
+            }
+
+        }
+
         void Host_eventPluginChannelMessageReceived( string name, string message, string channel )
         {
             string response = "";
 
-            if ( message.ToLower().Contains("would of") || message.ToLower().Contains("woud of") )
+            foreach ( KeyValuePair<string, string> Peeve in PeeveDict )
             {
-                //Host.PluginResponse(channel, "*would've/would have");
-                response += "*would've/would have ";
+                if ( Regex.Match(message, @"\b" + Peeve.Key + @"\b", RegexOptions.CultureInvariant | RegexOptions.IgnoreCase).Success )
+                {
+                    response += String.Format("*{0} ", Peeve.Value);
+                }
             }
 
-            if ( message.ToLower().Contains("should of") || message.ToLower().Contains("shoud of") )
-            {
-                //Host.PluginResponse(channel, "*should've/should have");
-                response += "*should've/should have ";
-            }
-
-            if ( message.ToLower().Contains("could of") || message.ToLower().Contains("coud of") )
-            {
-                //Host.PluginResponse(channel, "*could've/could have");
-                response += "*could've/could have";
-            }
-
-            if ( response.Length > 5 )
+            if ( response.Trim().Length > 0 )
             {
                 Host.PluginResponse(channel, response);
             }
+
         }
     }
 }

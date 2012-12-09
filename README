@@ -1,6 +1,6 @@
 SpawnBot is a Modular Pure C# IRC Bot.
 
-Netcode is provided by xIrcNet developed especially for SpawnBot.
+Netcode is provided by xIrcNet developed for SpawnBot.
 You can use xIrcNet independently from SpawnBot, refer to COPYING for limitations.
 
 --------------------------
@@ -12,18 +12,28 @@ Location: <BotDir>\config\config.cfg
 Description: Contains your basic bot configuration
 
 Content:
-nick=YourBotname
-secret=Ilovedembees
-channels=#mychannel,#otherchannel,#channelwithpw thepassword,#friendschannel
-admin=Yournickname
-debug=0
-autoexec=default.cfg
 
-Help:
-Secret: Is used for bot authentification with other bots running the same software
-admin: not used
-debug: 1 for true, will surppress bot authentification messages
-autoexec: Autoexec file (see below)
+// Server Address to connect to
+server=irc.quakenet.org
+// Port number at server
+port=6667
+
+// Bot Nickname
+nick=YourBotname
+// Bot Secret
+secret=ILOVEDEMBEES.12345!#+
+
+// List of channels to join
+channels=#mychannel,#otherchannel,#channelwithpw thepassword,#friendschannel
+
+// Nickname of the admin
+admin=Yournickname
+
+// Debug mode, 1 = true
+debug=0
+
+// Autoexec file
+autoexec=default.cfg
 
 2. Autoexec file
 

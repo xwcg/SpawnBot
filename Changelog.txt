@@ -1,0 +1,13 @@
+8th December 2012
+
+* Config manager now creates directory and files if they don't exist instead of returning null
+* Config files can now contain comment lines starting with //
+* Improved SBGrammarNazi, now uses a dictionary file
++ Added !choose command to SBDice
++ Added more DLC filters to SBGameSales
++ Added server and port config options
++ Added Kick response to plugin interface
++ New plugin SBQuake
+> Moved license files for 3rd party DLLs to root dir
+
+* Various other improvements

@@ -36,12 +36,25 @@ namespace SBGameSales
         public decimal PriceOriginal = 0.0m;
         public decimal PercentOff = 0.0m;
 
+        public bool DLC = false;
+
         public GameSaleData( SyndicationItem i )
         {
             string temp = i.Title.Text;
 
             Name = temp.Substring(temp.IndexOf("% off ", StringComparison.CurrentCultureIgnoreCase) + 6);
-            Name = Name.Substring(0, Name.LastIndexOf(" - Now only"));
+            Name = Name.Substring(0, Name.LastIndexOf(" - Now only")).Trim();
+
+            if ( Name.EndsWith("DLC", StringComparison.CurrentCultureIgnoreCase) ||
+                 Name.EndsWith("Pack", StringComparison.CurrentCultureIgnoreCase) ||
+                 Name.EndsWith("Skin", StringComparison.CurrentCultureIgnoreCase) ||
+                 Name.EndsWith("Set", StringComparison.CurrentCultureIgnoreCase) ||
+                 Name.EndsWith("sword", StringComparison.CurrentCultureIgnoreCase) ||
+                 Name.EndsWith("Bolter", StringComparison.CurrentCultureIgnoreCase) ||
+                 Name.EndsWith("Missions", StringComparison.CurrentCultureIgnoreCase) )
+            {
+                DLC = true;
+            }
 
             URL = i.Links[0].Uri.ToString();
 
@@ -200,7 +213,7 @@ namespace SBGameSales
 
             Sales = Sales.FindAll(delegate( GameSaleData d )
             {
-                if ( d.Name.ToLower().Contains(name.ToLower()) )
+                if ( d.Name.ToLower().Contains(name.ToLower()) && d.DLC == false )
                 {
                     return true;
                 }
@@ -210,31 +223,34 @@ namespace SBGameSales
 
             if ( Sales == null || Sales.Count == 0 )
             {
-                return "Sorry, no sales for '" + name + "' found for today :(";
+                return "Sorry, no sales for '" + name + "' found";
             }
 
             GameSaleData best = null;
 
             foreach ( GameSaleData d in Sales )
             {
-                if ( best == null )
+                if ( d.DLC == false )
                 {
-                    best = d;
-                    continue;
-                }
-
-                if ( byprice )
-                {
-                    if ( d.PriceNow < best.PriceNow )
+                    if ( best == null )
                     {
                         best = d;
+                        continue;
                     }
-                }
-                else
-                {
-                    if ( d.PercentOff > best.PercentOff )
+
+                    if ( byprice )
                     {
-                        best = d;
+                        if ( d.PriceNow < best.PriceNow )
+                        {
+                            best = d;
+                        }
+                    }
+                    else
+                    {
+                        if ( d.PercentOff > best.PercentOff )
+                        {
+                            best = d;
+                        }
                     }
                 }
             }
@@ -257,7 +273,7 @@ namespace SBGameSales
             {
                 Sales = Sales.FindAll(delegate( GameSaleData d )
                 {
-                    if ( d.Store == store )
+                    if ( d.Store == store && d.DLC == false )
                     {
                         return true;
                     }
@@ -275,24 +291,27 @@ namespace SBGameSales
 
             foreach ( GameSaleData d in Sales )
             {
-                if ( best == null )
+                if ( d.DLC == false )
                 {
-                    best = d;
-                    continue;
-                }
-
-                if ( byprice )
-                {
-                    if ( d.PriceNow < best.PriceNow )
+                    if ( best == null )
                     {
                         best = d;
+                        continue;
                     }
-                }
-                else
-                {
-                    if ( d.PercentOff > best.PercentOff )
+
+                    if ( byprice )
                     {
-                        best = d;
+                        if ( d.PriceNow < best.PriceNow )
+                        {
+                            best = d;
+                        }
+                    }
+                    else
+                    {
+                        if ( d.PercentOff > best.PercentOff )
+                        {
+                            best = d;
+                        }
                     }
                 }
             }
@@ -312,10 +331,7 @@ namespace SBGameSales
             {
                 foreach ( SyndicationItem i in f.Items )
                 {
-                    if ( !i.Title.Text.Contains(" DLC ") )
-                    {
-                        GameSales.Add(new GameSaleData(i));
-                    }
+                    GameSales.Add(new GameSaleData(i));
                 }
             }
             catch

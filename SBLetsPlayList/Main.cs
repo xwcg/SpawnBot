@@ -108,7 +108,7 @@ namespace SBLetsPlayList
                 {
                     if ( parameters[0].Trim() == "add" )
                     {
-                        if ( !Host.PluginUserManager.IsOperator(name, channel) )
+                        if ( !Host.PluginUserManager.IsOperator(name, "#spawn") )
                         {
                             Host.PluginResponse(channel, "Only @'s can do that.");
                             return;
@@ -132,7 +132,7 @@ namespace SBLetsPlayList
                     }
                     else if ( parameters[0].Trim() == "del" || parameters[0].Trim() == "remove" )
                     {
-                        if ( !Host.PluginUserManager.IsOperator(name, channel) )
+                        if ( !Host.PluginUserManager.IsOperator(name, "#spawn") )
                         {
                             Host.PluginResponse(channel, "Only @'s can do that.");
                             return;
@@ -146,6 +146,10 @@ namespace SBLetsPlayList
                         {
                             Host.PluginResponse(channel, "Invalid parameters. Usage: !lp remove|del [name]");
                         }
+                    }
+                    else if ( parameters[0].Trim() == "list" )
+                    {
+                        Host.PluginResponse(channel, LpList());
                     }
                     else
                     {

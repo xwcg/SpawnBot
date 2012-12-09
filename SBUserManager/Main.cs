@@ -160,6 +160,11 @@ namespace SBUserManager
                 return;
             }
 
+            if ( mode.Contains("b") )
+            {
+                Logger.WriteLine(String.Format("***** Ban handling not implemented! ( {0} {1} in {2})", mode, name, channel), ConsoleColor.DarkRed);
+            }
+
             IrcUser u = IUsers.GetUser(name, channel);
 
             if ( u == null )

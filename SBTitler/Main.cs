@@ -6,6 +6,7 @@ using SBPluginInterface;
 using xLogger;
 using System.Net;
 using System.Text.RegularExpressions;
+using System.Web;
 
 /*
     Copyright 2012 Michael Schwarz
@@ -94,6 +95,11 @@ namespace SBTitler
 
         void Host_eventPluginChannelCommandReceived( string name, string channel, string command, string[] parameters )
         {
+            if ( name.ToLower().Trim() == "eru" )
+            {
+                return;
+            }
+
             switch ( command )
             {
                 case "title":
@@ -113,6 +119,11 @@ namespace SBTitler
 
         void Host_eventPluginChannelMessageReceived( string name, string message, string channel )
         {
+            if ( name.ToLower().Trim() == "eru" )
+            {
+                return;
+            } 
+
             if ( message.Contains("youtube.com") || message.Contains("youtu.be") || message.Contains("vimeo.com") )
             {
                 string[] Parameters = message.Split(' ');
@@ -164,6 +175,8 @@ namespace SBTitler
                 string source = x.DownloadString(new Uri(cUrl));
                 string title = Regex.Match(source, @"\<title\b[^>]*\>\s*(?<Title>[\s\S]*?)\</title\>", RegexOptions.IgnoreCase).Groups["Title"].Value;
                 x.Dispose();
+
+                title = HttpUtility.HtmlDecode(title);
 
                 return title;
             }

@@ -104,16 +104,37 @@ namespace SBDice
                     }
                     break;
                 case "flip":
-                    Host.PluginResponse(channel, Flip());
-                    break;
                 case "coin":
                     Host.PluginResponse(channel, Flip());
+                    break;
+                case "choose":
+                    Host.PluginResponse(channel, Choose(parameters));
                     break;
             }
         }
 
         void Host_eventPluginChannelMessageReceived( string name, string message, string channel )
         {
+        }
+
+        private string Choose( string[] param )
+        {
+            string catstring = String.Join(" ", param);
+
+            if ( !catstring.Contains(";") )
+            {
+                return "Usage: !choose [option 1];[option 2];etc...";
+            }
+
+            string[] parts = catstring.Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries);
+            if ( parts.Length == 1 )
+            {
+                return "Need more than one option";
+            }
+
+            Random r = new Random();
+
+            return String.Format("I chose: {0}", parts[r.Next(parts.Length)].Trim());
         }
 
         private string Roll( string param )

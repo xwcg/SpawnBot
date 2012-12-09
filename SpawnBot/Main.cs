@@ -51,6 +51,9 @@ namespace SpawnBot
         private static string AutoexecFile = "";
         private static string Superadmin = "";
 
+        private static string ServerAddress = "";
+        private static int ServerPort = 0;
+
         private static List<string> Channels = new List<string>();
 
         private static PluginService plugins = new PluginService();
@@ -93,7 +96,7 @@ namespace SpawnBot
                     case "quit":
                         if ( cmdparts.Length > 1 )
                         {
-                            IrcService.Disconnect(cmd.Substring(5));
+                            IrcService.Disconnect(cmd.Substring(5), false);
                         }
                         else
                         {
@@ -107,7 +110,7 @@ namespace SpawnBot
                     case "disconnect":
                         if ( cmdparts.Length > 1 )
                         {
-                            IrcService.Disconnect(cmd.Substring(11));
+                            IrcService.Disconnect(cmd.Substring(11), false);
                         }
                         else
                         {
@@ -115,6 +118,7 @@ namespace SpawnBot
                         }
                         break;
                     case "ping":
+                        Logger.WriteLine(String.Format("[{0}] -> PING :test", DateTime.Now.ToLongTimeString()), ConsoleColor.DarkCyan);
                         IrcService.SendCommand("PING :test");
                         break;
                     case "say":
@@ -166,7 +170,7 @@ namespace SpawnBot
 
             Logger.WriteLine("* Starting Bot...", ConsoleColor.DarkYellow);
 
-            IrcService = new IRC(Botname, "SpawnBot", "Spawnbot", "irc.quakenet.org", 6667);
+            IrcService = new IRC(Botname, "SpawnBot", "Spawnbot", ServerAddress, ServerPort);
 
             IrcService.eventNameListReceived += new IrcNameListReceived(IrcService_eventNameListReceived);
             IrcService.eventTopicReceived += new IrcTopicReceived(IrcService_eventTopicReceived);
@@ -188,8 +192,28 @@ namespace SpawnBot
             IrcService.eventConnectingError += new IrcConnectingError(IrcService_eventConnectingError);
             IrcService.eventConnected += new IrcConnected(IrcService_eventConnected);
 
+            IrcService.eventServerPingReceived += new IrcServerPingReceived(IrcService_eventServerPingReceived);
+            IrcService.eventServerPongReceived += new IrcServerPongReceived(IrcService_eventServerPongReceived);
+
+            IrcService.eventCommandReceived += new IrcCommandReceived(IrcService_eventCommandReceived);
+
             Logger.WriteLine("* Connecting to " + IrcService.Server + " on port " + IrcService.Port.ToString(), ConsoleColor.White);
             IrcService.Connect();
+        }
+
+        void IrcService_eventCommandReceived( string cmd )
+        {
+            //Logger.WriteLine("#RAW# " + cmd, ConsoleColor.Gray);
+        }
+
+        void IrcService_eventServerPongReceived()
+        {
+            Logger.WriteLine(String.Format("[{0}] <- PONG", DateTime.Now.ToLongTimeString()), ConsoleColor.DarkMagenta);
+        }
+
+        void IrcService_eventServerPingReceived( string hash )
+        {
+            Logger.WriteLine(String.Format("[{0}] <- PING ({1})", DateTime.Today.ToLongTimeString(), hash), ConsoleColor.DarkMagenta);
         }
 
         #region IRC Events
@@ -206,9 +230,11 @@ namespace SpawnBot
             IrcService.Connect();
         }
 
-        void IrcService_eventDisconnected( string msg )
+        void IrcService_eventDisconnected( string msg, bool connectionError )
         {
-            if ( msg == "Disconnected" || msg == "Timeout" )
+            Logger.WriteLine("* Disconnected (" + msg + ")", ConsoleColor.Green);
+
+            if ( connectionError )
             {
                 UserManager.ClearAllUsers();
                 IrcService.Connect();
@@ -223,7 +249,7 @@ namespace SpawnBot
                 {
                     StreamReader r = new StreamReader(AutoexecFile);
                     string i;
-                    
+
                     while ( ( i = r.ReadLine() ) != null )
                     {
                         SendCommand(i);
@@ -359,6 +385,12 @@ namespace SpawnBot
             {
                 switch ( c.Index )
                 {
+                    case "server":
+                        ServerAddress = c.Value;
+                        break;
+                    case "port":
+                        ServerPort = Convert.ToInt32(c.Value);
+                        break;
                     case "nick":
                         Botname = c.Value;
                         break;
@@ -591,6 +623,11 @@ namespace SpawnBot
         public void PluginResponse( string channel, string message )
         {
             SendMessage(message, channel);
+        }
+
+        public void PluginKick( string channel, string name, string reason )
+        {
+            SendCommand(String.Format("KICK {0} {1} :{2}", channel, name, reason));
         }
 
         public event UserJoin eventPluginUserJoined;

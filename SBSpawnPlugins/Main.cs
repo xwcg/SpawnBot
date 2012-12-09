@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using SBPluginInterface;
+using System.Net;
 
 /*
     Copyright 2012 Michael Schwarz
@@ -105,12 +106,48 @@ namespace SBSpawnPlugins
                 case "mumble":
                     Host.PluginResponse(channel, "Mumble Address: mumble.thespawn.net - Port: 64738");
                     break;
+                case "uhc":
+                    WebClient x = new WebClient();
+                    string source = x.DownloadString(new Uri("http://greywool.com/uhc/countdown.php"));
+                    Host.PluginResponse(channel, source);
+                    break;
             }
         }
 
         void Host_eventPluginChannelMessageReceived( string name, string message, string channel )
         {
+            if ( channel.Contains("dewcepticons") )
+            {
+                if ( message.Contains("Kappa") )
+                {
+                    Host.PluginKick(channel, name, "Lisa made me do it");
+                }
+            }
+
+            if ( message.Length >= 6 && ( NumCaps(message) > ( message.Length / 2 ) ) )
+            {
+                if ( Host.PluginUserManager.IsOperator(Host.PluginBotname, channel) )
+                {
+                    if ( !Host.PluginUserManager.IsOperator(name, channel) )
+                    {
+                        Host.PluginKick(channel, name, "Captain Capslock and the Shift Crew");
+                    }
+                }
+            }
         }
 
+        private int NumCaps( string str )
+        {
+            char[] chars = str.ToCharArray();
+            int i = 0;
+            foreach ( char c in chars )
+            {
+                if ( Char.IsLetter(c) && Char.IsUpper(c) )
+                {
+                    i++;
+                }
+            }
+            return i;
+        }
     }
 }

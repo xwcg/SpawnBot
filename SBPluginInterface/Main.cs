@@ -89,6 +89,7 @@ namespace SBPluginInterface
     public interface SBPluginHost
     {
         void PluginResponse( string channel, string message );
+        void PluginKick( string channel, string name, string reason );
 
         event UserJoin eventPluginUserJoined;
         event UserLeave eventPluginUserLeft;
