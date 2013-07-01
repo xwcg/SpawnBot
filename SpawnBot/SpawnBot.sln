@@ -1,6 +1,11 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{1C901DA4-B009-4E07-895D-247E02AD9AF5}"
+	ProjectSection(SolutionItems) = preProject
+		..\Changelog.txt = ..\Changelog.txt
+	EndProjectSection
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpawnBot", "SpawnBot.csproj", "{C98DBFCB-7D6D-41D6-A9F8-D769951CF9D1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SBPluginInterface", "..\SBPluginInterface\SBPluginInterface.csproj", "{8CFEF42B-B9DB-41F1-8CC9-DA996D3C44DD}"
@@ -35,10 +40,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SBTardcords", "..\SBTardcor
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SBQuake", "..\SBQuake\SBQuake.csproj", "{35059CF3-B4F9-4FB7-8AA9-EAA1304C79A7}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{1C901DA4-B009-4E07-895D-247E02AD9AF5}"
-	ProjectSection(SolutionItems) = preProject
-		Changelog.txt = Changelog.txt
-	EndProjectSection
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SBLinkCommands", "..\SBLinkCommands\SBLinkCommands.csproj", "{B93553C7-6C17-4702-B143-8B1A64A1DA34}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SBScience", "..\SBScience\SBScience.csproj", "{DFD10403-4B3A-4781-864E-538486410541}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SBLists", "..\SBLists\SBLists.csproj", "{73F55F48-2657-4A4B-9FCC-58C0E5C7B780}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -114,6 +120,18 @@ Global
 		{35059CF3-B4F9-4FB7-8AA9-EAA1304C79A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{35059CF3-B4F9-4FB7-8AA9-EAA1304C79A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{35059CF3-B4F9-4FB7-8AA9-EAA1304C79A7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B93553C7-6C17-4702-B143-8B1A64A1DA34}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B93553C7-6C17-4702-B143-8B1A64A1DA34}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B93553C7-6C17-4702-B143-8B1A64A1DA34}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B93553C7-6C17-4702-B143-8B1A64A1DA34}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DFD10403-4B3A-4781-864E-538486410541}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DFD10403-4B3A-4781-864E-538486410541}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DFD10403-4B3A-4781-864E-538486410541}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DFD10403-4B3A-4781-864E-538486410541}.Release|Any CPU.Build.0 = Release|Any CPU
+		{73F55F48-2657-4A4B-9FCC-58C0E5C7B780}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{73F55F48-2657-4A4B-9FCC-58C0E5C7B780}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{73F55F48-2657-4A4B-9FCC-58C0E5C7B780}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{73F55F48-2657-4A4B-9FCC-58C0E5C7B780}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -52,6 +52,7 @@ namespace SpawnBot
         private static string Superadmin = "";
 
         private static string ServerAddress = "";
+        private static string ServerPassword = "";
         private static int ServerPort = 0;
 
         private static List<string> Channels = new List<string>();
@@ -137,7 +138,8 @@ namespace SpawnBot
                         }
                         break;
                     default:
-                        Console.WriteLine("Unknown command '" + cmd + "'");
+                        Console.WriteLine("Unknown command '" + cmd + "', sending as direct command");
+                        IrcService.SendCommand(cmd);
                         break;
                 }
             }
@@ -177,6 +179,7 @@ namespace SpawnBot
             IrcService.eventTopicOwnerReceived += new IrcTopicOwnerRecevied(IrcService_eventTopicOwnerReceived);
 
             IrcService.eventUserJoined += new IrcUserJoin(IrcService_eventUserJoined);
+            IrcService.eventUserJoinedHostname += new IrcUserJoinHostname(IrcService_eventUserJoinedHostname);
             IrcService.eventUserKicked += new IrcUserKicked(IrcService_eventUserKicked);
             IrcService.eventUserChangedNick += new IrcUserChange(IrcService_eventUserChangedNick);
             IrcService.eventUserModeChanged += new IrcUserMode(IrcService_eventUserModeChanged);
@@ -186,6 +189,7 @@ namespace SpawnBot
             IrcService.eventRawBotModeReceived += new IrcRawBotModeGet(IrcService_eventRawBotModeReceived);
 
             IrcService.eventMessageReceived += new IrcMessage(IrcService_eventMessageReceived);
+            IrcService.eventActionReceived += new IrcAction(IrcService_eventActionReceived);
             IrcService.eventNoticeReceived += new IrcNotice(IrcService_eventNoticeReceived);
 
             IrcService.eventDisconnected += new IrcDisconnected(IrcService_eventDisconnected);
@@ -196,9 +200,28 @@ namespace SpawnBot
             IrcService.eventServerPongReceived += new IrcServerPongReceived(IrcService_eventServerPongReceived);
 
             IrcService.eventCommandReceived += new IrcCommandReceived(IrcService_eventCommandReceived);
+            IrcService.eventUnhandled += new IrcCommandReceived(IrcService_eventUnhandled);
 
             Logger.WriteLine("* Connecting to " + IrcService.Server + " on port " + IrcService.Port.ToString(), ConsoleColor.White);
             IrcService.Connect();
+        }
+
+        void IrcService_eventUnhandled( string cmd )
+        {
+            Logger.WriteLine(cmd, ConsoleColor.Red);
+        }
+
+        void IrcService_eventActionReceived( string channel, string name, string action )
+        {
+            Logger.WriteLine(String.Format("[{0}] {1} {2}", channel, name, action));
+        }
+
+        void IrcService_eventUserJoinedHostname( string channel, string name, string hostname )
+        {
+            if ( eventPluginUserJoinedHostname != null )
+            {
+                eventPluginUserJoinedHostname(channel, name, hostname);
+            }
         }
 
         void IrcService_eventCommandReceived( string cmd )
@@ -213,7 +236,7 @@ namespace SpawnBot
 
         void IrcService_eventServerPingReceived( string hash )
         {
-            Logger.WriteLine(String.Format("[{0}] <- PING ({1})", DateTime.Today.ToLongTimeString(), hash), ConsoleColor.DarkMagenta);
+            Logger.WriteLine(String.Format("[{0}] <- PING ({1})", DateTime.Now.ToLongTimeString(), hash), ConsoleColor.DarkMagenta);
         }
 
         #region IRC Events
@@ -387,6 +410,9 @@ namespace SpawnBot
                 {
                     case "server":
                         ServerAddress = c.Value;
+                        break;
+                    case "password":
+                        ServerPassword = c.Value;
                         break;
                     case "port":
                         ServerPort = Convert.ToInt32(c.Value);
@@ -631,6 +657,8 @@ namespace SpawnBot
         }
 
         public event UserJoin eventPluginUserJoined;
+
+        public event UserJoinHostname eventPluginUserJoinedHostname;
 
         public event UserLeave eventPluginUserLeft;
 

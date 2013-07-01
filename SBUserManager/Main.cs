@@ -80,6 +80,7 @@ namespace SBUserManager
 
                 Host.eventPluginUserChangedNick += new UserChange(Host_eventPluginUserChangedNick);
                 Host.eventPluginUserJoined += new UserJoin(Host_eventPluginUserJoined);
+                Host.eventPluginUserJoinedHostname += new UserJoinHostname(Host_eventPluginUserJoinedHostname);
                 Host.eventPluginUserKicked += new UserKick(Host_eventPluginUserKicked);
                 Host.eventPluginUserLeft += new UserLeave(Host_eventPluginUserLeft);
                 Host.eventPluginUserQuit += new UserQuit(Host_eventPluginUserQuit);
@@ -149,7 +150,7 @@ namespace SBUserManager
         {
             foreach ( string u in list )
             {
-                IUsers.AddUser(u, channel);
+                IUsers.AddUser(u, channel, "-");
             }
         }
 
@@ -234,9 +235,16 @@ namespace SBUserManager
 
         void Host_eventPluginUserJoined( string channel, string name )
         {
-            IUsers.AddUser(name, channel);
+            //IUsers.AddUser(name, channel);
 
-            Logger.WriteLine(String.Format("[{0}] {1} has joined", channel, name), ConsoleColor.Yellow);
+            //Logger.WriteLine(String.Format("[{0}] {1} has joined", channel, name), ConsoleColor.Yellow);
+        }
+
+        void Host_eventPluginUserJoinedHostname( string channel, string name, string hostname )
+        {
+            IUsers.AddUser(name, channel, hostname);
+
+            Logger.WriteLine(String.Format("[{0}] {1} ({2}) has joined", channel, name, hostname), ConsoleColor.Yellow);
         }
 
         void Host_eventPluginUserChangedNick( string name, string newname )

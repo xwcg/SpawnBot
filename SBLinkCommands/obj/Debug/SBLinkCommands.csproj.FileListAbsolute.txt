@@ -1,0 +1,7 @@
+F:\Projects (Repositoried)\SpawnBot\SBLinkCommands\bin\Debug\SBLinkCommands.dll
+F:\Projects (Repositoried)\SpawnBot\SBLinkCommands\bin\Debug\SBLinkCommands.pdb
+F:\Projects (Repositoried)\SpawnBot\SBLinkCommands\obj\Debug\SBLinkCommands.dll
+F:\Projects (Repositoried)\SpawnBot\SBLinkCommands\obj\Debug\SBLinkCommands.pdb
+F:\Projects (Repositoried)\SpawnBot\SpawnBot\bin\Debug\Plugins\SBLinkCommands.dll
+F:\Projects (Repositoried)\SpawnBot\SpawnBot\bin\Debug\Plugins\SBLinkCommands.pdb
+F:\Projects (Repositoried)\SpawnBot\SBLinkCommands\obj\Debug\SBLinkCommands.csprojResolveAssemblyReference.cache

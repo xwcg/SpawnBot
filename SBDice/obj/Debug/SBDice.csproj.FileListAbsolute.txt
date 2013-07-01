@@ -1,7 +1,7 @@
 F:\Projects (Repositoried)\SpawnBot\SBDice\bin\Debug\SBDice.dll
 F:\Projects (Repositoried)\SpawnBot\SBDice\bin\Debug\SBDice.pdb
-F:\Projects (Repositoried)\SpawnBot\SBDice\obj\Debug\ResolveAssemblyReference.cache
 F:\Projects (Repositoried)\SpawnBot\SBDice\obj\Debug\SBDice.dll
 F:\Projects (Repositoried)\SpawnBot\SBDice\obj\Debug\SBDice.pdb
 F:\Projects (Repositoried)\SpawnBot\SpawnBot\bin\Debug\Plugins\SBDice.dll
 F:\Projects (Repositoried)\SpawnBot\SpawnBot\bin\Debug\Plugins\SBDice.pdb
+F:\Projects (Repositoried)\SpawnBot\SBDice\obj\Debug\SBDice.csprojResolveAssemblyReference.cache

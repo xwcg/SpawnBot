@@ -1,5 +1,5 @@
 F:\Projects (Repositoried)\SpawnBot\SpawnBot\bin\Debug\Plugins\SBGrammarNazi.dll
 F:\Projects (Repositoried)\SpawnBot\SpawnBot\bin\Debug\Plugins\SBGrammarNazi.pdb
-F:\Projects (Repositoried)\SpawnBot\SBGrammarNazi\obj\Debug\ResolveAssemblyReference.cache
 F:\Projects (Repositoried)\SpawnBot\SBGrammarNazi\obj\Debug\SBGrammarNazi.dll
 F:\Projects (Repositoried)\SpawnBot\SBGrammarNazi\obj\Debug\SBGrammarNazi.pdb
+F:\Projects (Repositoried)\SpawnBot\SBGrammarNazi\obj\Debug\SBGrammarNazi.csprojResolveAssemblyReference.cache

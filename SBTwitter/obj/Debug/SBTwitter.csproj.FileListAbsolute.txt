@@ -1,4 +1,3 @@
-F:\Projects (Repositoried)\SpawnBot\SBTwitter\obj\Debug\ResolveAssemblyReference.cache
 F:\Projects (Repositoried)\SpawnBot\SBTwitter\bin\Debug\SBTwitter.dll
 F:\Projects (Repositoried)\SpawnBot\SBTwitter\bin\Debug\SBTwitter.pdb
 F:\Projects (Repositoried)\SpawnBot\SBTwitter\bin\Debug\Newtonsoft.Json.dll
@@ -11,3 +10,4 @@ F:\Projects (Repositoried)\SpawnBot\SBTwitter\bin\Debug\xLogger.dll
 F:\Projects (Repositoried)\SpawnBot\SBTwitter\bin\Debug\xLogger.pdb
 F:\Projects (Repositoried)\SpawnBot\SpawnBot\bin\Debug\Plugins\SBTwitter.dll
 F:\Projects (Repositoried)\SpawnBot\SpawnBot\bin\Debug\Plugins\SBTwitter.pdb
+F:\Projects (Repositoried)\SpawnBot\SBTwitter\obj\Debug\SBTwitter.csprojResolveAssemblyReference.cache

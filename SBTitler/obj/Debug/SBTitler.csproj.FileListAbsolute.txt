@@ -1,4 +1,3 @@
-F:\Projects (Repositoried)\SpawnBot\SBTitler\obj\Debug\ResolveAssemblyReference.cache
 F:\Projects (Repositoried)\SpawnBot\SBTitler\bin\Debug\SBTitler.dll
 F:\Projects (Repositoried)\SpawnBot\SBTitler\bin\Debug\SBTitler.pdb
 F:\Projects (Repositoried)\SpawnBot\SBTitler\bin\Debug\SBPluginInterface.dll
@@ -9,3 +8,4 @@ F:\Projects (Repositoried)\SpawnBot\SBTitler\obj\Debug\SBTitler.dll
 F:\Projects (Repositoried)\SpawnBot\SBTitler\obj\Debug\SBTitler.pdb
 F:\Projects (Repositoried)\SpawnBot\SpawnBot\bin\Debug\Plugins\SBTitler.dll
 F:\Projects (Repositoried)\SpawnBot\SpawnBot\bin\Debug\Plugins\SBTitler.pdb
+F:\Projects (Repositoried)\SpawnBot\SBTitler\obj\Debug\SBTitler.csprojResolveAssemblyReference.cache

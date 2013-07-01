@@ -7,6 +7,7 @@ using xLogger;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Web;
+using System.Xml;
 
 /*
     Copyright 2012 Michael Schwarz
@@ -93,20 +94,20 @@ namespace SBTitler
 
         #endregion
 
-        void Host_eventPluginChannelCommandReceived( string name, string channel, string command, string[] parameters )
+        void Host_eventPluginChannelCommandReceived(string name, string channel, string command, string[] parameters)
         {
-            if ( name.ToLower().Trim() == "eru" )
+            if (name.ToLower().Trim() == "eru")
             {
                 return;
             }
 
-            switch ( command )
+            switch (command)
             {
                 case "title":
-                    if ( parameters.Length == 1 )
+                    if (parameters.Length == 1)
                     {
                         string title = PollWebsiteTitle(parameters[0]);
-                        if ( title == null )
+                        if (title == null)
                         {
                             Host.PluginResponse(channel, "Error getting website title. (Probably a timeout)");
                             break;
@@ -114,25 +115,36 @@ namespace SBTitler
                         Host.PluginResponse(channel, "Title: " + title);
                     }
                     break;
+
+                case "lastvideo":
+                    if (parameters.Length == 1)
+                    {
+                        Host.PluginResponse(channel, PollLastVideoYT(parameters[0]));
+                    }
+                    else
+                    {
+                        Host.PluginResponse(channel, "Usage: !lastvideo [username]");
+                    }
+                    break;
             }
         }
 
-        void Host_eventPluginChannelMessageReceived( string name, string message, string channel )
+        void Host_eventPluginChannelMessageReceived(string name, string message, string channel)
         {
-            if ( name.ToLower().Trim() == "eru" )
+            if (name.ToLower().Trim() == "eru")
             {
                 return;
-            } 
+            }
 
-            if ( message.Contains("youtube.com") || message.Contains("youtu.be") || message.Contains("vimeo.com") )
+            if (message.Contains("youtube.com") || message.Contains("youtu.be") || message.Contains("vimeo.com"))
             {
                 string[] Parameters = message.Split(' ');
-                foreach ( string p in Parameters )
+                foreach (string p in Parameters)
                 {
-                    if ( p.Contains("youtube.com/watch?") || p.Contains("youtu.be/") || p.Contains("vimeo.com/") )
+                    if (p.Contains("youtube.com/watch?") || p.Contains("youtu.be/") || p.Contains("vimeo.com/"))
                     {
                         string title = PollWebsiteTitle(p);
-                        if ( title == null )
+                        if (title == null)
                         {
                             break;
                         }
@@ -140,10 +152,10 @@ namespace SBTitler
                         break;
                     }
 
-                    if ( p.Contains("youtube.com/playlist?list=") )
+                    if (p.Contains("youtube.com/playlist?list="))
                     {
                         string title = PollWebsiteTitle(p);
-                        if ( title == null )
+                        if (title == null)
                         {
                             break;
                         }
@@ -154,36 +166,92 @@ namespace SBTitler
             }
         }
 
-        private string PollWebsiteTitle( string url )
+        private string PollWebsiteTitle(string url)
         {
             try
             {
                 Logger.WriteLine("* Polling Title for " + url, ConsoleColor.Yellow);
 
                 string cUrl = url.Trim();
-                if ( ( !cUrl.StartsWith("http://") && !cUrl.StartsWith("https://") ) && !cUrl.StartsWith("www.") )
+                if ((!cUrl.StartsWith("http://") && !cUrl.StartsWith("https://")) && !cUrl.StartsWith("www."))
                 {
                     cUrl = "http://www." + cUrl;
                 }
 
-                if ( cUrl.StartsWith("www.") )
+                if (cUrl.StartsWith("www."))
                 {
                     cUrl = "http://" + cUrl;
                 }
 
                 WebClient x = new WebClient();
+                x.Encoding = new UTF8Encoding();
                 string source = x.DownloadString(new Uri(cUrl));
                 string title = Regex.Match(source, @"\<title\b[^>]*\>\s*(?<Title>[\s\S]*?)\</title\>", RegexOptions.IgnoreCase).Groups["Title"].Value;
                 x.Dispose();
-
+                
                 title = HttpUtility.HtmlDecode(title);
-
+                
                 return title;
             }
-            catch ( Exception e )
+            catch (Exception e)
             {
                 Logger.WriteLine("***** " + e.Message, ConsoleColor.DarkRed);
                 return null;
+            }
+        }
+
+        private string PollLastVideoYT(string username)
+        {
+            try
+            {
+                string vTitle = "";
+                string vLink = "";
+
+                Uri requestUrl = new Uri(String.Format("https://gdata.youtube.com/feeds/api/users/{0}/uploads?max-results=1", username));
+
+                WebClient x = new WebClient();
+                string response = x.DownloadString(requestUrl);
+                x.Dispose();
+
+                if (response == "User not found" || response == "User account closed")
+                {
+                    return "User not found.";
+                }
+
+                XmlDocument xmlRoot = new XmlDocument();
+                xmlRoot.LoadXml(response);
+
+                foreach (XmlNode n in xmlRoot.ChildNodes[1].ChildNodes)
+                {
+                    if (n.Name == "entry")
+                    {
+                        foreach (XmlElement videoNode in n.ChildNodes)
+                        {
+                            if (videoNode.Name == "title")
+                            {
+                                vTitle = videoNode.InnerText;
+                            }
+                            if (videoNode.Name == "link")
+                            {
+                                if (videoNode.Attributes["rel"].Value == "alternate")
+                                {
+                                    vLink = videoNode.Attributes["href"].Value;
+                                }
+                            }
+
+                            if (vTitle != "" && vLink != "")
+                            {
+                                return String.Format("Last video by {0}: {1} - {2}", username, vTitle, vLink.Replace("&feature=youtube_gdata", ""));
+                            }
+                        }
+                    }
+                }
+
+                return "Error while parsing response";
+            }
+            catch
+            {
+                return "Error while requesting data. (Invalid username?)";
             }
         }
     }

@@ -90,12 +90,12 @@ namespace SBSpawnPlugins
 
         #endregion
 
-        void Host_eventPluginChannelCommandReceived( string name, string channel, string command, string[] parameters )
+        void Host_eventPluginChannelCommandReceived(string name, string channel, string command, string[] parameters)
         {
-            switch ( command )
+            switch (command)
             {
                 case "ranks":
-                    if ( channel.Contains("mhykol") )
+                    if (channel.Contains("mhykol"))
                     {
                         Host.PluginResponse(channel, "http://goo.gl/88F58");
                     }
@@ -106,29 +106,48 @@ namespace SBSpawnPlugins
                 case "mumble":
                     Host.PluginResponse(channel, "Mumble Address: mumble.thespawn.net - Port: 64738");
                     break;
-                case "uhc":
-                    WebClient x = new WebClient();
-                    string source = x.DownloadString(new Uri("http://greywool.com/uhc/countdown.php"));
-                    Host.PluginResponse(channel, source);
+                //case "uhc":
+                //    WebClient x = new WebClient();
+                //    string source = x.DownloadString(new Uri("http://greywool.com/uhc/countdown.php"));
+                //    Host.PluginResponse(channel, source);
+                //    break;
+                case "seen":
+                    if (channel.ToLower().Contains("spawn"))
+                    {
+                        if (parameters.Length == 0)
+                        {
+                            Host.PluginResponse(channel, "Usage: !seen [name]");
+                        }
+                        else
+                        {
+                            WebClient y = new WebClient();
+                            string source2 = y.DownloadString(new Uri("http://jace.greywool.com/~jace/seen.php?nick=" + parameters[0]));
+                            Host.PluginResponse(channel, source2 + " - [!seen is powered by Greywool(TM)]");
+                        }
+                    }
+                    else
+                    {
+                        Host.PluginResponse(channel, "Currently only available in #spawn :(");
+                    }
                     break;
             }
         }
 
-        void Host_eventPluginChannelMessageReceived( string name, string message, string channel )
+        void Host_eventPluginChannelMessageReceived(string name, string message, string channel)
         {
-            if ( channel.Contains("dewcepticons") )
+            if (channel.Contains("dewcepticons"))
             {
-                if ( message.Contains("Kappa") )
+                if (message.Contains("Kappa"))
                 {
                     Host.PluginKick(channel, name, "Lisa made me do it");
                 }
             }
 
-            if ( message.Length >= 6 && ( NumCaps(message) > ( message.Length / 2 ) ) )
+            if (message.Length >= 6 && (NumCaps(message) > (message.Length / 2)))
             {
-                if ( Host.PluginUserManager.IsOperator(Host.PluginBotname, channel) )
+                if (Host.PluginUserManager.IsOperator(Host.PluginBotname, channel))
                 {
-                    if ( !Host.PluginUserManager.IsOperator(name, channel) )
+                    if (!Host.PluginUserManager.IsOperator(name, channel))
                     {
                         Host.PluginKick(channel, name, "Captain Capslock and the Shift Crew");
                     }
@@ -136,13 +155,13 @@ namespace SBSpawnPlugins
             }
         }
 
-        private int NumCaps( string str )
+        private int NumCaps(string str)
         {
             char[] chars = str.ToCharArray();
             int i = 0;
-            foreach ( char c in chars )
+            foreach (char c in chars)
             {
-                if ( Char.IsLetter(c) && Char.IsUpper(c) )
+                if (Char.IsLetter(c) && Char.IsUpper(c))
                 {
                     i++;
                 }

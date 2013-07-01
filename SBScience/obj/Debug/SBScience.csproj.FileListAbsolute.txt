@@ -1,0 +1,5 @@
+F:\Projects (Repositoried)\SpawnBot\SpawnBot\bin\Debug\Plugins\SBScience.dll
+F:\Projects (Repositoried)\SpawnBot\SpawnBot\bin\Debug\Plugins\SBScience.pdb
+F:\Projects (Repositoried)\SpawnBot\SBScience\obj\Debug\SBScience.dll
+F:\Projects (Repositoried)\SpawnBot\SBScience\obj\Debug\SBScience.pdb
+F:\Projects (Repositoried)\SpawnBot\SBScience\obj\Debug\SBScience.csprojResolveAssemblyReference.cache

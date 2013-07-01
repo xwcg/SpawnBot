@@ -37,6 +37,7 @@ namespace xIrcNet
     public delegate void IrcIdentChallenge( string msg );
 
     public delegate void IrcMessage( string channel, string name, string message );
+    public delegate void IrcAction( string channel, string name, string action );
     public delegate void IrcNotice( string name, string message );
 
     public delegate void IrcTopicReceived( string channel, string topic );
@@ -44,6 +45,7 @@ namespace xIrcNet
     public delegate void IrcNameListReceived( string channel, string[] list );
 
     public delegate void IrcUserJoin( string channel, string name );
+    public delegate void IrcUserJoinHostname( string channel, string name, string hostname );
     public delegate void IrcUserPart( string channel, string name, string message );
     public delegate void IrcUserMode( string channel, string name, string mode, string by );
     public delegate void IrcUserChange( string name, string newName );
@@ -51,7 +53,7 @@ namespace xIrcNet
     public delegate void IrcUserQuit( string name, string message );
 
     public delegate void IrcConnected();
-    public delegate void IrcDisconnected( string msg , bool connectionError);
+    public delegate void IrcDisconnected( string msg, bool connectionError );
     public delegate void IrcConnectingError( string error );
 
     public delegate void IrcRawMotdStart();
@@ -65,6 +67,7 @@ namespace xIrcNet
         #region Events
 
         public event IrcUserJoin eventUserJoined;
+        public event IrcUserJoinHostname eventUserJoinedHostname;
         public event IrcUserKicked eventUserKicked;
         public event IrcUserMode eventUserModeChanged;
         public event IrcUserPart eventUserPart;
@@ -72,8 +75,10 @@ namespace xIrcNet
         public event IrcUserChange eventUserChangedNick;
 
         public event IrcCommandReceived eventCommandReceived;
+        public event IrcCommandReceived eventUnhandled;
         public event IrcCommandSent eventCommandSent;
         public event IrcMessage eventMessageReceived;
+        public event IrcAction eventActionReceived;
         public event IrcNotice eventNoticeReceived;
 
         public event IrcServerMessageReceived eventServerMessageReceived;
@@ -108,6 +113,7 @@ namespace xIrcNet
         private string _Server;
         private int _Port;
         private string _Nick;
+        private string _Password;
         private string _User;
         private string _RealName;
         private TcpClient _Connection;
@@ -241,6 +247,27 @@ namespace xIrcNet
         /// Creates a new IRC Connection
         /// </summary>
         /// <param name="name">Nickname/Handle</param>
+        /// <param name="password">Server password</param>
+        /// <param name="server">The server to connect to</param>
+        /// <param name="port">The port where to connect to</param>
+        public IRC( string name, string password, string server, int port )
+        {
+            _Nick = name;
+            _Password = password;
+            _Server = server;
+            _Port = port;
+
+            _User = "Arthur";
+            _RealName = "Arthur Dent";
+
+            eventConnected += new IrcConnected(IRC_eventConnected);
+        }
+
+
+        /// <summary>
+        /// Creates a new IRC Connection
+        /// </summary>
+        /// <param name="name">Nickname/Handle</param>
         /// <param name="user">Username</param>
         /// <param name="realname">Real Name</param>
         /// <param name="server">The server to connect to</param>
@@ -256,8 +283,34 @@ namespace xIrcNet
             eventConnected += new IrcConnected(IRC_eventConnected);
         }
 
+        /// <summary>
+        /// Creates a new IRC Connection
+        /// </summary>
+        /// <param name="name">Nickname/Handle</param>
+        /// <param name="password">Server password</param>
+        /// <param name="user">Username</param>
+        /// <param name="realname">Real Name</param>
+        /// <param name="server">The server to connect to</param>
+        /// <param name="port">The port where to connect to</param>
+        public IRC( string name, string password, string user, string realname, string server, int port )
+        {
+            _Nick = name;
+            _Password = password;
+            _User = user;
+            _RealName = realname;
+            _Server = server;
+            _Port = port;
+
+            eventConnected += new IrcConnected(IRC_eventConnected);
+        }
+
         void IRC_eventConnected()
         {
+            if ( !string.IsNullOrEmpty(_Password) )
+            {
+                SendCommand(String.Format("PASS {0}", _Password));
+            }
+
             SendCommand(String.Format("USER {0} 8 * :{1}", _User, _RealName));
             SendCommand(String.Format("NICK {0}", _Nick));
         }
@@ -271,7 +324,7 @@ namespace xIrcNet
             Disconnect("So long and thanks for all the fish", false);
         }
 
-        public void Disconnect( string msg , bool connectionError)
+        public void Disconnect( string msg, bool connectionError )
         {
             if ( _Connection != null && _Connection.Connected )
             {
@@ -463,6 +516,11 @@ namespace xIrcNet
                                 }
                                 break;
 
+                            case "302":
+                                // :portlane.se.quakenet.org 302 Testobrine :xwcg=+~Watashi@xwcg.users.quakenet.org
+
+                                break;
+
                             // TOPIC
                             case "332":
                                 HandleTopic(RawGetOnlyText(RawIn));
@@ -546,6 +604,11 @@ namespace xIrcNet
                                 {
                                     eventUserJoined(RawParts[2], RawGetSourceNick(RawParts[0]));
                                 }
+
+                                if ( eventUserJoinedHostname != null )
+                                {
+                                    eventUserJoinedHostname(RawParts[2], RawGetSourceNick(RawParts[0]), RawGetHostName(RawParts[0]));
+                                }
                                 break;
 
                             case "PART":
@@ -560,6 +623,12 @@ namespace xIrcNet
                                 if ( eventServerPongReceived != null )
                                 {
                                     eventServerPongReceived();
+                                }
+                                break;
+                            default:
+                                if ( eventUnhandled != null )
+                                {
+                                    eventUnhandled(RawIn);
                                 }
                                 break;
                         }
@@ -680,6 +749,23 @@ namespace xIrcNet
             }
         }
 
+        // Testobrine!~SpawnBot@95.91.164.68
+        private string RawGetHostName( string rawpart )
+        {
+            if ( rawpart.Contains("!") )
+            {
+                return rawpart.Substring(rawpart.IndexOf("!") + 1);
+            }
+            else if ( rawpart.Contains(_Host) )
+            {
+                return "Server";
+            }
+            else
+            {
+                return null;
+            }
+        }
+
         private void HandlePing( string rawHash )
         {
             _LastPing = DateTime.Now;
@@ -779,6 +865,18 @@ namespace xIrcNet
             string name = CleanSourceNick;
             string channel = parts[2];
             string message = rawcmd.Substring(rawcmd.IndexOf(channel) + channel.Length + 2);
+
+            if ( message.StartsWith(Char.ConvertFromUtf32(1)) )
+            {
+                if ( message.StartsWith(Char.ConvertFromUtf32(1) + "ACTION") )
+                {
+                    message = message.Substring(7);
+                    message = message.Substring(0, message.Length - 1).Trim();
+
+                    eventActionReceived(channel, name, message);
+                    return;
+                }
+            }
 
             if ( eventMessageReceived != null )
             {

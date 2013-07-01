@@ -30,7 +30,7 @@ namespace ConfigManager
         private string _Index;
         private string _Value;
 
-        public Config( string index, string value )
+        public Config(string index, string value)
         {
             _Index = index;
             _Value = value;
@@ -59,9 +59,9 @@ namespace ConfigManager
 
         public Manager()
         {
-            if ( Directory.Exists(Environment.CurrentDirectory) )
+            if (Directory.Exists(Environment.CurrentDirectory))
             {
-                if ( !Directory.Exists(Environment.CurrentDirectory + "\\config\\") )
+                if (!Directory.Exists(Environment.CurrentDirectory + "\\config\\"))
                 {
                     Directory.CreateDirectory(Environment.CurrentDirectory + "\\config\\");
                 }
@@ -74,21 +74,21 @@ namespace ConfigManager
             CurrentDir = Environment.CurrentDirectory + "\\config\\";
         }
 
-        public List<Config> Load( string PluginName, string FileName )
+        public List<Config> Load(string PluginName, string FileName)
         {
             string LoadPath = CurrentDir;
 
-            if ( PluginName != null && PluginName.Length > 0 )
+            if (PluginName != null && PluginName.Length > 0)
             {
                 LoadPath += PluginName + "\\";
             }
 
-            if ( !Directory.Exists(LoadPath) )
+            if (!Directory.Exists(LoadPath))
             {
                 Directory.CreateDirectory(LoadPath);
             }
 
-            if ( FileName != null && FileName.Length > 0 )
+            if (FileName != null && FileName.Length > 0)
             {
                 LoadPath += FileName;
             }
@@ -97,7 +97,7 @@ namespace ConfigManager
                 return null;
             }
 
-            if ( !File.Exists(LoadPath) )
+            if (!File.Exists(LoadPath))
             {
                 FileStream newfile = File.Create(LoadPath);
                 newfile.Flush();
@@ -110,19 +110,25 @@ namespace ConfigManager
 
             string input;
 
-            while ( ( input = r.ReadLine() ) != null )
+            while ((input = r.ReadLine()) != null)
             {
                 // Skip over comments
-                if ( input.StartsWith("//") )
+                if (input.StartsWith("//"))
                 {
                     continue;
                 }
 
                 // Otherwise, check if valid line and add
-                if ( input.Length > 2 && input.Contains("=") )
+                if (input.Length > 2 && input.Contains("="))
                 {
                     string[] parts = input.Split('=');
-                    Output.Add(new Config(parts[0], parts[1]));
+                    string value = parts[1];
+                    if (parts.Length > 2)
+                    {
+                        value = String.Join("=", parts, 1, parts.Length - 1);
+                    }
+
+                    Output.Add(new Config(parts[0], value));
                 }
             }
 
@@ -132,26 +138,26 @@ namespace ConfigManager
             return Output;
         }
 
-        public bool Save( List<Config> bits, string PluginName, string FileName )
+        public bool Save(List<Config> bits, string PluginName, string FileName)
         {
-            if ( bits == null || bits.Count == 0 )
+            if (bits == null || bits.Count == 0)
             {
                 return false;
             }
 
             string SavePath = CurrentDir;
 
-            if ( PluginName != null && PluginName.Length > 0 )
+            if (PluginName != null && PluginName.Length > 0)
             {
                 SavePath += PluginName + "\\";
             }
 
-            if ( !Directory.Exists(SavePath) )
+            if (!Directory.Exists(SavePath))
             {
                 Directory.CreateDirectory(SavePath);
             }
 
-            if ( FileName != null && FileName.Length > 0 )
+            if (FileName != null && FileName.Length > 0)
             {
                 SavePath += FileName;
             }
@@ -169,7 +175,7 @@ namespace ConfigManager
             {
                 StreamWriter w = new StreamWriter(SavePath, false);
 
-                foreach ( Config c in bits )
+                foreach (Config c in bits)
                 {
                     w.WriteLine("{0}={1}", c.Index, c.Value);
                 }

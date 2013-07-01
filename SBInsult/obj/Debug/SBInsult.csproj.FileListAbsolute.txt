@@ -1,4 +1,3 @@
-F:\Projects (Repositoried)\SpawnBot\SBInsult\obj\Debug\ResolveAssemblyReference.cache
 F:\Projects (Repositoried)\SpawnBot\SBInsult\bin\Debug\SBInsult.dll
 F:\Projects (Repositoried)\SpawnBot\SBInsult\bin\Debug\SBInsult.pdb
 F:\Projects (Repositoried)\SpawnBot\SBInsult\obj\Debug\SBInsult.dll

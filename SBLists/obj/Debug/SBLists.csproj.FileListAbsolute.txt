@@ -1,0 +1,7 @@
+F:\Projects (Repositoried)\SpawnBot\SBLists\bin\Debug\SBLists.dll
+F:\Projects (Repositoried)\SpawnBot\SBLists\bin\Debug\SBLists.pdb
+F:\Projects (Repositoried)\SpawnBot\SBLists\bin\Debug\ConfigManager.dll
+F:\Projects (Repositoried)\SpawnBot\SBLists\bin\Debug\ConfigManager.pdb
+F:\Projects (Repositoried)\SpawnBot\SBLists\obj\Debug\SBLists.csprojResolveAssemblyReference.cache
+F:\Projects (Repositoried)\SpawnBot\SBLists\obj\Debug\SBLists.dll
+F:\Projects (Repositoried)\SpawnBot\SBLists\obj\Debug\SBLists.pdb

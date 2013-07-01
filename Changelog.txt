@@ -1,3 +1,11 @@
+28th December 2012
+
++ Additional event when a user joins reflecting his hostname.
+
+10th December 2012
+
++ Added SBLinkCommands
+
 8th December 2012
 
 * Config manager now creates directory and files if they don't exist instead of returning null

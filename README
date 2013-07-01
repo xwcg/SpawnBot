@@ -3,9 +3,6 @@ SpawnBot is a Modular Pure C# IRC Bot.
 Netcode is provided by xIrcNet developed for SpawnBot.
 You can use xIrcNet independently from SpawnBot, refer to COPYING for limitations.
 
-Please consider donating, this project is available for free and is developed in my free time:
-https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=PUZFS9XWK7GYY
-
 --------------------------
 
 1. Bot config file

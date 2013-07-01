@@ -154,6 +154,29 @@ namespace SBGrammarNazi
                 }
             }
 
+            if ( command.ToLower() == "delgrammar" )
+            {
+                if ( Host.PluginUserManager.IsOperator(name, channel) && name.StartsWith("xwcg") )
+                {
+                    if ( parameters.Length >= 1 )
+                    {
+                        string parts = String.Join(" ", parameters).Trim();
+                        PeeveDict.Remove(parts);
+                        SaveDictionary();
+                        Host.PluginResponse(channel, "Grammar Rule removed!");
+                    }
+                    else
+                    {
+                        Host.PluginResponse(channel, "Usage: !delgrammar [badspelling]");
+                    }
+                }
+                else
+                {
+                    Host.PluginResponse(channel, "Only x can do this.");
+                }
+            }
+
+
             if ( command.ToLower() == "grammaroptimizedatabase" )
             {
                 if ( Host.PluginUserManager.IsOperator(name, channel) && name.StartsWith("xwcg") )

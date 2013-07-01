@@ -32,8 +32,9 @@ namespace SBUserManager
         private bool isBot = false;
         private string name;
         private string channel;
+        private string hostname;
 
-        public IrcUser( string UserName, string ChannelName )
+        public IrcUser( string UserName, string ChannelName, string HostName )
         {
             if ( UserName.StartsWith("+") )
             {
@@ -59,6 +60,8 @@ namespace SBUserManager
             {
                 channel = "#" + ChannelName;
             }
+
+            hostname = HostName;
         }
 
         public string GetLegacyName()
@@ -150,6 +153,14 @@ namespace SBUserManager
                 return channel;
             }
         }
+
+        public string Hostname
+        {
+            get
+            {
+                return hostname;
+            }
+        }
     }
 
     public static class IUsers
@@ -207,9 +218,9 @@ namespace SBUserManager
             return successes.ToArray();
         }
 
-        public static void AddUser( string name, string channel )
+        public static void AddUser( string name, string channel, string hostname )
         {
-            Userlist.Add(new IrcUser(name, channel));
+            Userlist.Add(new IrcUser(name, channel, hostname));
         }
 
         public static bool ChangeUserName( string name, string newname )

@@ -26,6 +26,7 @@ using ConfigManager;
 namespace SBPluginInterface
 {
     public delegate void UserJoin( string channel, string name );
+    public delegate void UserJoinHostname( string channel, string name, string hostname );
     public delegate void UserLeave( string channel, string name, string message );
     public delegate void UserKick( string channel, string name, string by, string reason );
     public delegate void UserChange( string name, string newname );
@@ -92,6 +93,7 @@ namespace SBPluginInterface
         void PluginKick( string channel, string name, string reason );
 
         event UserJoin eventPluginUserJoined;
+        event UserJoinHostname eventPluginUserJoinedHostname;
         event UserLeave eventPluginUserLeft;
         event UserKick eventPluginUserKicked;
         event UserChange eventPluginUserChangedNick;
