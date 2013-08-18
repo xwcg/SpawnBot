@@ -5,7 +5,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{73F55F48-2657-4A4B-9FCC-58C0E5C7B780}</ProjectGuid>
+    <ProjectGuid>{B0C6408F-7177-4606-BD10-EF1C0E4269BE}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SBProtect</RootNamespace>

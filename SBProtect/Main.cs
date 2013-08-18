@@ -77,15 +77,21 @@ namespace SBProtect
         {
             if (channel.Contains("spawn"))
             {
-                msgCache.Add(new UserCache
+                if (Host.PluginUserManager.IsOperator(Host.PluginBotname, channel))
+                {
+                    if (!Host.PluginUserManager.IsOperator(name, channel))
+                    {
+                        msgCache.Add(new UserCache
                             {
                                 Nick = name,
                                 Channel = channel,
                                 Time = DateTime.Now
                             });
-                msgCache.RemoveAll(x => (DateTime.Now - x.Time).TotalSeconds > 5);
-                var c = msgCache.Count(x => x.Nick == name && x.Channel == channel);
-                if (c > 4) Host.PluginKick(channel, name, "Slow your roll! (No more flooding, please.)");
+                        msgCache.RemoveAll(x => (DateTime.Now - x.Time).TotalSeconds > 5);
+                        var c = msgCache.Count(x => x.Nick == name && x.Channel == channel);
+                        if (c > 4) Host.PluginKick(channel, name, "Slow your roll! (No more flooding, please.)");
+                    }
+                }
             }
         }
 
