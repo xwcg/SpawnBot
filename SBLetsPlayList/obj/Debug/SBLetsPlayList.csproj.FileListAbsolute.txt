@@ -1,5 +1,0 @@
-F:\Projects (Repositoried)\SpawnBot\SBLetsPlayList\obj\Debug\ResolveAssemblyReference.cache
-F:\Projects (Repositoried)\SpawnBot\SpawnBot\bin\Debug\Plugins\SBLetsPlayList.dll
-F:\Projects (Repositoried)\SpawnBot\SpawnBot\bin\Debug\Plugins\SBLetsPlayList.pdb
-F:\Projects (Repositoried)\SpawnBot\SBLetsPlayList\obj\Debug\SBLetsPlayList.dll
-F:\Projects (Repositoried)\SpawnBot\SBLetsPlayList\obj\Debug\SBLetsPlayList.pdb

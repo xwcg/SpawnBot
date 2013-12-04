@@ -1,5 +1,0 @@
-F:\Projects (Repositoried)\SpawnBot\SpawnBot\bin\Debug\Plugins\SBMindcrack.dll
-F:\Projects (Repositoried)\SpawnBot\SpawnBot\bin\Debug\Plugins\SBMindcrack.pdb
-F:\Projects (Repositoried)\SpawnBot\SBMindcrack\obj\Debug\ResolveAssemblyReference.cache
-F:\Projects (Repositoried)\SpawnBot\SBMindcrack\obj\Debug\SBMindcrack.dll
-F:\Projects (Repositoried)\SpawnBot\SBMindcrack\obj\Debug\SBMindcrack.pdb
