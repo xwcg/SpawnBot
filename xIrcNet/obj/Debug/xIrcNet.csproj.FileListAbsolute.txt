@@ -1,0 +1,5 @@
+F:\Projects (Repositoried)\SpawnBot\xIrcNet\bin\Debug\xIrcNet.dll
+F:\Projects (Repositoried)\SpawnBot\xIrcNet\bin\Debug\xIrcNet.pdb
+F:\Projects (Repositoried)\SpawnBot\xIrcNet\obj\Debug\ResolveAssemblyReference.cache
+F:\Projects (Repositoried)\SpawnBot\xIrcNet\obj\Debug\xIrcNet.dll
+F:\Projects (Repositoried)\SpawnBot\xIrcNet\obj\Debug\xIrcNet.pdb
