@@ -1,0 +1,7 @@
+F:\Projects (Repositoried)\SpawnBot\SBUserManager\obj\Debug\ResolveAssemblyReference.cache
+F:\Projects (Repositoried)\SpawnBot\SBUserManager\bin\Debug\SBUserManager.dll
+F:\Projects (Repositoried)\SpawnBot\SBUserManager\bin\Debug\SBUserManager.pdb
+F:\Projects (Repositoried)\SpawnBot\SBUserManager\obj\Debug\SBUserManager.dll
+F:\Projects (Repositoried)\SpawnBot\SBUserManager\obj\Debug\SBUserManager.pdb
+F:\Projects (Repositoried)\SpawnBot\SpawnBot\bin\Debug\Plugins\SBUserManager.dll
+F:\Projects (Repositoried)\SpawnBot\SpawnBot\bin\Debug\Plugins\SBUserManager.pdb
