@@ -3,3 +3,8 @@ F:\Projects (Repositoried)\SpawnBot\xIrcNet\bin\Debug\xIrcNet.pdb
 F:\Projects (Repositoried)\SpawnBot\xIrcNet\obj\Debug\ResolveAssemblyReference.cache
 F:\Projects (Repositoried)\SpawnBot\xIrcNet\obj\Debug\xIrcNet.dll
 F:\Projects (Repositoried)\SpawnBot\xIrcNet\obj\Debug\xIrcNet.pdb
+C:\Users\Watashi\Documents\GitHub\SpawnBot\xIrcNet\bin\Debug\xIrcNet.dll
+C:\Users\Watashi\Documents\GitHub\SpawnBot\xIrcNet\bin\Debug\xIrcNet.pdb
+C:\Users\Watashi\Documents\GitHub\SpawnBot\xIrcNet\obj\Debug\xIrcNet.csprojResolveAssemblyReference.cache
+C:\Users\Watashi\Documents\GitHub\SpawnBot\xIrcNet\obj\Debug\xIrcNet.dll
+C:\Users\Watashi\Documents\GitHub\SpawnBot\xIrcNet\obj\Debug\xIrcNet.pdb

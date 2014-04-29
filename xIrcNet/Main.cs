@@ -147,6 +147,22 @@ namespace xIrcNet
             {
                 return _Port;
             }
+            set
+            {
+                _Port = value;
+            }
+        }
+
+        public string Password
+        {
+            get
+            {
+                return _Password;
+            }
+            set
+            {
+                _Password = value;
+            }
         }
 
         public string Nick

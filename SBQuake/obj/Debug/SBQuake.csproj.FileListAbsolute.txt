@@ -3,3 +3,7 @@ F:\Projects (Repositoried)\SpawnBot\SpawnBot\bin\Debug\Plugins\SBQuake.dll
 F:\Projects (Repositoried)\SpawnBot\SpawnBot\bin\Debug\Plugins\SBQuake.pdb
 F:\Projects (Repositoried)\SpawnBot\SBQuake\obj\Debug\SBQuake.dll
 F:\Projects (Repositoried)\SpawnBot\SBQuake\obj\Debug\SBQuake.pdb
+C:\Users\Watashi\Documents\GitHub\SpawnBot\SpawnBot\bin\Debug\Plugins\SBQuake.dll
+C:\Users\Watashi\Documents\GitHub\SpawnBot\SpawnBot\bin\Debug\Plugins\SBQuake.pdb
+C:\Users\Watashi\Documents\GitHub\SpawnBot\SBQuake\obj\Debug\SBQuake.dll
+C:\Users\Watashi\Documents\GitHub\SpawnBot\SBQuake\obj\Debug\SBQuake.pdb

@@ -11,3 +11,8 @@ F:\Projects (Repositoried)\SpawnBot\SBTwitter\bin\Debug\xLogger.dll
 F:\Projects (Repositoried)\SpawnBot\SBTwitter\bin\Debug\xLogger.pdb
 F:\Projects (Repositoried)\SpawnBot\SpawnBot\bin\Debug\Plugins\SBTwitter.dll
 F:\Projects (Repositoried)\SpawnBot\SpawnBot\bin\Debug\Plugins\SBTwitter.pdb
+C:\Users\Watashi\Documents\GitHub\SpawnBot\SpawnBot\bin\Debug\Plugins\SBTwitter.dll
+C:\Users\Watashi\Documents\GitHub\SpawnBot\SpawnBot\bin\Debug\Plugins\SBTwitter.pdb
+C:\Users\Watashi\Documents\GitHub\SpawnBot\SBTwitter\obj\Debug\SBTwitter.csprojResolveAssemblyReference.cache
+C:\Users\Watashi\Documents\GitHub\SpawnBot\SBTwitter\obj\Debug\SBTwitter.dll
+C:\Users\Watashi\Documents\GitHub\SpawnBot\SBTwitter\obj\Debug\SBTwitter.pdb

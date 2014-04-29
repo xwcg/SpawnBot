@@ -184,8 +184,9 @@ namespace ConfigManager
                 w.Close();
                 w.Dispose();
             }
-            catch
+            catch (Exception ex)
             {
+                throw ex;
                 return false;
             }
 

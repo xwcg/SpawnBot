@@ -172,7 +172,7 @@ namespace SpawnBot
 
             Logger.WriteLine("* Starting Bot...", ConsoleColor.DarkYellow);
 
-            IrcService = new IRC(Botname, "SpawnBot", "Spawnbot", ServerAddress, ServerPort);
+            IrcService = new IRC(Botname, ServerPassword, "SpawnBot", "Spawnbot", ServerAddress, ServerPort);
 
             IrcService.eventNameListReceived += new IrcNameListReceived(IrcService_eventNameListReceived);
             IrcService.eventTopicReceived += new IrcTopicReceived(IrcService_eventTopicReceived);
