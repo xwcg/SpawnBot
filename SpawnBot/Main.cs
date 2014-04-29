@@ -137,6 +137,24 @@ namespace SpawnBot
                             IrcService.SendCommand("JOIN " + cmdparts[1]);
                         }
                         break;
+                    case "joinall":
+                        foreach (string channel in Channels)
+                        {
+                            SendCommand("JOIN " + channel);
+                        }
+                        break;
+                    case "partall":
+                        foreach (string channel in Channels)
+                        {
+                            SendCommand("PART " + channel);
+                        }
+                        break;
+                    case "refreshusers":
+                        foreach (string channel in Channels)
+                        {
+                            SendCommand("NAMES " + channel);
+                        }
+                        break;
                     default:
                         Console.WriteLine("Unknown command '" + cmd + "', sending as direct command");
                         IrcService.SendCommand(cmd);
@@ -386,6 +404,8 @@ namespace SpawnBot
 
         void IrcService_eventNameListReceived(string channel, string[] list)
         {
+            Logger.WriteLine(String.Format("[{0}] Userlist with {1} names received", channel, list.Length), ConsoleColor.DarkYellow);
+
             if (eventPluginChannelNameListGet != null)
             {
                 eventPluginChannelNameListGet(channel, list);
