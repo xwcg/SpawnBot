@@ -7,3 +7,4 @@ C:\Users\Watashi\Documents\GitHub\SpawnBot\SpawnBot\bin\Debug\Plugins\SBMindcrac
 C:\Users\Watashi\Documents\GitHub\SpawnBot\SpawnBot\bin\Debug\Plugins\SBMindcrack.pdb
 C:\Users\Watashi\Documents\GitHub\SpawnBot\SBMindcrack\obj\Debug\SBMindcrack.dll
 C:\Users\Watashi\Documents\GitHub\SpawnBot\SBMindcrack\obj\Debug\SBMindcrack.pdb
+C:\Users\Watashi\Documents\GitHub\SpawnBot\SBMindcrack\obj\Debug\SBMindcrack.csprojResolveAssemblyReference.cache
