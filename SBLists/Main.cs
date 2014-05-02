@@ -103,7 +103,7 @@ namespace SBLists
                                 if (SaveLists() == false)
                                     Host.PluginResponse(channel, "Problem adding to list :(");
                                 else
-                                    Host.PluginResponse(channel, String.Format("Added to {0} list!  Cup No. '{1}' (Important for removal)", command.ToLower(), lists[command.ToLower()].Count - 1));
+                                    Host.PluginResponse(channel, String.Format("Added to {0} list!  Cup No. '{1}' (Important for removal)", command.ToLower(), lists[command.ToLower()].Count));
                             }
                             break;
 
@@ -127,7 +127,7 @@ namespace SBLists
                                     {
                                         try
                                         {
-                                            lists[command.ToLower()].RemoveAt(Convert.ToInt32(parameters[1]));
+                                            lists[command.ToLower()].RemoveAt(Convert.ToInt32(parameters[1]) - 1);
 
                                             if (SaveLists() == false)
                                                 Host.PluginResponse(channel, "Problem removing from list :(");
@@ -160,7 +160,7 @@ namespace SBLists
                         int i = r.Next(0, lists[command.ToLower()].Count);
                         string instantScience = lists[command.ToLower()][i];
 
-                        Host.PluginResponse(channel, String.Format("Warm Cup of Instant {0} No. {1}: {2}", command.ToLower(), i, instantScience));
+                        Host.PluginResponse(channel, String.Format("Warm Cup of Instant {0} No. {1}: {2}", command.ToLower(), i + 1, instantScience));
                     }
                 }
             }
@@ -260,30 +260,39 @@ namespace SBLists
 
         bool SaveLists()
         {
-            List<Config> cLists = new List<Config>();
-
-            for (int i = 0; i < lists_index.Count; i++)
+            try
             {
-                cLists.Add(new Config(i.ToString(), lists_index[i]));
-            }
 
-            if (Host.PluginConfigManager.Save(cLists, this.PluginName, "index_lists.cfg") == false)
-                return false;
+                List<Config> cLists = new List<Config>();
 
-            foreach (KeyValuePair<string, List<string>> entry in lists)
-            {
-                List<Config> thisList = new List<Config>();
-
-                for (int i = 0; i < entry.Value.Count; i++)
+                for (int i = 0; i < lists_index.Count; i++)
                 {
-                    thisList.Add(new Config(i.ToString(), entry.Value[i]));
+                    cLists.Add(new Config(i.ToString(), lists_index[i]));
                 }
 
-                if (Host.PluginConfigManager.Save(thisList, this.PluginName, String.Format("list_{0}.cfg", entry.Key)) == false)
+                if (Host.PluginConfigManager.Save(cLists, this.PluginName, "index_lists.cfg") == false)
                     return false;
-            }
 
-            return true;
+                foreach (KeyValuePair<string, List<string>> entry in lists)
+                {
+                    List<Config> thisList = new List<Config>();
+
+                    for (int i = 0; i < entry.Value.Count; i++)
+                    {
+                        thisList.Add(new Config(i.ToString(), entry.Value[i]));
+                    }
+
+                    if (Host.PluginConfigManager.Save(thisList, this.PluginName, String.Format("list_{0}.cfg", entry.Key)) == false)
+                        return false;
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Host.PluginResponse("#spawn", "Error while saving:" + ex.Message);
+                return false;
+            }
         }
 
 

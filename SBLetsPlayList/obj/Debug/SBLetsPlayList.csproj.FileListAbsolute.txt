@@ -3,3 +3,8 @@ F:\Projects (Repositoried)\SpawnBot\SpawnBot\bin\Debug\Plugins\SBLetsPlayList.dl
 F:\Projects (Repositoried)\SpawnBot\SpawnBot\bin\Debug\Plugins\SBLetsPlayList.pdb
 F:\Projects (Repositoried)\SpawnBot\SBLetsPlayList\obj\Debug\SBLetsPlayList.dll
 F:\Projects (Repositoried)\SpawnBot\SBLetsPlayList\obj\Debug\SBLetsPlayList.pdb
+C:\Users\Watashi\Documents\GitHub\SpawnBot\SpawnBot\bin\Debug\Plugins\SBLetsPlayList.dll
+C:\Users\Watashi\Documents\GitHub\SpawnBot\SpawnBot\bin\Debug\Plugins\SBLetsPlayList.pdb
+C:\Users\Watashi\Documents\GitHub\SpawnBot\SBLetsPlayList\obj\Debug\SBLetsPlayList.csprojResolveAssemblyReference.cache
+C:\Users\Watashi\Documents\GitHub\SpawnBot\SBLetsPlayList\obj\Debug\SBLetsPlayList.dll
+C:\Users\Watashi\Documents\GitHub\SpawnBot\SBLetsPlayList\obj\Debug\SBLetsPlayList.pdb

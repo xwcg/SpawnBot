@@ -9,3 +9,8 @@ F:\Projects (Repositoried)\SpawnBot\SBTitler\obj\Debug\SBTitler.dll
 F:\Projects (Repositoried)\SpawnBot\SBTitler\obj\Debug\SBTitler.pdb
 F:\Projects (Repositoried)\SpawnBot\SpawnBot\bin\Debug\Plugins\SBTitler.dll
 F:\Projects (Repositoried)\SpawnBot\SpawnBot\bin\Debug\Plugins\SBTitler.pdb
+C:\Users\Watashi\Documents\GitHub\SpawnBot\SpawnBot\bin\Debug\Plugins\SBTitler.dll
+C:\Users\Watashi\Documents\GitHub\SpawnBot\SpawnBot\bin\Debug\Plugins\SBTitler.pdb
+C:\Users\Watashi\Documents\GitHub\SpawnBot\SBTitler\obj\Debug\SBTitler.csprojResolveAssemblyReference.cache
+C:\Users\Watashi\Documents\GitHub\SpawnBot\SBTitler\obj\Debug\SBTitler.dll
+C:\Users\Watashi\Documents\GitHub\SpawnBot\SBTitler\obj\Debug\SBTitler.pdb

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using System.Text.RegularExpressions;
 
 /*
     Copyright 2012-2013 Michael Schwarz
@@ -30,6 +31,19 @@ namespace ConfigManager
         private string _Index;
         private string _Value;
 
+        public Config(string index, string value, bool isEscaped)
+        {
+            _Index = index;
+            if (isEscaped)
+            {
+                EscapedValue = value;
+            }
+            else
+            {
+                _Value = value;
+            }
+        }
+
         public Config(string index, string value)
         {
             _Index = index;
@@ -49,6 +63,18 @@ namespace ConfigManager
             get
             {
                 return _Value;
+            }
+        }
+
+        public string EscapedValue
+        {
+            get
+            {
+                return _Value.Replace("=", "\\=");
+            }
+            set
+            {
+                _Value = value.Replace("\\=", "=");
             }
         }
     }
@@ -110,6 +136,8 @@ namespace ConfigManager
 
             string input;
 
+            Regex configMatcher = new Regex(@"([^\\=]*(\\=)*\\*)+", RegexOptions.ECMAScript);
+
             while ((input = r.ReadLine()) != null)
             {
                 // Skip over comments
@@ -119,16 +147,24 @@ namespace ConfigManager
                 }
 
                 // Otherwise, check if valid line and add
-                if (input.Length > 2 && input.Contains("="))
+                if (input.Length > 3 && input.Contains("="))
                 {
-                    string[] parts = input.Split('=');
-                    string value = parts[1];
-                    if (parts.Length > 2)
+                    MatchCollection parts = configMatcher.Matches(input);
+                    if (parts.Count == 4)
                     {
-                        value = String.Join("=", parts, 1, parts.Length - 1);
+                        string key = parts[0].Value;
+                        string value = parts[2].Value;
+                        Console.WriteLine("{0} ::: {1}", key, value);
+                        Output.Add(new Config(key, value, true));
                     }
-
-                    Output.Add(new Config(parts[0], value));
+                    //string[] parts = input.Split('=');
+                    //string value = parts[1];
+                    //if (parts.Length > 2)
+                    //{
+                    //    value = String.Join("=", parts, 1, parts.Length - 1);
+                    //}
+                    //
+                    //Output.Add(new Config(parts[0], value));
                 }
             }
 
@@ -177,15 +213,16 @@ namespace ConfigManager
 
                 foreach (Config c in bits)
                 {
-                    w.WriteLine("{0}={1}", c.Index, c.Value);
+                    w.WriteLine("{0}={1}", c.Index, c.EscapedValue);
                 }
 
                 w.Flush();
                 w.Close();
                 w.Dispose();
             }
-            catch
+            catch (Exception ex)
             {
+                throw ex;
                 return false;
             }
 
