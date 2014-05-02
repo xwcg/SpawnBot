@@ -1,0 +1,18 @@
+F:\Projects (Repositoried)\SpawnBot\SBPluginInterface\bin\Debug\SBPluginInterface.dll
+F:\Projects (Repositoried)\SpawnBot\SBPluginInterface\bin\Debug\SBPluginInterface.pdb
+F:\Projects (Repositoried)\SpawnBot\SBPluginInterface\obj\Debug\ResolveAssemblyReference.cache
+F:\Projects (Repositoried)\SpawnBot\SBPluginInterface\obj\Debug\SBPluginInterface.dll
+F:\Projects (Repositoried)\SpawnBot\SBPluginInterface\obj\Debug\SBPluginInterface.pdb
+F:\Projects (Repositoried)\SpawnBot\SBPluginInterface\bin\Debug\xLogger.dll
+F:\Projects (Repositoried)\SpawnBot\SBPluginInterface\bin\Debug\xLogger.pdb
+F:\Projects (Repositoried)\SpawnBot\SBPluginInterface\bin\Debug\ConfigManager.dll
+F:\Projects (Repositoried)\SpawnBot\SBPluginInterface\bin\Debug\ConfigManager.pdb
+C:\Users\Watashi\Documents\GitHub\SpawnBot\SBPluginInterface\bin\Debug\SBPluginInterface.dll
+C:\Users\Watashi\Documents\GitHub\SpawnBot\SBPluginInterface\bin\Debug\SBPluginInterface.pdb
+C:\Users\Watashi\Documents\GitHub\SpawnBot\SBPluginInterface\bin\Debug\ConfigManager.dll
+C:\Users\Watashi\Documents\GitHub\SpawnBot\SBPluginInterface\bin\Debug\xLogger.dll
+C:\Users\Watashi\Documents\GitHub\SpawnBot\SBPluginInterface\bin\Debug\ConfigManager.pdb
+C:\Users\Watashi\Documents\GitHub\SpawnBot\SBPluginInterface\bin\Debug\xLogger.pdb
+C:\Users\Watashi\Documents\GitHub\SpawnBot\SBPluginInterface\obj\Debug\SBPluginInterface.csprojResolveAssemblyReference.cache
+C:\Users\Watashi\Documents\GitHub\SpawnBot\SBPluginInterface\obj\Debug\SBPluginInterface.dll
+C:\Users\Watashi\Documents\GitHub\SpawnBot\SBPluginInterface\obj\Debug\SBPluginInterface.pdb

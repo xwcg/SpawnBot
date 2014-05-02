@@ -1,0 +1,10 @@
+F:\Projects (Repositoried)\SpawnBot\ConfigManager\obj\Debug\ResolveAssemblyReference.cache
+F:\Projects (Repositoried)\SpawnBot\ConfigManager\bin\Debug\ConfigManager.dll
+F:\Projects (Repositoried)\SpawnBot\ConfigManager\bin\Debug\ConfigManager.pdb
+F:\Projects (Repositoried)\SpawnBot\ConfigManager\obj\Debug\ConfigManager.dll
+F:\Projects (Repositoried)\SpawnBot\ConfigManager\obj\Debug\ConfigManager.pdb
+C:\Users\Watashi\Documents\GitHub\SpawnBot\ConfigManager\bin\Debug\ConfigManager.dll
+C:\Users\Watashi\Documents\GitHub\SpawnBot\ConfigManager\bin\Debug\ConfigManager.pdb
+C:\Users\Watashi\Documents\GitHub\SpawnBot\ConfigManager\obj\Debug\ConfigManager.csprojResolveAssemblyReference.cache
+C:\Users\Watashi\Documents\GitHub\SpawnBot\ConfigManager\obj\Debug\ConfigManager.dll
+C:\Users\Watashi\Documents\GitHub\SpawnBot\ConfigManager\obj\Debug\ConfigManager.pdb

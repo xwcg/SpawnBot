@@ -1,0 +1,10 @@
+F:\Projects (Repositoried)\SpawnBot\xLogger\bin\Debug\xLogger.dll
+F:\Projects (Repositoried)\SpawnBot\xLogger\bin\Debug\xLogger.pdb
+F:\Projects (Repositoried)\SpawnBot\xLogger\obj\Debug\ResolveAssemblyReference.cache
+F:\Projects (Repositoried)\SpawnBot\xLogger\obj\Debug\xLogger.dll
+F:\Projects (Repositoried)\SpawnBot\xLogger\obj\Debug\xLogger.pdb
+C:\Users\Watashi\Documents\GitHub\SpawnBot\xLogger\bin\Debug\xLogger.dll
+C:\Users\Watashi\Documents\GitHub\SpawnBot\xLogger\bin\Debug\xLogger.pdb
+C:\Users\Watashi\Documents\GitHub\SpawnBot\xLogger\obj\Debug\xLogger.csprojResolveAssemblyReference.cache
+C:\Users\Watashi\Documents\GitHub\SpawnBot\xLogger\obj\Debug\xLogger.dll
+C:\Users\Watashi\Documents\GitHub\SpawnBot\xLogger\obj\Debug\xLogger.pdb

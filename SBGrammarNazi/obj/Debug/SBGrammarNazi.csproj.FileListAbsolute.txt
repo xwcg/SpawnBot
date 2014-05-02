@@ -1,0 +1,10 @@
+F:\Projects (Repositoried)\SpawnBot\SpawnBot\bin\Debug\Plugins\SBGrammarNazi.dll
+F:\Projects (Repositoried)\SpawnBot\SpawnBot\bin\Debug\Plugins\SBGrammarNazi.pdb
+F:\Projects (Repositoried)\SpawnBot\SBGrammarNazi\obj\Debug\ResolveAssemblyReference.cache
+F:\Projects (Repositoried)\SpawnBot\SBGrammarNazi\obj\Debug\SBGrammarNazi.dll
+F:\Projects (Repositoried)\SpawnBot\SBGrammarNazi\obj\Debug\SBGrammarNazi.pdb
+C:\Users\Watashi\Documents\GitHub\SpawnBot\SpawnBot\bin\Debug\Plugins\SBGrammarNazi.dll
+C:\Users\Watashi\Documents\GitHub\SpawnBot\SpawnBot\bin\Debug\Plugins\SBGrammarNazi.pdb
+C:\Users\Watashi\Documents\GitHub\SpawnBot\SBGrammarNazi\obj\Debug\SBGrammarNazi.csprojResolveAssemblyReference.cache
+C:\Users\Watashi\Documents\GitHub\SpawnBot\SBGrammarNazi\obj\Debug\SBGrammarNazi.dll
+C:\Users\Watashi\Documents\GitHub\SpawnBot\SBGrammarNazi\obj\Debug\SBGrammarNazi.pdb
