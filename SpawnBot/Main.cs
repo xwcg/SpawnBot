@@ -645,7 +645,7 @@ namespace SpawnBot
 
                 if (Command == "version")
                 {
-                    SendMessage("SpawnBot v" + Assembly.GetCallingAssembly().GetName().Version.ToString(), channel);
+                    SendMessage("SpawnBot v" + Assembly.GetCallingAssembly().GetName().Version.ToString() + " - GitHub: https://github.com/xwcg/SpawnBot/", channel);
                     return;
                 }
 
