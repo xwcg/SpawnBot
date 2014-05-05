@@ -162,34 +162,45 @@ namespace SBTwitter
                 case "twitter":
                     if (parameters.Length > 0)
                     {
-                        switch (parameters[0].ToLower())
+                        if (Host.PluginUserManager.IsOperator(name, channel))
                         {
-                            case "follow":
-                                if (parameters.Length > 1)
-                                {
-                                    this.AddFollow(channel, parameters[1]);
-                                    this.InitFollow();
-                                    Host.PluginResponse(channel, String.Format("Now following @{0} on Twitter for you!", parameters[1]));
-                                }
-                                else
-                                {
-                                    Host.PluginResponse(channel, "Usage: !twitter follow [username]");
-                                }
-                                break;
+                            switch (parameters[0].ToLower())
+                            {
+                                case "follow":
+                                    if (parameters.Length > 1)
+                                    {
+                                        this.AddFollow(channel, parameters[1]);
+                                        this.InitFollow();
+                                        Host.PluginResponse(channel, String.Format("Now following @{0} on Twitter for you!", parameters[1]));
+                                    }
+                                    else
+                                    {
+                                        Host.PluginResponse(channel, "Usage: !twitter follow [username]");
+                                    }
+                                    break;
 
-                            case "unfollow":
-                                if (parameters.Length > 1)
-                                {
-                                    this.DelFollow(channel, parameters[1]);
-                                    this.InitFollow();
-                                    Host.PluginResponse(channel, String.Format("Not following @{0} on Twitter for you anymore!", parameters[1]));
-                                }
-                                else
-                                {
-                                    Host.PluginResponse(channel, "Usage: !twitter follow [username]");
-                                }
-                                break;
+                                case "unfollow":
+                                    if (parameters.Length > 1)
+                                    {
+                                        this.DelFollow(channel, parameters[1]);
+                                        this.InitFollow();
+                                        Host.PluginResponse(channel, String.Format("Not following @{0} on Twitter for you anymore!", parameters[1]));
+                                    }
+                                    else
+                                    {
+                                        Host.PluginResponse(channel, "Usage: !twitter follow [username]");
+                                    }
+                                    break;
+                            }
                         }
+                        else
+                        {
+                            Host.PluginResponse(channel, "Only @'s can do this!");
+                        }
+                    }
+                    else
+                    {
+                        Host.PluginResponse(channel, "Usage: !twitter (follow/unfollow) [Twitter Screen Name]");
                     }
                     break;
 
