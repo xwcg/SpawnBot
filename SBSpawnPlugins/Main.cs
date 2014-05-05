@@ -100,6 +100,12 @@ namespace SBSpawnPlugins
                         Host.PluginResponse(channel, "http://goo.gl/88F58");
                     }
                     break;
+                case "lmgtfy":
+                    if (parameters.Length > 0)
+                    {
+                        Host.PluginResponse(channel, String.Format("http://lmgtfy.com/?q={0}", String.Join("+", parameters)));
+                    }
+                    break;
                 case "server":
                     Host.PluginResponse(channel, "The Spawn.net Server IP is: 127.0.0.1");
                     break;
