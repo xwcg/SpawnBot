@@ -9,7 +9,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Xml;
-using Twitterizer;
 using xLogger;
 using SBPluginInterface;
 using xIrcNet;
