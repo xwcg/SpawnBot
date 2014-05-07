@@ -354,16 +354,25 @@ namespace SBTwitter
 
         private Tweetinvi.Core.Interfaces.Streaminvi.IFilteredStream stream = null;
 
-        private void InitFollow()
+
+        private void InitFollow ()
+        {
+            this.InitFollow( false );
+        }
+
+        private void InitFollow(bool verbose)
         {
             if (stream != null)
             {
+                if ( verbose )
+                    Host.PluginResponse( "xwcg", "Stopping Twitter Stream" );
                 stream.StopStream();
             }
 
             stream = Stream.CreateFilteredStream();
             stream.MatchingTweetReceived += stream_MatchingTweetReceived;
             stream.WarningFallingBehindDetected += stream_WarningFallingBehindDetected;
+            stream.DisconnectMessageReceived += stream_DisconnectMessageReceived;
             foreach (KeyValuePair<string, List<string>> kp in this.follows)
             {
                 string channel = kp.Key;
@@ -371,12 +380,22 @@ namespace SBTwitter
 
                 foreach (string tweeter in tweeters)
                 {
+                    if ( verbose )
+                        Host.PluginResponse( "xwcg", "Adding '" + tweeter + "' to Twitter Stream" );
                     //stream.AddTrack(tweeter);
                     stream.AddFollow(User.GetUserFromScreenName(tweeter));
                 }
             }
 
-            stream.StartStreamMatchingAllConditionsAsync();
+            if ( verbose )
+                Host.PluginResponse( "xwcg", "Starting Twitter Stream" );
+
+            stream.StartStreamMatchingAnyConditionAsync();
+        }
+
+        void stream_DisconnectMessageReceived ( object sender, Tweetinvi.Core.Events.EventArguments.DisconnectMessageEventArgs e )
+        {
+            InitFollow();
         }
 
         void stream_WarningFallingBehindDetected(object sender, Tweetinvi.Core.Events.EventArguments.WarningFallingBehindEventArgs e)
