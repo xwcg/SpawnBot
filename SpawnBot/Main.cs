@@ -739,6 +739,22 @@ namespace SpawnBot
             }
         }
 
+        public string PluginBotAdmin
+        {
+            get
+            {
+                return Superadmin;
+            }
+        }
+
+        public string PluginBotSecret
+        {
+            get
+            {
+                return BotConfirmationSecret;
+            }
+        }
+
         public SBUserPlugin PluginUserManager
         {
             get

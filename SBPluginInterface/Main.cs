@@ -75,9 +75,10 @@ namespace SBPluginInterface
 
     public interface SBUserPlugin : SBPlugin
     {
+        bool Exists ( string name, string channel );
         bool IsOperator( string name, string channel );
-        bool IsVoiced( string name, string channel );
-        bool IsBot( string name );
+        bool IsVoiced ( string name, string channel );
+        bool IsBot ( string name );
 
         string[] GetChannels( string name );
         string[] GetUsers( string channel );
@@ -128,6 +129,16 @@ namespace SBPluginInterface
         }
 
         string PluginBotFolder
+        {
+            get;
+        }
+
+        string PluginBotAdmin
+        {
+            get;
+        }
+
+        string PluginBotSecret
         {
             get;
         }
