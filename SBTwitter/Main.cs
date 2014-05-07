@@ -95,6 +95,7 @@ namespace SBTwitter
                     Tweetinvi.TwitterCredentials.SetCredentials(AccessToken, AccessSecret, ConsumerKey, ConsumerSecret);
                     Host.eventPluginChannelMessageReceived += new ChannelMessage(Host_eventPluginChannelMessageReceived);
                     Host.eventPluginChannelCommandReceived += Host_eventPluginChannelCommandReceived;
+                    Host.eventPluginPrivateCommandReceived += Host_eventPluginPrivateCommandReceived;
 
                     var twitterStream = Stream.CreateFilteredStream();
                     twitterStream.AddTrack("HerobrineIRC");
@@ -103,6 +104,34 @@ namespace SBTwitter
 
                     LoadConfig();
                     InitFollow();
+                }
+            }
+        }
+
+        void Host_eventPluginPrivateCommandReceived(string name, string command, string[] parameters)
+        {
+            if (name == "xwcg" && command == "twitterdebug")
+            {
+                if (stream != null)
+                {
+                    try
+                    {
+                        if (ExceptionHandler.GetLastException() == null)
+                        {
+                            Host.PluginResponse(name, "No errors so far!");
+                        }
+                        else
+                        {
+                            var exceptionStatusCode = ExceptionHandler.GetLastException().StatusCode;
+                            var exceptionDescription = ExceptionHandler.GetLastException().TwitterDescription;
+                            Host.PluginResponse(name, exceptionStatusCode + ": " + exceptionDescription);
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Host.PluginResponse(name, "Exception while getting status:" + e.Message);
+                    }
+
                 }
             }
         }
@@ -303,7 +332,8 @@ namespace SBTwitter
             }
             else
             {
-                this.follows[channel].Add(tweeter);
+                if (!this.follows[channel].Contains(tweeter))
+                    this.follows[channel].Add(tweeter);
             }
 
             return SaveConfig();
@@ -333,6 +363,7 @@ namespace SBTwitter
 
             stream = Stream.CreateFilteredStream();
             stream.MatchingTweetReceived += stream_MatchingTweetReceived;
+            stream.WarningFallingBehindDetected += stream_WarningFallingBehindDetected;
             foreach (KeyValuePair<string, List<string>> kp in this.follows)
             {
                 string channel = kp.Key;
@@ -346,6 +377,11 @@ namespace SBTwitter
             }
 
             stream.StartStreamMatchingAllConditionsAsync();
+        }
+
+        void stream_WarningFallingBehindDetected(object sender, Tweetinvi.Core.Events.EventArguments.WarningFallingBehindEventArgs e)
+        {
+            Host.PluginResponse("xwcg", "Twitter: Warning Falling Behind! " + e.WarningMessage.Message);
         }
 
         private void stream_MatchingTweetReceived(object sender, Tweetinvi.Core.Events.EventArguments.MatchedTweetReceivedEventArgs e)
