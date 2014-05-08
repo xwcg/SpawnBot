@@ -25,22 +25,22 @@ using ConfigManager;
 
 namespace SBPluginInterface
 {
-    public delegate void UserJoin( string channel, string name );
-    public delegate void UserJoinHostname( string channel, string name, string hostname );
-    public delegate void UserLeave( string channel, string name, string message );
-    public delegate void UserKick( string channel, string name, string by, string reason );
-    public delegate void UserChange( string name, string newname );
-    public delegate void UserQuit( string name, string message );
-    public delegate void UserMode( string name, string channel, string mode, string by );
+    public delegate void UserJoin ( string channel, string name );
+    public delegate void UserJoinHostname ( string channel, string name, string hostname );
+    public delegate void UserLeave ( string channel, string name, string message );
+    public delegate void UserKick ( string channel, string name, string by, string reason );
+    public delegate void UserChange ( string name, string newname );
+    public delegate void UserQuit ( string name, string message );
+    public delegate void UserMode ( string name, string channel, string mode, string by );
 
-    public delegate void ChannelMessage( string name, string message, string channel );
-    public delegate void ChannelCommand(string name, string channel, string command, string[] parameters);
-    public delegate void PrivateMessage( string name, string message );
-    public delegate void PrivateCommand( string name, string command, string[] parameters );
+    public delegate void ChannelMessage ( string name, string message, string channel );
+    public delegate void ChannelCommand ( string name, string channel, string command, string[] parameters );
+    public delegate void PrivateMessage ( string name, string message );
+    public delegate void PrivateCommand ( string name, string command, string[] parameters );
 
-    public delegate void ServerTopicSet( string channel, string topic );
-    public delegate void ServerTopicOwner( string channel, string name, string date );
-    public delegate void ServerNames( string channel, string[] list );
+    public delegate void ServerTopicSet ( string channel, string topic );
+    public delegate void ServerTopicOwner ( string channel, string name, string date );
+    public delegate void ServerNames ( string channel, string[] list );
 
     public interface SBPlugin
     {
@@ -70,30 +70,31 @@ namespace SBPluginInterface
             set;
         }
 
-        void Dispose();
+        void Dispose ();
     }
 
     public interface SBUserPlugin : SBPlugin
     {
         bool Exists ( string name, string channel );
-        bool IsOperator( string name, string channel );
+        bool IsOperator ( string name, string channel );
         bool IsVoiced ( string name, string channel );
         bool IsBot ( string name );
+        bool VerifyAdmin ( string name, string channel );
 
-        string[] GetChannels( string name );
-        string[] GetUsers( string channel );
+        string[] GetChannels ( string name );
+        string[] GetUsers ( string channel );
 
-        void SetBotFlag( string name );
+        void SetBotFlag ( string name );
 
-        void ClearAllUsers();
+        void ClearAllUsers ();
     }
 
     public interface SBPluginHost
     {
-        void PluginResponse( string channel, string message );
-        void PluginKick( string channel, string name, string reason );
+        void PluginResponse ( string channel, string message );
+        void PluginKick ( string channel, string name, string reason );
 
-        SBPlugin FindPlugin(string nameOrPath);
+        SBPlugin FindPlugin ( string nameOrPath );
 
         event UserJoin eventPluginUserJoined;
         event UserJoinHostname eventPluginUserJoinedHostname;
