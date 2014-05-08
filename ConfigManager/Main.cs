@@ -31,10 +31,10 @@ namespace ConfigManager
         private string _Index;
         private string _Value;
 
-        public Config(string index, string value, bool isEscaped)
+        public Config ( string index, string value, bool isEscaped )
         {
             _Index = index;
-            if (isEscaped)
+            if ( isEscaped )
             {
                 EscapedValue = value;
             }
@@ -44,7 +44,7 @@ namespace ConfigManager
             }
         }
 
-        public Config(string index, string value)
+        public Config ( string index, string value )
         {
             _Index = index;
             _Value = value;
@@ -70,11 +70,11 @@ namespace ConfigManager
         {
             get
             {
-                return _Value.Replace("=", "\\=");
+                return _Value.Replace( "=", "\\=" );
             }
             set
             {
-                _Value = value.Replace("\\=", "=");
+                _Value = value.Replace( "\\=", "=" );
             }
         }
     }
@@ -83,79 +83,80 @@ namespace ConfigManager
     {
         private string CurrentDir;
 
-        public Manager()
+        public Manager ()
         {
-            if (Directory.Exists(Environment.CurrentDirectory))
+            string localDir = Environment.CurrentDirectory;
+            if ( Directory.Exists( localDir ) )
             {
-                if (!Directory.Exists(Environment.CurrentDirectory + "\\config\\"))
+                if ( !Directory.Exists( Path.Combine( localDir, "config" ) ) )
                 {
-                    Directory.CreateDirectory(Environment.CurrentDirectory + "\\config\\");
+                    Directory.CreateDirectory( Path.Combine( localDir, "config" ) );
                 }
             }
             else
             {
-                throw new Exception("Base Directory does not exist");
+                throw new Exception( "Base Directory does not exist" );
             }
 
-            CurrentDir = Environment.CurrentDirectory + "\\config\\";
+            CurrentDir = Path.Combine( localDir, "config" );
         }
 
-        public List<Config> Load(string PluginName, string FileName)
+        public List<Config> Load ( string PluginName, string FileName )
         {
             string LoadPath = CurrentDir;
 
-            if (PluginName != null && PluginName.Length > 0)
+            if ( PluginName != null && PluginName.Length > 0 )
             {
-                LoadPath += PluginName + "\\";
+                LoadPath = Path.Combine( LoadPath, PluginName );
             }
 
-            if (!Directory.Exists(LoadPath))
+            if ( !Directory.Exists( LoadPath ) )
             {
-                Directory.CreateDirectory(LoadPath);
+                Directory.CreateDirectory( LoadPath );
             }
 
-            if (FileName != null && FileName.Length > 0)
+            if ( FileName != null && FileName.Length > 0 )
             {
-                LoadPath += FileName;
+                LoadPath = Path.Combine( LoadPath, FileName );
             }
             else
             {
                 return null;
             }
 
-            if (!File.Exists(LoadPath))
+            if ( !File.Exists( LoadPath ) )
             {
-                FileStream newfile = File.Create(LoadPath);
+                FileStream newfile = File.Create( LoadPath );
                 newfile.Flush();
                 newfile.Close();
                 newfile.Dispose();
             }
 
             List<Config> Output = new List<Config>();
-            StreamReader r = new StreamReader(LoadPath);
+            StreamReader r = new StreamReader( LoadPath );
 
             string input;
 
-            Regex configMatcher = new Regex(@"([^\\=]*(\\=)*\\*)+", RegexOptions.ECMAScript);
+            Regex configMatcher = new Regex( @"([^\\=]*(\\=)*\\*)+", RegexOptions.ECMAScript );
 
-            while ((input = r.ReadLine()) != null)
+            while ( ( input = r.ReadLine() ) != null )
             {
                 // Skip over comments
-                if (input.StartsWith("//"))
+                if ( input.StartsWith( "//" ) )
                 {
                     continue;
                 }
 
                 // Otherwise, check if valid line and add
-                if (input.Length > 3 && input.Contains("="))
+                if ( input.Length > 3 && input.Contains( "=" ) )
                 {
-                    MatchCollection parts = configMatcher.Matches(input);
-                    if (parts.Count == 4)
+                    MatchCollection parts = configMatcher.Matches( input );
+                    if ( parts.Count == 4 )
                     {
                         string key = parts[0].Value;
                         string value = parts[2].Value;
-                        Console.WriteLine("{0} ::: {1}", key, value);
-                        Output.Add(new Config(key, value, true));
+                        //Console.WriteLine( "{0} ::: {1}", key, value );
+                        Output.Add( new Config( key, value, true ) );
                     }
                     //string[] parts = input.Split('=');
                     //string value = parts[1];
@@ -174,28 +175,28 @@ namespace ConfigManager
             return Output;
         }
 
-        public bool Save(List<Config> bits, string PluginName, string FileName)
+        public bool Save ( List<Config> bits, string PluginName, string FileName )
         {
-            if (bits == null)
+            if ( bits == null )
             {
                 return false;
             }
 
             string SavePath = CurrentDir;
 
-            if (PluginName != null && PluginName.Length > 0)
+            if ( PluginName != null && PluginName.Length > 0 )
             {
-                SavePath += PluginName + "\\";
+                SavePath = Path.Combine( SavePath, PluginName );
             }
 
-            if (!Directory.Exists(SavePath))
+            if ( !Directory.Exists( SavePath ) )
             {
-                Directory.CreateDirectory(SavePath);
+                Directory.CreateDirectory( SavePath );
             }
 
-            if (FileName != null && FileName.Length > 0)
+            if ( FileName != null && FileName.Length > 0 )
             {
-                SavePath += FileName;
+                SavePath = Path.Combine( SavePath, FileName );
             }
             else
             {
@@ -209,18 +210,18 @@ namespace ConfigManager
 
             try
             {
-                StreamWriter w = new StreamWriter(SavePath, false);
+                StreamWriter w = new StreamWriter( SavePath, false );
 
-                foreach (Config c in bits)
+                foreach ( Config c in bits )
                 {
-                    w.WriteLine("{0}={1}", c.Index, c.EscapedValue);
+                    w.WriteLine( "{0}={1}", c.Index, c.EscapedValue );
                 }
 
                 w.Flush();
                 w.Close();
                 w.Dispose();
             }
-            catch (Exception ex)
+            catch ( Exception ex )
             {
                 throw ex;
                 return false;
