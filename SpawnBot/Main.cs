@@ -15,7 +15,7 @@ using xIrcNet;
 using ConfigManager;
 
 /*
-    Copyright 2012-2013 Michael Schwarz
+    Copyright 2012-2014 Michael Schwarz
   
     This file is part of SpawnBot.
 
@@ -66,7 +66,7 @@ namespace SpawnBot
             Console.BackgroundColor = ConsoleColor.DarkBlue;
             Console.ForegroundColor = ConsoleColor.White;
 
-            Console.WriteLine("SpawnBot - Copyright (C) 2012 - 2013 Michael Schwarz                           ");
+            Console.WriteLine("SpawnBot - Copyright (C) 2012 - 2014 Michael Schwarz                           ");
             Console.WriteLine("This program comes with ABSOLUTELY NO WARRANTY.                                ");
             Console.WriteLine("This is free software, and you are welcome to redistribute it                  ");
             Console.WriteLine("under certain conditions; Read COPYING for details.                            ");

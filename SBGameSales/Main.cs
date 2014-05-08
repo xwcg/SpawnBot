@@ -7,7 +7,7 @@ using System.Xml;
 using System.ServiceModel.Syndication;
 
 /*
-    Copyright 2012-2013 Michael Schwarz
+    Copyright 2012-2014 Michael Schwarz
   
     This file is part of SpawnBot.
 

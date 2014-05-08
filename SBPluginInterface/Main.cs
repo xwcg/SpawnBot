@@ -5,7 +5,7 @@ using System.Text;
 using ConfigManager;
 
 /*
-    Copyright 2012-2013 Michael Schwarz
+    Copyright 2012-2014 Michael Schwarz
   
     This file is part of SpawnBot.
 

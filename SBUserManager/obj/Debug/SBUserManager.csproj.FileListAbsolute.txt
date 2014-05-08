@@ -10,3 +10,7 @@ C:\Users\Watashi\Documents\GitHub\SpawnBot\SpawnBot\bin\Debug\Plugins\SBUserMana
 C:\Users\Watashi\Documents\GitHub\SpawnBot\SBUserManager\obj\Debug\SBUserManager.dll
 C:\Users\Watashi\Documents\GitHub\SpawnBot\SBUserManager\obj\Debug\SBUserManager.pdb
 C:\Users\Watashi\Documents\GitHub\SpawnBot\SBUserManager\obj\Debug\SBUserManager.csprojResolveAssemblyReference.cache
+C:\Users\mschwarz\Documents\GitHub\SpawnBot\SpawnBot\bin\Debug\Plugins\SBUserManager.dll
+C:\Users\mschwarz\Documents\GitHub\SpawnBot\SpawnBot\bin\Debug\Plugins\SBUserManager.pdb
+C:\Users\mschwarz\Documents\GitHub\SpawnBot\SBUserManager\obj\Debug\SBUserManager.dll
+C:\Users\mschwarz\Documents\GitHub\SpawnBot\SBUserManager\obj\Debug\SBUserManager.pdb

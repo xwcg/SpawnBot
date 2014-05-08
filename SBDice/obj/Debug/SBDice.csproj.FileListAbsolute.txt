@@ -10,3 +10,8 @@ C:\Users\Watashi\Documents\GitHub\SpawnBot\SpawnBot\bin\Debug\Plugins\SBDice.pdb
 C:\Users\Watashi\Documents\GitHub\SpawnBot\SBDice\obj\Debug\SBDice.csprojResolveAssemblyReference.cache
 C:\Users\Watashi\Documents\GitHub\SpawnBot\SBDice\obj\Debug\SBDice.dll
 C:\Users\Watashi\Documents\GitHub\SpawnBot\SBDice\obj\Debug\SBDice.pdb
+C:\Users\mschwarz\Documents\GitHub\SpawnBot\SpawnBot\bin\Debug\Plugins\SBDice.dll
+C:\Users\mschwarz\Documents\GitHub\SpawnBot\SpawnBot\bin\Debug\Plugins\SBDice.pdb
+C:\Users\mschwarz\Documents\GitHub\SpawnBot\SBDice\obj\Debug\SBDice.csprojResolveAssemblyReference.cache
+C:\Users\mschwarz\Documents\GitHub\SpawnBot\SBDice\obj\Debug\SBDice.dll
+C:\Users\mschwarz\Documents\GitHub\SpawnBot\SBDice\obj\Debug\SBDice.pdb

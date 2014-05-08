@@ -16,3 +16,8 @@ C:\Users\Watashi\Documents\GitHub\SpawnBot\SpawnBot\bin\Debug\Plugins\SBTwitter.
 C:\Users\Watashi\Documents\GitHub\SpawnBot\SBTwitter\obj\Debug\SBTwitter.csprojResolveAssemblyReference.cache
 C:\Users\Watashi\Documents\GitHub\SpawnBot\SBTwitter\obj\Debug\SBTwitter.dll
 C:\Users\Watashi\Documents\GitHub\SpawnBot\SBTwitter\obj\Debug\SBTwitter.pdb
+C:\Users\mschwarz\Documents\GitHub\SpawnBot\SpawnBot\bin\Debug\Plugins\SBTwitter.dll
+C:\Users\mschwarz\Documents\GitHub\SpawnBot\SpawnBot\bin\Debug\Plugins\SBTwitter.pdb
+C:\Users\mschwarz\Documents\GitHub\SpawnBot\SBTwitter\obj\Debug\SBTwitter.csprojResolveAssemblyReference.cache
+C:\Users\mschwarz\Documents\GitHub\SpawnBot\SBTwitter\obj\Debug\SBTwitter.dll
+C:\Users\mschwarz\Documents\GitHub\SpawnBot\SBTwitter\obj\Debug\SBTwitter.pdb

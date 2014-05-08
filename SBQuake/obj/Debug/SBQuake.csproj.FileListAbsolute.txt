@@ -8,3 +8,7 @@ C:\Users\Watashi\Documents\GitHub\SpawnBot\SpawnBot\bin\Debug\Plugins\SBQuake.pd
 C:\Users\Watashi\Documents\GitHub\SpawnBot\SBQuake\obj\Debug\SBQuake.dll
 C:\Users\Watashi\Documents\GitHub\SpawnBot\SBQuake\obj\Debug\SBQuake.pdb
 C:\Users\Watashi\Documents\GitHub\SpawnBot\SBQuake\obj\Debug\SBQuake.csprojResolveAssemblyReference.cache
+C:\Users\mschwarz\Documents\GitHub\SpawnBot\SpawnBot\bin\Debug\Plugins\SBQuake.dll
+C:\Users\mschwarz\Documents\GitHub\SpawnBot\SpawnBot\bin\Debug\Plugins\SBQuake.pdb
+C:\Users\mschwarz\Documents\GitHub\SpawnBot\SBQuake\obj\Debug\SBQuake.dll
+C:\Users\mschwarz\Documents\GitHub\SpawnBot\SBQuake\obj\Debug\SBQuake.pdb
