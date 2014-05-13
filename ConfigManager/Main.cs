@@ -33,13 +33,14 @@ namespace ConfigManager
 
         public Config ( string index, string value, bool isEscaped )
         {
-            _Index = index;
             if ( isEscaped )
             {
+                EscapedIndex = index;
                 EscapedValue = value;
             }
             else
             {
+                _Index = index;
                 _Value = value;
             }
         }
@@ -55,6 +56,18 @@ namespace ConfigManager
             get
             {
                 return _Index;
+            }
+        }
+
+        public string EscapedIndex
+        {
+            get
+            {
+                return _Index.Replace( "=", "\\=" );
+            }
+            set
+            {
+                _Index = value.Replace( "\\=", "=" );
             }
         }
 
@@ -100,6 +113,51 @@ namespace ConfigManager
 
             CurrentDir = Path.Combine( localDir, "config" );
         }
+        
+        public Dictionary<T, T2> Load<T, T2> ( string PluginName, string FileName )
+        {
+            List<Config> cfgs = this.Load( PluginName, FileName );
+            if ( cfgs == null )
+                return null;
+
+            Dictionary<T, T2> ret = new Dictionary<T, T2>();
+
+            if ( typeof( T2 ) == ( new List<string>() ).GetType() )
+            {
+                foreach ( Config i in cfgs )
+                {
+                    T key = (T)Convert.ChangeType( i.Index, typeof( T ) );
+                    List<string> vals = new List<string>( i.Value.Split( ';' ) );
+                    T2 val = (T2)Convert.ChangeType( vals, typeof( T2 ) );
+                    ret.Add( key, val );
+                }
+            }
+            else
+            {
+                foreach ( Config i in cfgs )
+                {
+                    T key = (T)Convert.ChangeType( i.Index, typeof( T ) );
+                    T2 val = (T2)Convert.ChangeType( i.Value, typeof( T2 ) );
+                    ret.Add( key, val );
+                }
+            }
+            return ret;
+        }
+
+        public List<T> Load<T> ( string PluginName, string FileName )
+        {
+            List<Config> cfgs = this.Load( PluginName, FileName );
+            if ( cfgs == null )
+                return null;
+
+            List<T> ret = new List<T>();
+            foreach ( Config i in cfgs )
+            {
+                ret.Add( (T)Convert.ChangeType( i.Value, typeof( T ) ) );
+            }
+
+            return ret;
+        }
 
         public List<Config> Load ( string PluginName, string FileName )
         {
@@ -129,7 +187,7 @@ namespace ConfigManager
                 FileStream newfile = File.Create( LoadPath );
                 newfile.Flush();
                 newfile.Close();
-                newfile.Dispose();
+                //newfile.Dispose();
             }
 
             List<Config> Output = new List<Config>();
@@ -170,11 +228,66 @@ namespace ConfigManager
             }
 
             r.Close();
-            r.Dispose();
+            //r.Dispose();
 
             return Output;
         }
 
+        /// <summary>
+        /// Save a String-list to a config file for a plugin and filename
+        /// </summary>
+        /// <param name="bits">List to save</param>
+        /// <param name="PluginName">Name of the plugin</param>
+        /// <param name="FileName">Name of the file</param>
+        /// <returns>true if saved, false on error</returns>
+        public bool Save ( List<string> bits, string PluginName, string FileName )
+        {
+            List<Config> newBits = new List<Config>();
+            for ( int i = 0; i < bits.Count; i++ )
+                newBits.Add( new Config( i.ToString(), bits[i] ) );
+
+            return this.Save( newBits, PluginName, FileName );
+        }
+
+        /// <summary>
+        /// Save a Dictionary with a string key and string value to a config file for a plugin and filename
+        /// </summary>
+        /// <param name="bits">Dictionary to save</param>
+        /// <param name="PluginName">Name of the plugin</param>
+        /// <param name="FileName">Name of the file</param>
+        /// <returns>true if saved, false on error</returns>
+        public bool Save ( Dictionary<string, string> bits, string PluginName, string FileName )
+        {
+            List<Config> newBits = new List<Config>();
+            foreach ( KeyValuePair<string, string> b in bits )
+                newBits.Add( new Config( b.Key, b.Value ) );
+
+            return this.Save( newBits, PluginName, FileName );
+        }
+
+        /// <summary>
+        /// Save a Dictionary with a string key and String-list value to a config file for a plugin and filename
+        /// </summary>
+        /// <param name="bits">Dictionary to save</param>
+        /// <param name="PluginName">Name of the plugin</param>
+        /// <param name="FileName">Name of the file</param>
+        /// <returns>true if saved, false on error</returns>
+        public bool Save ( Dictionary<string, List<string>> bits, string PluginName, string FileName )
+        {
+            List<Config> newBits = new List<Config>();
+            foreach ( KeyValuePair<string, List<string>> b in bits )
+                newBits.Add( new Config( b.Key, String.Join( ";", b.Value.ToArray() ) ) );
+
+            return this.Save( newBits, PluginName, FileName );
+        }
+
+        /// <summary>
+        /// Saves a Config item list to a config file for a plugin and filename
+        /// </summary>
+        /// <param name="bits">Config items to save</param>
+        /// <param name="PluginName">Name of the plugin</param>
+        /// <param name="FileName">Name of the file</param>
+        /// <returns>true if saved, false on error</returns>
         public bool Save ( List<Config> bits, string PluginName, string FileName )
         {
             if ( bits == null )
@@ -214,16 +327,15 @@ namespace ConfigManager
 
                 foreach ( Config c in bits )
                 {
-                    w.WriteLine( "{0}={1}", c.Index, c.EscapedValue );
+                    w.WriteLine( "{0}={1}", c.EscapedIndex, c.EscapedValue );
                 }
 
                 w.Flush();
                 w.Close();
-                w.Dispose();
+                //w.Dispose();
             }
             catch ( Exception ex )
             {
-                throw ex;
                 return false;
             }
 
