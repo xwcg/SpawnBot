@@ -296,30 +296,37 @@ namespace SBTwitter
 
         private bool LoadConfig()
         {
-            List<Config> cfgfollows = Host.PluginConfigManager.Load("sbtwitter", "follows.cfg");
-            if (cfgfollows == null)
+            //List<Config> cfgfollows = Host.PluginConfigManager.Load("sbtwitter", "follows.cfg");
+            //if (cfgfollows == null)
+            //    return false;
+            //follows.Clear();
+            //foreach (Config f in cfgfollows)
+            //{
+            //    string channel = f.Index;
+            //    string[] tweeters = f.Value.Split(';');
+
+            //    follows.Add(channel, new List<string>(tweeters));
+            //}
+            //
+            //return true;
+
+            Dictionary<string, List<string>> cfgFollows = Host.PluginConfigManager.Load<string, List<string>>( "sbtwitter", "follows.cfg" );
+            if ( cfgFollows == null )
                 return false;
-            follows.Clear();
-            foreach (Config f in cfgfollows)
-            {
-                string channel = f.Index;
-                string[] tweeters = f.Value.Split(';');
 
-                follows.Add(channel, new List<string>(tweeters));
-            }
-
+            this.follows = cfgFollows;
             return true;
         }
 
         private bool SaveConfig()
         {
-            List<Config> cfgFollows = new List<Config>();
-            foreach (KeyValuePair<string, List<string>> kp in follows)
-            {
-                cfgFollows.Add(new Config(kp.Key, String.Join(";", kp.Value.ToArray())));
-            }
+            //List<Config> cfgFollows = new List<Config>();
+            //foreach (KeyValuePair<string, List<string>> kp in follows)
+            //{
+            //    cfgFollows.Add(new Config(kp.Key, String.Join(";", kp.Value.ToArray())));
+            //}
 
-            return Host.PluginConfigManager.Save(cfgFollows, "sbtwitter", "follows.cfg");
+            return Host.PluginConfigManager.Save(follows, "sbtwitter", "follows.cfg");
         }
 
         private bool AddFollow(string channel, string tweeter)
