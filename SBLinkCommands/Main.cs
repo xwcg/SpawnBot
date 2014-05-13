@@ -76,56 +76,64 @@ namespace SBLinkCommands
 
         private bool LoadDictionary ()
         {
-            List<Config> list = Host.PluginConfigManager.Load( "sblinkcommands", "cmds.cfg" );
+            //List<Config> list = Host.PluginConfigManager.Load( "sblinkcommands", "cmds.cfg" );
 
-            cmds.Clear();
+            //cmds.Clear();
 
-            if ( list == null )
-            {
+            //if ( list == null )
+            //{
+            //    return false;
+            //}
+
+            //foreach ( Config l in list )
+            //{
+            //    cmds.Add( l.Index, l.Value );
+            //}
+
+            //list = Host.PluginConfigManager.Load( "sblinkcommands", "urls.cfg" );
+
+            //urls.Clear();
+
+            //if ( list == null )
+            //{
+            //    return false;
+            //}
+
+            //foreach ( Config l in list )
+            //{
+            //    urls.Add( l.Index, l.Value );
+            //}
+
+            //return true;
+
+            cmds = Host.PluginConfigManager.Load<string, string>( "sblinkcommands", "cmds.cfg" );
+            urls = Host.PluginConfigManager.Load<string, string>( "sblinkcommands", "urls.cfg" );
+
+            if ( cmds == null && urls == null )
                 return false;
-            }
-
-            foreach ( Config l in list )
-            {
-                cmds.Add( l.Index, l.Value );
-            }
-
-            list = Host.PluginConfigManager.Load( "sblinkcommands", "urls.cfg" );
-
-            urls.Clear();
-
-            if ( list == null )
-            {
-                return false;
-            }
-
-            foreach ( Config l in list )
-            {
-                urls.Add( l.Index, l.Value );
-            }
 
             return true;
         }
 
         private void SaveDictionary ()
         {
-            List<Config> list = new List<Config>();
+            //List<Config> list = new List<Config>();
 
-            foreach ( KeyValuePair<string, string> Peeve in cmds )
-            {
-                list.Add( new Config( Peeve.Key, Peeve.Value ) );
-            }
+            //foreach ( KeyValuePair<string, string> Peeve in cmds )
+            //{
+            //    list.Add( new Config( Peeve.Key, Peeve.Value ) );
+            //}
 
-            Host.PluginConfigManager.Save( list, "sblinkcommands", "cmds.cfg" );
+            Host.PluginConfigManager.Save( cmds, "sblinkcommands", "cmds.cfg" );
 
-            list = new List<Config>();
+            //list = new List<Config>();
 
-            foreach ( KeyValuePair<string, string> Peeve in urls )
-            {
-                list.Add( new Config( Peeve.Key, Peeve.Value ) );
-            }
+            //foreach ( KeyValuePair<string, string> Peeve in urls )
+            //{
+            //    list.Add( new Config( Peeve.Key, Peeve.Value ) );
+            //}
 
-            Host.PluginConfigManager.Save( list, "sblinkcommands", "urls.cfg" );
+            Host.PluginConfigManager.Save( urls, "sblinkcommands", "urls.cfg" );
         }
 
         void Host_eventPluginChannelCommandReceived ( string name, string channel, string command, string[] parameters )
