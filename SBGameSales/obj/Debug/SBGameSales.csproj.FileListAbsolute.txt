@@ -8,3 +8,8 @@ C:\Users\Watashi\Documents\GitHub\SpawnBot\SpawnBot\bin\Debug\Plugins\SBGameSale
 C:\Users\Watashi\Documents\GitHub\SpawnBot\SBGameSales\obj\Debug\SBGameSales.csprojResolveAssemblyReference.cache
 C:\Users\Watashi\Documents\GitHub\SpawnBot\SBGameSales\obj\Debug\SBGameSales.dll
 C:\Users\Watashi\Documents\GitHub\SpawnBot\SBGameSales\obj\Debug\SBGameSales.pdb
+C:\Users\mschwarz\Documents\GitHub\SpawnBot\SpawnBot\bin\Debug\Plugins\SBGameSales.dll
+C:\Users\mschwarz\Documents\GitHub\SpawnBot\SpawnBot\bin\Debug\Plugins\SBGameSales.pdb
+C:\Users\mschwarz\Documents\GitHub\SpawnBot\SBGameSales\obj\Debug\SBGameSales.csprojResolveAssemblyReference.cache
+C:\Users\mschwarz\Documents\GitHub\SpawnBot\SBGameSales\obj\Debug\SBGameSales.dll
+C:\Users\mschwarz\Documents\GitHub\SpawnBot\SBGameSales\obj\Debug\SBGameSales.pdb

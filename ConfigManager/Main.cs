@@ -6,7 +6,7 @@ using System.IO;
 using System.Text.RegularExpressions;
 
 /*
-    Copyright 2012-2013 Michael Schwarz
+    Copyright 2012-2014 Michael Schwarz
   
     This file is part of SpawnBot.
 
@@ -31,20 +31,21 @@ namespace ConfigManager
         private string _Index;
         private string _Value;
 
-        public Config(string index, string value, bool isEscaped)
+        public Config ( string index, string value, bool isEscaped )
         {
-            _Index = index;
-            if (isEscaped)
+            if ( isEscaped )
             {
+                EscapedIndex = index;
                 EscapedValue = value;
             }
             else
             {
+                _Index = index;
                 _Value = value;
             }
         }
 
-        public Config(string index, string value)
+        public Config ( string index, string value )
         {
             _Index = index;
             _Value = value;
@@ -55,6 +56,18 @@ namespace ConfigManager
             get
             {
                 return _Index;
+            }
+        }
+
+        public string EscapedIndex
+        {
+            get
+            {
+                return _Index.Replace( "=", "\\=" );
+            }
+            set
+            {
+                _Index = value.Replace( "\\=", "=" );
             }
         }
 
@@ -70,11 +83,11 @@ namespace ConfigManager
         {
             get
             {
-                return _Value.Replace("=", "\\=");
+                return _Value.Replace( "=", "\\=" );
             }
             set
             {
-                _Value = value.Replace("\\=", "=");
+                _Value = value.Replace( "\\=", "=" );
             }
         }
     }
@@ -83,79 +96,125 @@ namespace ConfigManager
     {
         private string CurrentDir;
 
-        public Manager()
+        public Manager ()
         {
-            if (Directory.Exists(Environment.CurrentDirectory))
+            string localDir = Environment.CurrentDirectory;
+            if ( Directory.Exists( localDir ) )
             {
-                if (!Directory.Exists(Environment.CurrentDirectory + "\\config\\"))
+                if ( !Directory.Exists( Path.Combine( localDir, "config" ) ) )
                 {
-                    Directory.CreateDirectory(Environment.CurrentDirectory + "\\config\\");
+                    Directory.CreateDirectory( Path.Combine( localDir, "config" ) );
                 }
             }
             else
             {
-                throw new Exception("Base Directory does not exist");
+                throw new Exception( "Base Directory does not exist" );
             }
 
-            CurrentDir = Environment.CurrentDirectory + "\\config\\";
+            CurrentDir = Path.Combine( localDir, "config" );
+        }
+        
+        public Dictionary<T, T2> Load<T, T2> ( string PluginName, string FileName )
+        {
+            List<Config> cfgs = this.Load( PluginName, FileName );
+            if ( cfgs == null )
+                return null;
+
+            Dictionary<T, T2> ret = new Dictionary<T, T2>();
+
+            if ( typeof( T2 ) == ( new List<string>() ).GetType() )
+            {
+                foreach ( Config i in cfgs )
+                {
+                    T key = (T)Convert.ChangeType( i.Index, typeof( T ) );
+                    List<string> vals = new List<string>( i.Value.Split( ';' ) );
+                    T2 val = (T2)Convert.ChangeType( vals, typeof( T2 ) );
+                    ret.Add( key, val );
+                }
+            }
+            else
+            {
+                foreach ( Config i in cfgs )
+                {
+                    T key = (T)Convert.ChangeType( i.Index, typeof( T ) );
+                    T2 val = (T2)Convert.ChangeType( i.Value, typeof( T2 ) );
+                    ret.Add( key, val );
+                }
+            }
+            return ret;
         }
 
-        public List<Config> Load(string PluginName, string FileName)
+        public List<T> Load<T> ( string PluginName, string FileName )
+        {
+            List<Config> cfgs = this.Load( PluginName, FileName );
+            if ( cfgs == null )
+                return null;
+
+            List<T> ret = new List<T>();
+            foreach ( Config i in cfgs )
+            {
+                ret.Add( (T)Convert.ChangeType( i.Value, typeof( T ) ) );
+            }
+
+            return ret;
+        }
+
+        public List<Config> Load ( string PluginName, string FileName )
         {
             string LoadPath = CurrentDir;
 
-            if (PluginName != null && PluginName.Length > 0)
+            if ( PluginName != null && PluginName.Length > 0 )
             {
-                LoadPath += PluginName + "\\";
+                LoadPath = Path.Combine( LoadPath, PluginName );
             }
 
-            if (!Directory.Exists(LoadPath))
+            if ( !Directory.Exists( LoadPath ) )
             {
-                Directory.CreateDirectory(LoadPath);
+                Directory.CreateDirectory( LoadPath );
             }
 
-            if (FileName != null && FileName.Length > 0)
+            if ( FileName != null && FileName.Length > 0 )
             {
-                LoadPath += FileName;
+                LoadPath = Path.Combine( LoadPath, FileName );
             }
             else
             {
                 return null;
             }
 
-            if (!File.Exists(LoadPath))
+            if ( !File.Exists( LoadPath ) )
             {
-                FileStream newfile = File.Create(LoadPath);
+                FileStream newfile = File.Create( LoadPath );
                 newfile.Flush();
                 newfile.Close();
-                newfile.Dispose();
+                //newfile.Dispose();
             }
 
             List<Config> Output = new List<Config>();
-            StreamReader r = new StreamReader(LoadPath);
+            StreamReader r = new StreamReader( LoadPath );
 
             string input;
 
-            Regex configMatcher = new Regex(@"([^\\=]*(\\=)*\\*)+", RegexOptions.ECMAScript);
+            Regex configMatcher = new Regex( @"([^\\=]*(\\=)*\\*)+", RegexOptions.ECMAScript );
 
-            while ((input = r.ReadLine()) != null)
+            while ( ( input = r.ReadLine() ) != null )
             {
                 // Skip over comments
-                if (input.StartsWith("//"))
+                if ( input.StartsWith( "//" ) )
                 {
                     continue;
                 }
 
                 // Otherwise, check if valid line and add
-                if (input.Length > 3 && input.Contains("="))
+                if ( input.Length > 3 && input.Contains( "=" ) )
                 {
-                    MatchCollection parts = configMatcher.Matches(input);
-                    if (parts.Count == 4)
+                    MatchCollection parts = configMatcher.Matches( input );
+                    if ( parts.Count == 4 )
                     {
                         string key = parts[0].Value;
                         string value = parts[2].Value;
-                        Console.WriteLine("{0} ::: {1}", key, value);
-                        Output.Add(new Config(key, value, true));
+                        //Console.WriteLine( "{0} ::: {1}", key, value );
+                        Output.Add( new Config( key, value, true ) );
                     }
                     //string[] parts = input.Split('=');
                     //string value = parts[1];
@@ -169,33 +228,88 @@ namespace ConfigManager
             }
 
             r.Close();
-            r.Dispose();
+            //r.Dispose();
 
             return Output;
         }
 
-        public bool Save(List<Config> bits, string PluginName, string FileName)
+        /// <summary>
+        /// Save a String-list to a config file for a plugin and filename
+        /// </summary>
+        /// <param name="bits">List to save</param>
+        /// <param name="PluginName">Name of the plugin</param>
+        /// <param name="FileName">Name of the file</param>
+        /// <returns>true if saved, false on error</returns>
+        public bool Save ( List<string> bits, string PluginName, string FileName )
         {
-            if (bits == null)
+            List<Config> newBits = new List<Config>();
+            for ( int i = 0; i < bits.Count; i++ )
+                newBits.Add( new Config( i.ToString(), bits[i] ) );
+
+            return this.Save( newBits, PluginName, FileName );
+        }
+
+        /// <summary>
+        /// Save a Dictionary with a string key and string value to a config file for a plugin and filename
+        /// </summary>
+        /// <param name="bits">Dictionary to save</param>
+        /// <param name="PluginName">Name of the plugin</param>
+        /// <param name="FileName">Name of the file</param>
+        /// <returns>true if saved, false on error</returns>
+        public bool Save ( Dictionary<string, string> bits, string PluginName, string FileName )
+        {
+            List<Config> newBits = new List<Config>();
+            foreach ( KeyValuePair<string, string> b in bits )
+                newBits.Add( new Config( b.Key, b.Value ) );
+
+            return this.Save( newBits, PluginName, FileName );
+        }
+
+        /// <summary>
+        /// Save a Dictionary with a string key and String-list value to a config file for a plugin and filename
+        /// </summary>
+        /// <param name="bits">Dictionary to save</param>
+        /// <param name="PluginName">Name of the plugin</param>
+        /// <param name="FileName">Name of the file</param>
+        /// <returns>true if saved, false on error</returns>
+        public bool Save ( Dictionary<string, List<string>> bits, string PluginName, string FileName )
+        {
+            List<Config> newBits = new List<Config>();
+            foreach ( KeyValuePair<string, List<string>> b in bits )
+                newBits.Add( new Config( b.Key, String.Join( ";", b.Value.ToArray() ) ) );
+
+            return this.Save( newBits, PluginName, FileName );
+        }
+
+        /// <summary>
+        /// Saves a Config item list to a config file for a plugin and filename
+        /// </summary>
+        /// <param name="bits">Config items to save</param>
+        /// <param name="PluginName">Name of the plugin</param>
+        /// <param name="FileName">Name of the file</param>
+        /// <returns>true if saved, false on error</returns>
+        public bool Save ( List<Config> bits, string PluginName, string FileName )
+        {
+            if ( bits == null )
             {
                 return false;
             }
 
             string SavePath = CurrentDir;
 
-            if (PluginName != null && PluginName.Length > 0)
+            if ( PluginName != null && PluginName.Length > 0 )
             {
-                SavePath += PluginName + "\\";
+                SavePath = Path.Combine( SavePath, PluginName );
             }
 
-            if (!Directory.Exists(SavePath))
+            if ( !Directory.Exists( SavePath ) )
             {
-                Directory.CreateDirectory(SavePath);
+                Directory.CreateDirectory( SavePath );
             }
 
-            if (FileName != null && FileName.Length > 0)
+            if ( FileName != null && FileName.Length > 0 )
             {
-                SavePath += FileName;
+                SavePath = Path.Combine( SavePath, FileName );
             }
             else
             {
@@ -209,20 +323,19 @@ namespace ConfigManager
 
             try
             {
-                StreamWriter w = new StreamWriter(SavePath, false);
+                StreamWriter w = new StreamWriter( SavePath, false );
 
-                foreach (Config c in bits)
+                foreach ( Config c in bits )
                 {
-                    w.WriteLine("{0}={1}", c.Index, c.EscapedValue);
+                    w.WriteLine( "{0}={1}", c.EscapedIndex, c.EscapedValue );
                 }
 
                 w.Flush();
                 w.Close();
-                w.Dispose();
+                //w.Dispose();
             }
-            catch (Exception ex)
+            catch ( Exception ex )
             {
-                throw ex;
                 return false;
             }
 

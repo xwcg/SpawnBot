@@ -6,7 +6,7 @@ using SBPluginInterface;
 using System.Net;
 
 /*
-    Copyright 2012-2013 Michael Schwarz
+    Copyright 2012-2014 Michael Schwarz
   
     This file is part of SpawnBot.
 
@@ -98,6 +98,12 @@ namespace SBSpawnPlugins
                     if (channel.ToLower().Contains("mhykol"))
                     {
                         Host.PluginResponse(channel, "http://goo.gl/88F58");
+                    }
+                    break;
+                case "lmgtfy":
+                    if (parameters.Length > 0)
+                    {
+                        Host.PluginResponse(channel, String.Format("http://lmgtfy.com/?q={0}", String.Join("+", parameters)));
                     }
                     break;
                 case "server":
