@@ -7,7 +7,7 @@ using System.Timers;
 
 namespace SBTimegiver
 {
-    public class Main : SBPlugin
+    public class Main : SBTimePlugin
     {
         private SBPluginHost Host;
         private Timer timer = new Timer();
@@ -18,7 +18,7 @@ namespace SBTimegiver
         {
             get
             {
-                return "SBTimegiver";
+                return "SpawnBot TimeGiver";
             }
         }
 
@@ -80,12 +80,6 @@ namespace SBTimegiver
                 onSecond();
         }
 
-
-        public delegate void Tick();
-
-        public event Tick onSecond;
-        public event Tick onMinute;
-        public event Tick onHour;
-
+        public event TimeTick onSecond;
     }
 }

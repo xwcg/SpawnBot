@@ -58,7 +58,10 @@ namespace SpawnBot
 
         private static PluginService plugins = new PluginService();
         private static SBUserPlugin UserManager;
+        private static SBTimePlugin TimeGiver;
         private static Manager CfgManager = new Manager();
+        private static Regex MessageSplitter = new Regex(@"!?[^ ""]+|""[^""]*""", RegexOptions.CultureInvariant | RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
         #endregion
 
         static void Main(string[] args)
@@ -66,7 +69,7 @@ namespace SpawnBot
             Console.BackgroundColor = ConsoleColor.DarkBlue;
             Console.ForegroundColor = ConsoleColor.White;
 
-            Console.WriteLine("SpawnBot - Copyright (C) 2012 - 2013 Michael Schwarz                           ");
+            Console.WriteLine("SpawnBot - Copyright (C) 2012 - 2015 Michael Schwarz                           ");
             Console.WriteLine("This program comes with ABSOLUTELY NO WARRANTY.                                ");
             Console.WriteLine("This is free software, and you are welcome to redistribute it                  ");
             Console.WriteLine("under certain conditions; Read COPYING for details.                            ");
@@ -94,6 +97,7 @@ namespace SpawnBot
                 switch (cmdparts[0])
                 {
                     case "quit":
+                    case "q":
                         if (cmdparts.Length > 1)
                         {
                             IrcService.Disconnect(cmd.Substring(5), false);
@@ -105,9 +109,11 @@ namespace SpawnBot
                         Environment.Exit(0);
                         break;
                     case "connect":
+                    case "con":
                         IrcService.Connect();
                         break;
                     case "disconnect":
+                    case "disco":
                         if (cmdparts.Length > 1)
                         {
                             IrcService.Disconnect(cmd.Substring(11), false);
@@ -149,6 +155,7 @@ namespace SpawnBot
                         }
                         break;
                     case "refreshusers":
+                    case "allnames":
                         foreach (string channel in Channels)
                         {
                             SendCommand("NAMES " + channel);
@@ -169,21 +176,42 @@ namespace SpawnBot
 
             plugins.FindPlugins(Environment.CurrentDirectory + "\\Plugins\\");
 
+            // Load Plugins first
             foreach (AvailablePlugin p in plugins.AvailablePlugins)
             {
-                p.Instance.PluginHost = this;
                 Logger.WriteLine("* Loaded Plugin: " + p.Instance.PluginName + " - v" + p.Instance.Version, ConsoleColor.DarkGreen);
             }
 
-            UserManager = (SBUserPlugin)plugins.AvailablePlugins.FindUserManager().Instance;
+            try
+            {
+                UserManager = (SBUserPlugin)plugins.AvailablePlugins.FindUserManager().Instance;
+                TimeGiver = (SBTimePlugin)plugins.AvailablePlugins.FindTimeGiver().Instance;
+            }
+            catch (Exception) { }
 
             if (UserManager == null)
             {
-                Logger.WriteLine("**** No User Manager Found. Exiting.", ConsoleColor.DarkRed);
+                Logger.WriteLine("**** User Manager: NOT FOUND. Exiting.", ConsoleColor.DarkRed);
                 Environment.Exit(1);
             }
 
+            if (TimeGiver == null)
+            {
+                Logger.WriteLine("**** Timegiver: NOT FOUND.", ConsoleColor.DarkRed);
+            }
+            else
+            {
+                Logger.WriteLine("* Timegiver: " + TimeGiver.PluginName, ConsoleColor.Green);
+            }
+
             Logger.WriteLine("* User Manager: " + UserManager.PluginName, ConsoleColor.Green);
+
+            // Initialize plugins later
+            foreach (AvailablePlugin p in plugins.AvailablePlugins)
+            {
+                p.Instance.PluginHost = this;
+                Logger.WriteLine("* Started Plugin: " + p.Instance.PluginName + " - v" + p.Instance.Version, ConsoleColor.DarkGreen);
+            }
 
             // Start Service
 
@@ -525,7 +553,15 @@ namespace SpawnBot
         {
             if (message.StartsWith("!"))
             {
-                string[] parts = message.Split(' ');
+                List<string> partsList = new List<string>();
+                MatchCollection messageMatches = MessageSplitter.Matches(message);
+
+                foreach (Match m in messageMatches)
+                {
+                    partsList.Add(m.Value);
+                }
+
+                string[] parts = partsList.ToArray();
 
                 if (parts[0].Length == 1)
                 {
@@ -626,7 +662,15 @@ namespace SpawnBot
                     }
                 }
 
-                string[] parts = message.Split(' ');
+                List<string> partsList = new List<string>();
+                MatchCollection messageMatches = MessageSplitter.Matches(message);
+
+                foreach (Match m in messageMatches)
+                {
+                    partsList.Add(m.Value);
+                }
+
+                string[] parts = partsList.ToArray();
 
                 if (parts[0].Length == 1)
                 {
@@ -747,6 +791,16 @@ namespace SpawnBot
             }
         }
 
+        public SBTimePlugin PluginTimegiver
+        {
+            get
+            {
+                return TimeGiver;
+            }
+        }
+
         #endregion
+
+
     }
 }

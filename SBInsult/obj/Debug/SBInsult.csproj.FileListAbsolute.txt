@@ -10,3 +10,8 @@ C:\Users\Watashi\Documents\GitHub\SpawnBot\SpawnBot\bin\Debug\Plugins\SBInsult.p
 C:\Users\Watashi\Documents\GitHub\SpawnBot\SBInsult\obj\Debug\SBInsult.csprojResolveAssemblyReference.cache
 C:\Users\Watashi\Documents\GitHub\SpawnBot\SBInsult\obj\Debug\SBInsult.dll
 C:\Users\Watashi\Documents\GitHub\SpawnBot\SBInsult\obj\Debug\SBInsult.pdb
+F:\#Documents\GitHub\SpawnBot\SpawnBot\bin\Debug\Plugins\SBInsult.dll
+F:\#Documents\GitHub\SpawnBot\SpawnBot\bin\Debug\Plugins\SBInsult.pdb
+F:\#Documents\GitHub\SpawnBot\SBInsult\obj\Debug\SBInsult.csprojResolveAssemblyReference.cache
+F:\#Documents\GitHub\SpawnBot\SBInsult\obj\Debug\SBInsult.dll
+F:\#Documents\GitHub\SpawnBot\SBInsult\obj\Debug\SBInsult.pdb

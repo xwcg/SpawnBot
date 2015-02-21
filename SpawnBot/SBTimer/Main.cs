@@ -9,9 +9,16 @@ namespace SBTimer
     public class Main : SBPlugin
     {
         private SBPluginHost Host;
-        private SBTimegiver.Main Timegiver;
-        private Dictionary<string, DateTime> Timers = new Dictionary<string, DateTime>();
+        private List<TimerInfo> Timers = new List<TimerInfo>();
 
+        private class TimerInfo
+        {
+            public string Channel;
+            public string Username;
+            public string Name;
+            public DateTime EndTime;
+            public Boolean Expired;
+        }
 
         #region SBPlugin Members
 
@@ -60,20 +67,27 @@ namespace SBTimer
             set
             {
                 Host = value;
-                
-                this.Timegiver = (SBTimegiver.Main)Host.FindPlugin("SBTimegiver");
 
-                if (this.Timegiver == null)
-                    xLogger.Logger.WriteLine("Timegiver not found", ConsoleColor.Red);
-                else
+                if (Host.PluginTimegiver != null)
                 {
-                    xLogger.Logger.WriteLine("Timegiver found!", ConsoleColor.Green);
-
-                    Timegiver.onSecond += Timegiver_onSecond;
+                    Host.PluginTimegiver.onSecond += PluginTimegiver_onSecond;
                     Host.eventPluginChannelCommandReceived += Host_eventPluginChannelCommandReceived;
                 }
+
+                //this.Timegiver = (SBTimegiver.Main)Host.FindPlugin("SBTimegiver");
+
+                //if (this.Timegiver == null)
+                //    xLogger.Logger.WriteLine("Timegiver not found", ConsoleColor.Red);
+                //else
+                //{
+                //    xLogger.Logger.WriteLine("Timegiver found!", ConsoleColor.Green);
+
+                //    Timegiver.onSecond += Timegiver_onSecond;
+                //    Host.eventPluginChannelCommandReceived += Host_eventPluginChannelCommandReceived;
+                //}
             }
         }
+
 
         public void Dispose()
         {
@@ -82,24 +96,24 @@ namespace SBTimer
 
         #endregion
 
-        void Timegiver_onSecond()
+        void PluginTimegiver_onSecond()
         {
             DateTime now = DateTime.Now;
-            foreach (KeyValuePair<string, DateTime> t in Timers)
+
+            for (int i = 0; i < Timers.Count; i++)
             {
-                if (t.Value <= now)
+                TimerInfo timer = Timers[i];
+                if (!timer.Expired && timer.EndTime.Ticks <= now.Ticks)
                 {
-                    string[] vals = t.Key.Split(';');
-
-                    Host.PluginResponse(vals[0], String.Format("{0}, your timer '{1}' has expired!", vals[1], vals[2]));
-
-                    Timers.Remove(t.Key);
+                    Host.PluginResponse(timer.Channel, String.Format("{0}, your timer '{1}' has elapsed!", timer.Username, timer.Name));
+                    Timers[i].Expired = true;
                 }
             }
         }
-
+        
         void Host_eventPluginChannelCommandReceived(string name, string channel, string command, string[] parameters)
         {
+            // !timer add "Tea Timer" 1h10m10s
             if (command == "timer")
             {
                 if (parameters.Length > 0)
@@ -107,16 +121,54 @@ namespace SBTimer
                     switch (parameters[0])
                     {
                         case "add":
-                            if (parameters.Length >= 2)
+                            if (parameters.Length >= 3)
                             {
-                                string makeKey = parameters[1];
+                                try
+                                {
+                                    string timerName = parameters[1].Trim(new char[] { '"' });
+                                    string timeString = parameters[2];
 
-                                string seconds = makeKey.Split('s')[0];
-                                int secs = Convert.ToInt32(seconds);
+                                    string[] hourBits = timeString.Split('h');
+                                    string minuteString = hourBits.Length == 1 ? hourBits[0] : hourBits[1];
 
-                                Timers.Add(String.Format("{0};{1};{2}", channel, name, "testdummyname"), DateTime.Now.AddSeconds(secs));
+                                    string[] minuteBits = minuteString.Split('m');
+                                    string secondString = minuteBits.Length == 1 ? minuteBits[0] : minuteBits[1];
 
-                                Host.PluginResponse(channel, String.Format("Timer with duration of {0} seconds added!", seconds));
+                                    string[] secondBits = secondString.Split('s');
+
+                                    string sHour = hourBits.Length == 1 ? null : hourBits[0];
+                                    string sMinute = minuteBits.Length == 1 ? null : minuteBits[0];
+                                    string sSecond = secondBits.Length == 1 ? null : secondBits[0];
+
+                                    DateTime endTime = DateTime.Now;
+
+                                    if (sHour != null)
+                                        endTime = endTime.AddHours(Convert.ToInt32(sHour));
+                                    if (sMinute != null)
+                                        endTime = endTime.AddMinutes(Convert.ToInt32(sMinute));
+                                    if (sSecond != null)
+                                        endTime = endTime.AddSeconds(Convert.ToInt32(sSecond));
+
+                                    TimerInfo newTimer = new TimerInfo();
+                                    newTimer.Channel = channel;
+                                    newTimer.Username = name;
+                                    newTimer.Name = timerName;
+                                    newTimer.EndTime = endTime;
+                                    newTimer.Expired = false;
+
+                                    xLogger.Logger.WriteLine(String.Format("Now: {0}, Expiry: {1}", DateTime.Now.ToLongTimeString(), endTime.ToLongTimeString()));
+
+                                    Timers.Add(newTimer);
+
+                                    Host.PluginResponse(channel, String.Format("Your timer \"{0}\" with a duration of{1}{2}{3} has been added!", timerName,
+                                        (sHour != null ? String.Format(" {0} hours", sHour) : ""),
+                                        (sMinute != null ? String.Format(" {0} minutes", sMinute) : ""),
+                                        (sSecond != null ? String.Format(" {0} seconds", sSecond) : "")));
+                                }
+                                catch (Exception ex)
+                                {
+                                    Host.PluginResponse(channel, String.Format("Error while adding timer: {0}", ex.Message));
+                                }
 
                             }
                             break;

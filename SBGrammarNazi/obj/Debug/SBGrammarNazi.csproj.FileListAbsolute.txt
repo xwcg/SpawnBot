@@ -8,3 +8,8 @@ C:\Users\Watashi\Documents\GitHub\SpawnBot\SpawnBot\bin\Debug\Plugins\SBGrammarN
 C:\Users\Watashi\Documents\GitHub\SpawnBot\SBGrammarNazi\obj\Debug\SBGrammarNazi.csprojResolveAssemblyReference.cache
 C:\Users\Watashi\Documents\GitHub\SpawnBot\SBGrammarNazi\obj\Debug\SBGrammarNazi.dll
 C:\Users\Watashi\Documents\GitHub\SpawnBot\SBGrammarNazi\obj\Debug\SBGrammarNazi.pdb
+F:\#Documents\GitHub\SpawnBot\SpawnBot\bin\Debug\Plugins\SBGrammarNazi.dll
+F:\#Documents\GitHub\SpawnBot\SpawnBot\bin\Debug\Plugins\SBGrammarNazi.pdb
+F:\#Documents\GitHub\SpawnBot\SBGrammarNazi\obj\Debug\SBGrammarNazi.csprojResolveAssemblyReference.cache
+F:\#Documents\GitHub\SpawnBot\SBGrammarNazi\obj\Debug\SBGrammarNazi.dll
+F:\#Documents\GitHub\SpawnBot\SBGrammarNazi\obj\Debug\SBGrammarNazi.pdb

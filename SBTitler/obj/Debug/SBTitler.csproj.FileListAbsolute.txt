@@ -14,3 +14,8 @@ C:\Users\Watashi\Documents\GitHub\SpawnBot\SpawnBot\bin\Debug\Plugins\SBTitler.p
 C:\Users\Watashi\Documents\GitHub\SpawnBot\SBTitler\obj\Debug\SBTitler.csprojResolveAssemblyReference.cache
 C:\Users\Watashi\Documents\GitHub\SpawnBot\SBTitler\obj\Debug\SBTitler.dll
 C:\Users\Watashi\Documents\GitHub\SpawnBot\SBTitler\obj\Debug\SBTitler.pdb
+F:\#Documents\GitHub\SpawnBot\SpawnBot\bin\Debug\Plugins\SBTitler.dll
+F:\#Documents\GitHub\SpawnBot\SpawnBot\bin\Debug\Plugins\SBTitler.pdb
+F:\#Documents\GitHub\SpawnBot\SBTitler\obj\Debug\SBTitler.csprojResolveAssemblyReference.cache
+F:\#Documents\GitHub\SpawnBot\SBTitler\obj\Debug\SBTitler.dll
+F:\#Documents\GitHub\SpawnBot\SBTitler\obj\Debug\SBTitler.pdb

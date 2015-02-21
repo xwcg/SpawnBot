@@ -154,7 +154,7 @@ namespace ConfigManager
                     {
                         string key = parts[0].Value;
                         string value = parts[2].Value;
-                        Console.WriteLine("{0} ::: {1}", key, value);
+                        //Console.WriteLine("{0} ::: {1}", key, value);
                         Output.Add(new Config(key, value, true));
                     }
                     //string[] parts = input.Split('=');

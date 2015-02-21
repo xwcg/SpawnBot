@@ -8,3 +8,8 @@ C:\Users\Watashi\Documents\GitHub\SpawnBot\ConfigManager\bin\Debug\ConfigManager
 C:\Users\Watashi\Documents\GitHub\SpawnBot\ConfigManager\obj\Debug\ConfigManager.csprojResolveAssemblyReference.cache
 C:\Users\Watashi\Documents\GitHub\SpawnBot\ConfigManager\obj\Debug\ConfigManager.dll
 C:\Users\Watashi\Documents\GitHub\SpawnBot\ConfigManager\obj\Debug\ConfigManager.pdb
+F:\#Documents\GitHub\SpawnBot\ConfigManager\bin\Debug\ConfigManager.dll
+F:\#Documents\GitHub\SpawnBot\ConfigManager\bin\Debug\ConfigManager.pdb
+F:\#Documents\GitHub\SpawnBot\ConfigManager\obj\Debug\ConfigManager.csprojResolveAssemblyReference.cache
+F:\#Documents\GitHub\SpawnBot\ConfigManager\obj\Debug\ConfigManager.dll
+F:\#Documents\GitHub\SpawnBot\ConfigManager\obj\Debug\ConfigManager.pdb
