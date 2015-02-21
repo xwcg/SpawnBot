@@ -134,7 +134,7 @@ namespace SBGrammarNazi
         {
             if ( command.ToLower() == "addgrammar" )
             {
-                if ( Host.PluginUserManager.IsOperator(name, channel) && name.StartsWith("xwcg"))
+                if (Host.PluginUserManager.VerifyAdmin(name, channel))
                 {
                     if ( parameters.Length >= 3 )
                     {
@@ -156,7 +156,7 @@ namespace SBGrammarNazi
 
             if ( command.ToLower() == "delgrammar" )
             {
-                if ( Host.PluginUserManager.IsOperator(name, channel) && name.StartsWith("xwcg") )
+                if (Host.PluginUserManager.VerifyAdmin(name, channel))
                 {
                     if ( parameters.Length >= 1 )
                     {
@@ -177,13 +177,7 @@ namespace SBGrammarNazi
             }
 
 
-            if ( command.ToLower() == "grammaroptimizedatabase" )
-            {
-                if ( Host.PluginUserManager.IsOperator(name, channel) && name.StartsWith("xwcg") )
-                {
-                    
-                }
-            }
+            
 
         }
 
