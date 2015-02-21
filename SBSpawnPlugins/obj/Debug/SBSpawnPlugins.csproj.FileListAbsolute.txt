@@ -10,7 +10,8 @@ C:\Users\Watashi\Documents\GitHub\SpawnBot\SpawnBot\bin\Debug\Plugins\SBSpawnPlu
 C:\Users\Watashi\Documents\GitHub\SpawnBot\SBSpawnPlugins\obj\Debug\SBSpawnPlugins.csprojResolveAssemblyReference.cache
 C:\Users\Watashi\Documents\GitHub\SpawnBot\SBSpawnPlugins\obj\Debug\SBSpawnPlugins.dll
 C:\Users\Watashi\Documents\GitHub\SpawnBot\SBSpawnPlugins\obj\Debug\SBSpawnPlugins.pdb
-C:\Users\mschwarz\Documents\GitHub\SpawnBot\SpawnBot\bin\Debug\Plugins\SBSpawnPlugins.dll
-C:\Users\mschwarz\Documents\GitHub\SpawnBot\SpawnBot\bin\Debug\Plugins\SBSpawnPlugins.pdb
-C:\Users\mschwarz\Documents\GitHub\SpawnBot\SBSpawnPlugins\obj\Debug\SBSpawnPlugins.dll
-C:\Users\mschwarz\Documents\GitHub\SpawnBot\SBSpawnPlugins\obj\Debug\SBSpawnPlugins.pdb
+F:\#Documents\GitHub\SpawnBot\SpawnBot\bin\Debug\Plugins\SBSpawnPlugins.dll
+F:\#Documents\GitHub\SpawnBot\SpawnBot\bin\Debug\Plugins\SBSpawnPlugins.pdb
+F:\#Documents\GitHub\SpawnBot\SBSpawnPlugins\obj\Debug\SBSpawnPlugins.csprojResolveAssemblyReference.cache
+F:\#Documents\GitHub\SpawnBot\SBSpawnPlugins\obj\Debug\SBSpawnPlugins.dll
+F:\#Documents\GitHub\SpawnBot\SBSpawnPlugins\obj\Debug\SBSpawnPlugins.pdb

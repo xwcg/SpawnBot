@@ -8,7 +8,7 @@ using Tweetinvi;
 using xLogger;
 
 /*
-    Copyright 2012-2014 Michael Schwarz
+    Copyright 2012-2015 Michael Schwarz
 
     This file is part of SpawnBot.
 
@@ -220,6 +220,11 @@ namespace SBTwitter
                                         Host.PluginResponse( channel, "Usage: !twitter follow [username]" );
                                     }
                                     break;
+                                case "restart":
+                                    Host.PluginResponse(channel, "Restarting twitter stream...");
+                                    this.InitFollow();
+                                    Host.PluginResponse(channel, "Twitter stream restarted!");
+                                    break;
                             }
                         }
                         else
@@ -295,7 +300,7 @@ namespace SBTwitter
         }
 
         private bool LoadConfig ()
-        {
+            {
             //List<Config> cfgfollows = Host.PluginConfigManager.Load("sbtwitter", "follows.cfg");
             //if (cfgfollows == null)
             //    return false;
@@ -319,7 +324,7 @@ namespace SBTwitter
         }
 
         private bool SaveConfig ()
-        {
+            {
             //List<Config> cfgFollows = new List<Config>();
             //foreach (KeyValuePair<string, List<string>> kp in follows)
             //{
@@ -392,13 +397,13 @@ namespace SBTwitter
                     //stream.AddTrack(tweeter);
                     stream.AddFollow( User.GetUserFromScreenName( tweeter ) );
                 }
-            }
+                }
 
             if ( verbose )
                 Host.PluginResponse( "xwcg", "Starting Twitter Stream" );
 
             stream.StartStreamMatchingAnyConditionAsync();
-        }
+            }
 
         void stream_DisconnectMessageReceived ( object sender, Tweetinvi.Core.Events.EventArguments.DisconnectMessageEventArgs e )
         {

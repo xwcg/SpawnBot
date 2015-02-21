@@ -8,9 +8,8 @@ C:\Users\Watashi\Documents\GitHub\SpawnBot\ConfigManager\bin\Debug\ConfigManager
 C:\Users\Watashi\Documents\GitHub\SpawnBot\ConfigManager\obj\Debug\ConfigManager.csprojResolveAssemblyReference.cache
 C:\Users\Watashi\Documents\GitHub\SpawnBot\ConfigManager\obj\Debug\ConfigManager.dll
 C:\Users\Watashi\Documents\GitHub\SpawnBot\ConfigManager\obj\Debug\ConfigManager.pdb
-C:\Users\mschwarz\Documents\GitHub\SpawnBot\ConfigManager\obj\Debug\ConfigManager.dll
-C:\Users\mschwarz\Documents\GitHub\SpawnBot\ConfigManager\bin\Debug\ConfigManager.dll
-C:\Users\mschwarz\Documents\GitHub\SpawnBot\ConfigManager\bin\Debug\ConfigManager.pdb
-C:\Users\mschwarz\Documents\GitHub\SpawnBot\ConfigManager\bin\Debug\ConfigManager.dll.CodeAnalysisLog.xml
-C:\Users\mschwarz\Documents\GitHub\SpawnBot\ConfigManager\bin\Debug\ConfigManager.dll.lastcodeanalysissucceeded
-C:\Users\mschwarz\Documents\GitHub\SpawnBot\ConfigManager\obj\Debug\ConfigManager.pdb
+F:\#Documents\GitHub\SpawnBot\ConfigManager\bin\Debug\ConfigManager.dll
+F:\#Documents\GitHub\SpawnBot\ConfigManager\bin\Debug\ConfigManager.pdb
+F:\#Documents\GitHub\SpawnBot\ConfigManager\obj\Debug\ConfigManager.csprojResolveAssemblyReference.cache
+F:\#Documents\GitHub\SpawnBot\ConfigManager\obj\Debug\ConfigManager.dll
+F:\#Documents\GitHub\SpawnBot\ConfigManager\obj\Debug\ConfigManager.pdb

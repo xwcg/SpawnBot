@@ -5,7 +5,7 @@ using System.Text;
 using xLogger;
 
 /*
-    Copyright 2012-2014 Michael Schwarz
+    Copyright 2012-2015 Michael Schwarz
   
     This file is part of SpawnBot.
 

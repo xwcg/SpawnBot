@@ -8,8 +8,8 @@ C:\Users\Watashi\Documents\GitHub\SpawnBot\xIrcNet\bin\Debug\xIrcNet.pdb
 C:\Users\Watashi\Documents\GitHub\SpawnBot\xIrcNet\obj\Debug\xIrcNet.csprojResolveAssemblyReference.cache
 C:\Users\Watashi\Documents\GitHub\SpawnBot\xIrcNet\obj\Debug\xIrcNet.dll
 C:\Users\Watashi\Documents\GitHub\SpawnBot\xIrcNet\obj\Debug\xIrcNet.pdb
-C:\Users\mschwarz\Documents\GitHub\SpawnBot\xIrcNet\bin\Debug\xIrcNet.dll
-C:\Users\mschwarz\Documents\GitHub\SpawnBot\xIrcNet\bin\Debug\xIrcNet.pdb
-C:\Users\mschwarz\Documents\GitHub\SpawnBot\xIrcNet\obj\Debug\xIrcNet.csprojResolveAssemblyReference.cache
-C:\Users\mschwarz\Documents\GitHub\SpawnBot\xIrcNet\obj\Debug\xIrcNet.dll
-C:\Users\mschwarz\Documents\GitHub\SpawnBot\xIrcNet\obj\Debug\xIrcNet.pdb
+F:\#Documents\GitHub\SpawnBot\xIrcNet\bin\Debug\xIrcNet.dll
+F:\#Documents\GitHub\SpawnBot\xIrcNet\bin\Debug\xIrcNet.pdb
+F:\#Documents\GitHub\SpawnBot\xIrcNet\obj\Debug\xIrcNet.csprojResolveAssemblyReference.cache
+F:\#Documents\GitHub\SpawnBot\xIrcNet\obj\Debug\xIrcNet.dll
+F:\#Documents\GitHub\SpawnBot\xIrcNet\obj\Debug\xIrcNet.pdb

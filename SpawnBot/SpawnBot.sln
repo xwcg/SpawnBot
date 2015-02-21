@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30501.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{1C901DA4-B009-4E07-895D-247E02AD9AF5}"
 	ProjectSection(SolutionItems) = preProject
 		..\Changelog.txt = ..\Changelog.txt
@@ -51,6 +53,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SBTimegiver", "..\SBTimegiver\SBTimegiver.csproj", "{6AB2D913-6A94-4296-BD3B-94F045A4BD70}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SBTimer", "SBTimer\SBTimer.csproj", "{1F983DB3-92B0-4B10-8CEA-27EADAFEFA71}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SBRoleCall", "..\SBRoleCall\SBRoleCall.csproj", "{560733A0-7C1C-4F4A-9BDF-ACF08A70DE41}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -150,6 +154,10 @@ Global
 		{1F983DB3-92B0-4B10-8CEA-27EADAFEFA71}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1F983DB3-92B0-4B10-8CEA-27EADAFEFA71}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1F983DB3-92B0-4B10-8CEA-27EADAFEFA71}.Release|Any CPU.Build.0 = Release|Any CPU
+		{560733A0-7C1C-4F4A-9BDF-ACF08A70DE41}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{560733A0-7C1C-4F4A-9BDF-ACF08A70DE41}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{560733A0-7C1C-4F4A-9BDF-ACF08A70DE41}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{560733A0-7C1C-4F4A-9BDF-ACF08A70DE41}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -6,7 +6,7 @@ using System.IO;
 using System.Text.RegularExpressions;
 
 /*
-    Copyright 2012-2014 Michael Schwarz
+    Copyright 2012-2015 Michael Schwarz
   
     This file is part of SpawnBot.
 
@@ -113,7 +113,7 @@ namespace ConfigManager
 
             CurrentDir = Path.Combine( localDir, "config" );
         }
-        
+
         public Dictionary<T, T2> Load<T, T2> ( string PluginName, string FileName )
         {
             List<Config> cfgs = this.Load( PluginName, FileName );

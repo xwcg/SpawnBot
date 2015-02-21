@@ -8,8 +8,8 @@ C:\Users\Watashi\Documents\GitHub\SpawnBot\xLogger\bin\Debug\xLogger.pdb
 C:\Users\Watashi\Documents\GitHub\SpawnBot\xLogger\obj\Debug\xLogger.csprojResolveAssemblyReference.cache
 C:\Users\Watashi\Documents\GitHub\SpawnBot\xLogger\obj\Debug\xLogger.dll
 C:\Users\Watashi\Documents\GitHub\SpawnBot\xLogger\obj\Debug\xLogger.pdb
-C:\Users\mschwarz\Documents\GitHub\SpawnBot\xLogger\bin\Debug\xLogger.dll
-C:\Users\mschwarz\Documents\GitHub\SpawnBot\xLogger\bin\Debug\xLogger.pdb
-C:\Users\mschwarz\Documents\GitHub\SpawnBot\xLogger\obj\Debug\xLogger.csprojResolveAssemblyReference.cache
-C:\Users\mschwarz\Documents\GitHub\SpawnBot\xLogger\obj\Debug\xLogger.dll
-C:\Users\mschwarz\Documents\GitHub\SpawnBot\xLogger\obj\Debug\xLogger.pdb
+F:\#Documents\GitHub\SpawnBot\xLogger\bin\Debug\xLogger.dll
+F:\#Documents\GitHub\SpawnBot\xLogger\bin\Debug\xLogger.pdb
+F:\#Documents\GitHub\SpawnBot\xLogger\obj\Debug\xLogger.csprojResolveAssemblyReference.cache
+F:\#Documents\GitHub\SpawnBot\xLogger\obj\Debug\xLogger.dll
+F:\#Documents\GitHub\SpawnBot\xLogger\obj\Debug\xLogger.pdb

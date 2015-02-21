@@ -54,18 +54,18 @@ namespace SpawnBot
         /// Searches the passed Path for Plugins
         /// </summary>
         /// <param name="Path">Directory to search for Plugins in</param>
-        public void FindPlugins( string Path )
+        public void FindPlugins(string Path)
         {
             //First empty the collection, we're reloading them all
             colAvailablePlugins.Clear();
 
             //Go through all the files in the plugin directory
-            foreach ( string fileOn in Directory.GetFiles(Path) )
+            foreach (string fileOn in Directory.GetFiles(Path))
             {
                 FileInfo file = new FileInfo(fileOn);
 
                 //Preliminary check, must be .dll
-                if ( file.Extension.Equals(".dll") )
+                if (file.Extension.Equals(".dll"))
                 {
                     //Add the 'plugin'
                     this.AddPlugin(fileOn);
@@ -77,15 +77,15 @@ namespace SpawnBot
         /// Searches the passed Path for Plugins
         /// </summary>
         /// <param name="Path">Directory to search for Plugins in</param>
-        public void AppendPlugins( string Path )
+        public void AppendPlugins(string Path)
         {
             //Go through all the files in the plugin directory
-            foreach ( string fileOn in Directory.GetFiles(Path) )
+            foreach (string fileOn in Directory.GetFiles(Path))
             {
                 FileInfo file = new FileInfo(fileOn);
 
                 //Preliminary check, must be .dll
-                if ( file.Extension.Equals(".dll") )
+                if (file.Extension.Equals(".dll"))
                 {
                     //Add the 'plugin'
                     this.AddPlugin(fileOn);
@@ -98,7 +98,7 @@ namespace SpawnBot
         /// </summary>
         public void ClosePlugins()
         {
-            foreach ( AvailablePlugin pluginOn in colAvailablePlugins )
+            foreach (AvailablePlugin pluginOn in colAvailablePlugins)
             {
                 //Close all plugin instances
                 //We call the plugins Dispose sub first incase it has to do 
@@ -113,17 +113,17 @@ namespace SpawnBot
             colAvailablePlugins.Clear();
         }
 
-        private void AddPlugin( string FileName )
+        private void AddPlugin(string FileName)
         {
             //Create a new assembly from the plugin file we're adding..
             Assembly pluginAssembly = Assembly.LoadFrom(FileName);
 
             //Next we'll loop through all the Types found in the assembly
-            foreach ( Type pluginType in pluginAssembly.GetTypes() )
+            foreach (Type pluginType in pluginAssembly.GetTypes())
             {
-                if ( pluginType.IsPublic ) //Only look at public types
+                if (pluginType.IsPublic) //Only look at public types
                 {
-                    if ( !pluginType.IsAbstract )  //Only look at non-abstract types
+                    if (!pluginType.IsAbstract)  //Only look at non-abstract types
                     {
                         Type typeInterface = null;
 
@@ -139,7 +139,7 @@ namespace SpawnBot
                         }
 
                         //Make sure the interface we want to use actually exists
-                        if ( typeInterface != null )
+                        if (typeInterface != null)
                         {
                             //Create a new available plugin since the type implements the IPlugin interface
                             AvailablePlugin newPlugin = new AvailablePlugin();
@@ -189,7 +189,7 @@ namespace SpawnBot
         /// Add a Plugin to the collection of Available plugins
         /// </summary>
         /// <param name="pluginToAdd">The Plugin to Add</param>
-        public void Add( AvailablePlugin pluginToAdd )
+        public void Add(AvailablePlugin pluginToAdd)
         {
             this.List.Add(pluginToAdd);
         }
@@ -198,7 +198,7 @@ namespace SpawnBot
         /// Remove a Plugin to the collection of Available plugins
         /// </summary>
         /// <param name="pluginToRemove">The Plugin to Remove</param>
-        public void Remove( AvailablePlugin pluginToRemove )
+        public void Remove(AvailablePlugin pluginToRemove)
         {
             this.List.Remove(pluginToRemove);
         }
@@ -208,15 +208,15 @@ namespace SpawnBot
         /// </summary>
         /// <param name="pluginNameOrPath">The name or File path of the plugin to find</param>
         /// <returns>Available Plugin, or null if the plugin is not found</returns>
-        public AvailablePlugin Find( string pluginNameOrPath )
+        public AvailablePlugin Find(string pluginNameOrPath)
         {
             AvailablePlugin toReturn = null;
 
             //Loop through all the plugins
-            foreach ( AvailablePlugin pluginOn in this.List )
+            foreach (AvailablePlugin pluginOn in this.List)
             {
                 //Find the one with the matching name or filename
-                if ( ( pluginOn.Instance.PluginName.Equals(pluginNameOrPath) ) || pluginOn.AssemblyPath.Equals(pluginNameOrPath) )
+                if ((pluginOn.Instance.PluginName.Equals(pluginNameOrPath)) || pluginOn.AssemblyPath.Equals(pluginNameOrPath))
                 {
                     toReturn = pluginOn;
                     break;
@@ -227,13 +227,30 @@ namespace SpawnBot
 
         public AvailablePlugin FindUserManager()
         {
-            foreach ( AvailablePlugin pluginOn in this.List )
+            foreach (AvailablePlugin pluginOn in this.List)
             {
                 Type[] types = pluginOn.Instance.GetType().Assembly.GetTypes();
 
-                foreach ( Type t in types )
+                foreach (Type t in types)
                 {
-                    if ( t.GetInterface("SBPluginInterface.SBUserPlugin") != null )
+                    if (t.GetInterface("SBPluginInterface.SBUserPlugin") != null)
+                    {
+                        return pluginOn;
+                    }
+                }
+            }
+
+            return null;
+        }
+        public AvailablePlugin FindTimeGiver()
+        {
+            foreach (AvailablePlugin pluginOn in this.List)
+            {
+                Type[] types = pluginOn.Instance.GetType().Assembly.GetTypes();
+
+                foreach (Type t in types)
+                {
+                    if (t.GetInterface("SBPluginInterface.SBTimePlugin") != null)
                     {
                         return pluginOn;
                     }
