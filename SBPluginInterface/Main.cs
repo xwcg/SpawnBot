@@ -72,21 +72,23 @@ namespace SBPluginInterface
             set;
         }
 
-        void Dispose();
+        void Dispose ();
     }
 
     public interface SBUserPlugin : SBPlugin
     {
-        bool IsOperator(string name, string channel);
-        bool IsVoiced(string name, string channel);
-        bool IsBot(string name);
+        bool Exists ( string name, string channel );
+        bool IsOperator ( string name, string channel );
+        bool IsVoiced ( string name, string channel );
+        bool IsBot ( string name );
+        bool VerifyAdmin ( string name, string channel );
 
-        string[] GetChannels(string name);
-        string[] GetUsers(string channel);
+        string[] GetChannels ( string name );
+        string[] GetUsers ( string channel );
 
-        void SetBotFlag(string name);
+        void SetBotFlag ( string name );
 
-        void ClearAllUsers();
+        void ClearAllUsers ();
     }
 
     public interface SBTimePlugin : SBPlugin
@@ -96,10 +98,10 @@ namespace SBPluginInterface
 
     public interface SBPluginHost
     {
-        void PluginResponse(string channel, string message);
-        void PluginKick(string channel, string name, string reason);
+        void PluginResponse ( string channel, string message );
+        void PluginKick ( string channel, string name, string reason );
 
-        SBPlugin FindPlugin(string nameOrPath);
+        SBPlugin FindPlugin ( string nameOrPath );
 
         event UserJoin eventPluginUserJoined;
         event UserJoinHostname eventPluginUserJoinedHostname;
@@ -140,6 +142,16 @@ namespace SBPluginInterface
         }
 
         string PluginBotFolder
+        {
+            get;
+        }
+
+        string PluginBotAdmin
+        {
+            get;
+        }
+
+        string PluginBotSecret
         {
             get;
         }

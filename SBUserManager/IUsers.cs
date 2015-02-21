@@ -30,29 +30,30 @@ namespace SBUserManager
         private bool isOp = false;
         private bool isVoice = false;
         private bool isBot = false;
+        private bool isAdmin = false;
         private string name;
         private string channel;
         private string hostname;
 
-        public IrcUser( string UserName, string ChannelName, string HostName )
+        public IrcUser ( string UserName, string ChannelName, string HostName )
         {
-            if ( UserName.StartsWith("+") )
+            if ( UserName.StartsWith( "+" ) )
             {
                 isVoice = true;
-                name = UserName.Substring(1);
+                name = UserName.Substring( 1 );
             }
-            else if ( UserName.StartsWith("@") )
+            else if ( UserName.StartsWith( "@" ) )
             {
                 isVoice = true;
                 isOp = true;
-                name = UserName.Substring(1);
+                name = UserName.Substring( 1 );
             }
             else
             {
                 name = UserName;
             }
 
-            if ( ChannelName.StartsWith("#") )
+            if ( ChannelName.StartsWith( "#" ) )
             {
                 channel = ChannelName;
             }
@@ -64,7 +65,7 @@ namespace SBUserManager
             hostname = HostName;
         }
 
-        public string GetLegacyName()
+        public string GetLegacyName ()
         {
             if ( isOp )
             {
@@ -80,38 +81,45 @@ namespace SBUserManager
             }
         }
 
-        public void ChangeName( string newname )
+        public void ChangeName ( string newname )
         {
-            Logger.WriteLine(String.Format("* '{0}' changed name to '{1}'", name, newname), ConsoleColor.DarkYellow);
+            Logger.WriteLine( String.Format( "* '{0}' changed name to '{1}'", name, newname ), ConsoleColor.DarkYellow );
             name = newname;
         }
 
-        public void Op()
+        public void Op ()
         {
             isVoice = true;
             isOp = true;
         }
 
-        public void DeOp()
+        public void DeOp ()
         {
             isOp = false;
         }
 
-        public void Voice()
+        public void Voice ()
         {
             isVoice = true;
         }
 
-        public void DeVoice()
+        public void DeVoice ()
         {
             isVoice = false;
         }
 
-        public void FlagBot()
+        public void FlagAdmin ()
+        {
+            isAdmin = true;
+
+            Logger.WriteLine( String.Format( "* Flagged '{0}' as admin", name ), ConsoleColor.DarkYellow );
+        }
+
+        public void FlagBot ()
         {
             isBot = true;
 
-            Logger.WriteLine(String.Format("* Flagged '{0}' as bot", name), ConsoleColor.DarkYellow);
+            Logger.WriteLine( String.Format( "* Flagged '{0}' as bot", name ), ConsoleColor.DarkYellow );
         }
 
         public bool HasOp
@@ -135,6 +143,14 @@ namespace SBUserManager
             get
             {
                 return isBot;
+            }
+        }
+
+        public bool HasAdminFlag
+        {
+            get
+            {
+                return isAdmin;
             }
         }
 
@@ -167,20 +183,20 @@ namespace SBUserManager
     {
         private static List<IrcUser> Userlist = new List<IrcUser>();
 
-        public static bool RemoveUser( string name, string channel )
+        public static bool RemoveUser ( string name, string channel )
         {
-            int user = Userlist.FindIndex(delegate( IrcUser n )
+            int user = Userlist.FindIndex( delegate( IrcUser n )
             {
-                if ( n.Name.Equals(name, StringComparison.CurrentCultureIgnoreCase) )
+                if ( n.Name.Equals( name, StringComparison.CurrentCultureIgnoreCase ) )
                 {
-                    if ( n.Channel.Equals(channel, StringComparison.CurrentCultureIgnoreCase) )
+                    if ( n.Channel.Equals( channel, StringComparison.CurrentCultureIgnoreCase ) )
                     {
                         return true;
                     }
                 }
 
                 return false;
-            });
+            } );
 
             if ( user < 0 )
             {
@@ -188,12 +204,12 @@ namespace SBUserManager
             }
             else
             {
-                Userlist.RemoveAt(user);
+                Userlist.RemoveAt( user );
                 return true;
             }
         }
 
-        public static bool[] RemoveAllUser( string name )
+        public static bool[] RemoveAllUser ( string name )
         {
             if ( name == "*" )
             {
@@ -201,7 +217,7 @@ namespace SBUserManager
                 return new bool[] { true };
             }
 
-            IrcUser[] users = GetUsers(name);
+            IrcUser[] users = GetUsers( name );
 
             if ( users == null )
             {
@@ -212,20 +228,20 @@ namespace SBUserManager
 
             foreach ( IrcUser u in users )
             {
-                successes.Add(RemoveUser(u.Name, u.Channel));
+                successes.Add( RemoveUser( u.Name, u.Channel ) );
             }
 
             return successes.ToArray();
         }
 
-        public static void AddUser( string name, string channel, string hostname )
+        public static void AddUser ( string name, string channel, string hostname )
         {
-            Userlist.Add(new IrcUser(name, channel, hostname));
+            Userlist.Add( new IrcUser( name, channel, hostname ) );
         }
 
-        public static bool ChangeUserName( string name, string newname )
+        public static bool ChangeUserName ( string name, string newname )
         {
-            IrcUser[] users = GetUsers(name);
+            IrcUser[] users = GetUsers( name );
 
             if ( users == null )
             {
@@ -234,15 +250,15 @@ namespace SBUserManager
 
             foreach ( IrcUser u in users )
             {
-                u.ChangeName(newname);
+                u.ChangeName( newname );
             }
 
             return true;
         }
 
-        public static bool SetBotFlag( string name )
+        public static bool SetBotFlag ( string name )
         {
-            IrcUser[] users = GetUsers(name);
+            IrcUser[] users = GetUsers( name );
 
             if ( users == null )
             {
@@ -257,9 +273,26 @@ namespace SBUserManager
             return true;
         }
 
-        public static bool IsBot( string name )
+        public static bool SetAdminFlag ( string name )
         {
-            IrcUser[] users = GetUsers(name);
+            IrcUser[] users = GetUsers( name );
+
+            if ( users == null )
+            {
+                return false;
+            }
+
+            foreach ( IrcUser u in users )
+            {
+                u.FlagAdmin();
+            }
+
+            return true;
+        }
+
+        public static bool IsBot ( string name )
+        {
+            IrcUser[] users = GetUsers( name );
 
             if ( users == null )
             {
@@ -275,20 +308,20 @@ namespace SBUserManager
         /// <param name="name">Complete username</param>
         /// <param name="channel">Channel to look for user</param>
         /// <returns>User; null when not found</returns>
-        public static IrcUser GetUser( string name, string channel )
+        public static IrcUser GetUser ( string name, string channel )
         {
-            IrcUser user = Userlist.Find(delegate( IrcUser n )
+            IrcUser user = Userlist.Find( delegate( IrcUser n )
             {
-                if ( n.Name.Equals(name, StringComparison.CurrentCultureIgnoreCase) )
+                if ( n.Name.Equals( name, StringComparison.CurrentCultureIgnoreCase ) )
                 {
-                    if ( n.Channel.Equals(channel, StringComparison.CurrentCultureIgnoreCase) )
+                    if ( n.Channel.Equals( channel, StringComparison.CurrentCultureIgnoreCase ) )
                     {
                         return true;
                     }
                 }
 
                 return false;
-            });
+            } );
 
             if ( user == null )
             {
@@ -300,12 +333,12 @@ namespace SBUserManager
             }
         }
 
-        public static IrcUser[] GetUsers( string name )
+        public static IrcUser[] GetUsers ( string name )
         {
-            List<IrcUser> users = Userlist.FindAll(delegate( IrcUser n )
+            List<IrcUser> users = Userlist.FindAll( delegate( IrcUser n )
             {
-                return n.Name.Equals(name, StringComparison.CurrentCultureIgnoreCase);
-            });
+                return n.Name.Equals( name, StringComparison.CurrentCultureIgnoreCase );
+            } );
 
             if ( users == null || users.Count == 0 )
             {
@@ -317,12 +350,12 @@ namespace SBUserManager
             }
         }
 
-        public static string[] GetChannelsForUser( string name )
+        public static string[] GetChannelsForUser ( string name )
         {
-            List<IrcUser> users = Userlist.FindAll(delegate( IrcUser n )
+            List<IrcUser> users = Userlist.FindAll( delegate( IrcUser n )
             {
-                return n.Name.Equals(name, StringComparison.CurrentCultureIgnoreCase);
-            });
+                return n.Name.Equals( name, StringComparison.CurrentCultureIgnoreCase );
+            } );
 
             if ( users == null || users.Count == 0 )
             {
@@ -334,9 +367,9 @@ namespace SBUserManager
 
                 foreach ( IrcUser user in users )
                 {
-                    if ( !chlist.Contains(user.Channel) )
+                    if ( !chlist.Contains( user.Channel ) )
                     {
-                        chlist.Add(user.Channel);
+                        chlist.Add( user.Channel );
                     }
                 }
 
@@ -344,12 +377,12 @@ namespace SBUserManager
             }
         }
 
-        public static IrcUser[] GetUsersForChannel( string channel )
+        public static IrcUser[] GetUsersForChannel ( string channel )
         {
-            List<IrcUser> users = Userlist.FindAll(delegate( IrcUser n )
+            List<IrcUser> users = Userlist.FindAll( delegate( IrcUser n )
             {
-                return n.Channel.Equals(channel, StringComparison.CurrentCultureIgnoreCase);
-            });
+                return n.Channel.Equals( channel, StringComparison.CurrentCultureIgnoreCase );
+            } );
 
             if ( users == null || users.Count == 0 )
             {
@@ -367,20 +400,20 @@ namespace SBUserManager
         /// <param name="name">Partial username</param>
         /// <param name="channel">Channel to look for user</param>
         /// <returns>User; null when not found</returns>
-        public static IrcUser GetUserPartial( string name, string channel )
+        public static IrcUser GetUserPartial ( string name, string channel )
         {
-            IrcUser user = Userlist.Find(delegate( IrcUser n )
+            IrcUser user = Userlist.Find( delegate( IrcUser n )
             {
-                if ( n.Name.Contains(name) )
+                if ( n.Name.Contains( name ) )
                 {
-                    if ( n.Channel.Equals(channel, StringComparison.CurrentCultureIgnoreCase) )
+                    if ( n.Channel.Equals( channel, StringComparison.CurrentCultureIgnoreCase ) )
                     {
                         return true;
                     }
                 }
 
                 return false;
-            });
+            } );
 
             if ( user == null )
             {

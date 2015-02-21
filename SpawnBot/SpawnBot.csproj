@@ -63,7 +63,7 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="TweetinviAPI">
-      <HintPath>F:\Google Drive\#Projects\_PLugs\TweetinviAPI.dll</HintPath>
+      <HintPath>..\TweetinviAPI.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

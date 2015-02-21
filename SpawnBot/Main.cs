@@ -184,7 +184,7 @@ namespace SpawnBot
 
             try
             {
-                UserManager = (SBUserPlugin)plugins.AvailablePlugins.FindUserManager().Instance;
+            UserManager = (SBUserPlugin)plugins.AvailablePlugins.FindUserManager().Instance;
                 TimeGiver = (SBTimePlugin)plugins.AvailablePlugins.FindTimeGiver().Instance;
             }
             catch (Exception) { }
@@ -780,6 +780,22 @@ namespace SpawnBot
             get
             {
                 return Environment.CurrentDirectory;
+            }
+        }
+
+        public string PluginBotAdmin
+        {
+            get
+            {
+                return Superadmin;
+            }
+        }
+
+        public string PluginBotSecret
+        {
+            get
+            {
+                return BotConfirmationSecret;
             }
         }
 
