@@ -220,6 +220,11 @@ namespace SBTwitter
                                         Host.PluginResponse( channel, "Usage: !twitter follow [username]" );
                                     }
                                     break;
+                                case "restart":
+                                    Host.PluginResponse(channel, "Restarting twitter stream...");
+                                    this.InitFollow();
+                                    Host.PluginResponse(channel, "Twitter stream restarted!");
+                                    break;
                             }
                         }
                         else
