@@ -652,16 +652,6 @@ namespace SpawnBot
 
             if (message.StartsWith("!"))
             {
-                if (name.StartsWith("Mariondoe", StringComparison.CurrentCultureIgnoreCase))
-                {
-                    Random r = new Random();
-                    if (r.Next(0, 100) <= 25)
-                    {
-                        SendMessage("Unexpected error 0x0001D107", channel);
-                        return;
-                    }
-                }
-
                 List<string> partsList = new List<string>();
                 MatchCollection messageMatches = MessageSplitter.Matches(message);
 
